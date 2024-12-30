@@ -1,13 +1,14 @@
-export default function AboutLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+'use client';
+import { SessionProvider } from "next-auth/react"; 
+import { ReactNode } from "react";
+
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-lg text-center justify-center">
+    <SessionProvider>
+
+      <div>
         {children}
       </div>
-    </section>
+    </SessionProvider>
   );
 }

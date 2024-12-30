@@ -34,7 +34,7 @@
     "react-hooks/exhaustive-deps": "off",
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/interactive-supports-focus": "warn",
-    "prettier/prettier": "warn", // คุณสามารถตั้งเป็น "off" ถ้าไม่ต้องการให้มีการตรวจสอบ Prettier
+    "prettier/prettier": "off", // คุณสามารถตั้งเป็น "off" ถ้าไม่ต้องการให้มีการตรวจสอบ Prettier
     "no-unused-vars": "off", // ปิดการตรวจสอบตัวแปรที่ไม่ได้ใช้งาน
     "unused-imports/no-unused-vars": "off", // ปิดการตรวจสอบ import ที่ไม่ได้ใช้งาน
     "unused-imports/no-unused-imports": "warn", // คุณสามารถตั้งเป็น "off" หรือ "error" ถ้าไม่ต้องการคำเตือน

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,9 +8,188 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id             String        @id @default(cuid())
+  name           String?
+  email          String        @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[] // ความสัมพันธ์กับ Account
+  sessions       Session[] // ความสัมพันธ์กับ Session
+  password       String?
+  phone          String? // เบอร์โทรศัพท์ (เฉพาะพนักงาน)
+  startDate      DateTime? // วันเริ่มงาน (เฉพาะพนักงาน)
+  role           Role           @default(customer)
+  orders         Order[]       @relation("UserOrders") // ความสัมพันธ์กับ Order
+  transactions   Transaction[] @relation("UserTransactions") // ความสัมพันธ์กับ Transaction
+  customerQueues Queue[]       @relation("CustomerQueue") // ความสัมพันธ์กับ Queue (ในฐานะลูกค้า)
+  userQueues     Queue[]       @relation("UserQueue") // ความสัมพันธ์กับ Queue (ในฐานะผู้ใช้ที่เกี่ยวข้อง)
+  bills          Bill[]        @relation("UserBills") // ความสัมพันธ์กับ Bill
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
+enum Role {
+  admin
+  cashier
+  customer
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String
+  skewers Skewer[] // ความสัมพันธ์กับ Skewer
+}
+
+model Skewer {
+  id         Int         @id @default(autoincrement())
+  name       String
+  price      Float
+  spicyLevel SpicyLevel  @default(medium)
+  images     Image[] // เชื่อมต่อกับรูปภาพ
+  categoryId Int
+  category   Category    @relation(fields: [categoryId], references: [id]) // เชื่อมโยงกับ Category
+  orderItems OrderItem[]
+}
+
+model Image {
+  id       Int     @id @default(autoincrement())
+  url      String
+  altText  String?
+  skewerId Int
+  skewer   Skewer  @relation(fields: [skewerId], references: [id])
+}
+
+enum SpicyLevel {
+  low
+  medium
+  high
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  customerId String
+  customer   User        @relation("UserOrders", fields: [customerId], references: [id])
+  orderDate  DateTime    @default(now())
+  status     OrderStatus @default(pending)
+  totalPrice Float?
+  orderItems OrderItem[]
+  bill       Bill?
+}
+
+enum OrderStatus {
+  pending
+  cooking
+  completed
+  canceled
+}
+
+model OrderItem {
+  id       Int    @id @default(autoincrement())
+  orderId  Int
+  skewerId Int
+  quantity Int
+  price    Float
+  order    Order  @relation(fields: [orderId], references: [id])
+  skewer   Skewer @relation(fields: [skewerId], references: [id])
+}
+
+model Bill {
+  id          Int          @id @default(autoincrement())
+  orderId     Int          @unique
+  totalPrice  Float
+  paidAt      DateTime?
+  paymentType PaymentType
+  cashierId   String
+  cashier     User         @relation("UserBills", fields: [cashierId], references: [id])
+  order       Order        @relation(fields: [orderId], references: [id])
+  Transaction Transaction?
+}
+
+enum PaymentType {
+  cash
+  card
+  online
+}
+
+model Queue {
+  id          Int         @id @default(autoincrement())
+  customerId  String
+  userId      String? // เพิ่มฟิลด์นี้เพื่อเก็บข้อมูล User ที่เกี่ยวข้อง
+  queueNumber Int         @unique
+  status      QueueStatus @default(waiting)
+  createdAt   DateTime    @default(now())
+
+  customer User  @relation("CustomerQueue", fields: [customerId], references: [id])
+  user     User? @relation("UserQueue", fields: [userId], references: [id])
+}
+
+enum status {
+  waiting
+  completed
+  canceled
+}
+
+enum QueueStatus {
+  waiting
+  completed
+  canceled
+}
+
+model Inventory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  quantity    Float
+  unit        String
+  lastUpdated DateTime @default(now())
+}
+
+model Transaction {
+  id          Int         @id @default(autoincrement())
+  billId      Int         @unique
+  amountPaid  Float
+  createdAt   DateTime    @default(now())
+  paymentType PaymentType
+  cashierId   String
+  cashier     User        @relation("UserTransactions", fields: [cashierId], references: [id])
+  bill        Bill        @relation(fields: [billId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+ 
