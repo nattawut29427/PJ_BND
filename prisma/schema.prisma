@@ -18,7 +18,7 @@ model User {
   password       String?
   phone          String? // เบอร์โทรศัพท์ (เฉพาะพนักงาน)
   startDate      DateTime? // วันเริ่มงาน (เฉพาะพนักงาน)
-  role           Role           @default(customer)
+  role           Role          @default(customer)
   orders         Order[]       @relation("UserOrders") // ความสัมพันธ์กับ Order
   transactions   Transaction[] @relation("UserTransactions") // ความสัมพันธ์กับ Transaction
   customerQueues Queue[]       @relation("CustomerQueue") // ความสัมพันธ์กับ Queue (ในฐานะลูกค้า)
@@ -76,18 +76,12 @@ model Skewer {
   name       String
   price      Float
   spicyLevel SpicyLevel  @default(medium)
-  images     Image[] // เชื่อมต่อกับรูปภาพ
+  images     String?
   categoryId Int
   category   Category    @relation(fields: [categoryId], references: [id]) // เชื่อมโยงกับ Category
   orderItems OrderItem[]
-}
-
-model Image {
-  id       Int     @id @default(autoincrement())
-  url      String
-  altText  String?
-  skewerId Int
-  skewer   Skewer  @relation(fields: [skewerId], references: [id])
+  quantity   Float
+  Sale       Sale[]
 }
 
 enum SpicyLevel {
@@ -166,14 +160,6 @@ enum QueueStatus {
   canceled
 }
 
-model Inventory {
-  id          Int      @id @default(autoincrement())
-  name        String
-  quantity    Float
-  unit        String
-  lastUpdated DateTime @default(now())
-}
-
 model Transaction {
   id          Int         @id @default(autoincrement())
   billId      Int         @unique
@@ -189,7 +175,14 @@ model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
- 
+
+model Sale {
+  id       Int      @id @default(autoincrement())
+  skewerId Int
+  quantity Float
+  saleDate DateTime @default(now())
+  skewer   Skewer   @relation(fields: [skewerId], references: [id])
+}
