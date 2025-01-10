@@ -1,7 +1,9 @@
 import {nextui} from '@nextui-org/theme'
+import { withUt } from "uploadthing/tw";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+
+export default withUt({
   content: [
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -17,4 +19,5 @@ module.exports = {
   },
   darkMode: "class",
   plugins: [nextui()],
-}
+})
+

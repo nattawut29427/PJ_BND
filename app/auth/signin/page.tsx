@@ -15,19 +15,19 @@ const SignIn = () => {
       e.preventDefault();
       setLoading(true);
       setError(null); 
-
       const result = await signIn("credentials", {
-        redirect: false, 
+        redirect: false,
         email,
         password,
       });
 
-      setLoading(false); 
+      setLoading(false);
 
       if (result?.error) {
-        setError("Login failed! Please check your credentials.");
+        setError(result.error); 
       } else {
-        router.push("/"); 
+       
+        router.push("/");
       }
     },
     [email, password, router]
@@ -36,18 +36,18 @@ const SignIn = () => {
   const handleGoogleSignIn = useCallback(
     async () => {
       setLoading(true);
-      setError(null); 
+      setError(null); // Clear previous error message
 
       const result = await signIn("google", {
-        redirect: false, 
+        redirect: false, // Don't redirect immediately
       });
 
-      setLoading(false); 
+      setLoading(false);
 
       if (result?.error) {
         setError("Google login failed! Please try again.");
       } else {
-        router.push("/"); 
+        // Redirect after successful Google login
       }
     },
     [router]

@@ -1,34 +1,35 @@
 import { PrismaClient } from '@prisma/client';
+import { ourFileRouter } from "@/app/api/uploadthing/core"
+import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req:any) {
+
+
+export async function POST(req: Request) {
   try {
-    const body = await req.json(); // รับข้อมูล JSON จาก request body
-    const { name, price, categoryId, images, quantity } = body;
+    const metadata = await req.json();
 
+    const { name, price, spicyLevel, categoryId, quantity, fileUrl } = metadata;
 
-    if (!name) {
-      return new Response(JSON.stringify({ error: 'Not found' }), { status: 400 });
-    }
-
-    const newskewer = await prisma.skewer.create({
+    // บันทึกข้อมูลในฐานข้อมูล
+    await prisma.skewer.create({
       data: {
         name,
-        price, 
-        categoryId, 
-        images, 
-        quantity
-    
+        price: parseFloat(price),
+        spicyLevel,
+        images: fileUrl, // URL ของไฟล์
+        categoryId: parseInt(categoryId),
+        quantity: parseFloat(quantity),
       },
     });
 
-    return new Response(JSON.stringify(newskewer), { status: 201 });
+    return new Response("Data saved successfully", { status: 200 });
   } catch (error) {
-    console.error('Error creating Category:', error);
-    return new Response(JSON.stringify({ error: 'Unable to create Category' }), { status: 500 });
+    return new Response("Failed to save data", { status: 500 });
   }
 }
+
 
 export async function GET() {
   try {
