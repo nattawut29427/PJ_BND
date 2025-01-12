@@ -15,7 +15,7 @@ export async function middleware(request:any) {
   }
   
   if (
-    pathname.startsWith('/docs') &&
+    pathname.startsWith('/admin') &&
     (!user || user.role !== 'admin')
   ) {
     console.log(user)
