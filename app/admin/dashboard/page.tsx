@@ -2,6 +2,7 @@
 
 import type { Selection } from "@nextui-org/react";
 import Modalbt from "@/components/Modalbt";
+import Find from "@/components/Find";
 
 import {
   Dropdown,
@@ -175,6 +176,7 @@ export default function App() {
     <>
       <div className="flex-row">
         <div className="flex justify-end pb-5 gap-5"> 
+        <Find/>
           <Dropdown className="">
             <DropdownTrigger>
               <Button className="capitalize" variant="bordered">

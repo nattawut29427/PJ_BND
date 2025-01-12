@@ -13,7 +13,7 @@ import {
   
     return (
       <>
-        <Button onPress={onOpen}>Add</Button>
+        <Button className="bg-blue-600" onPress={onOpen}>Add</Button>
         <Modal
           isDismissable={false}
           isKeyboardDismissDisabled={true}
