@@ -3,7 +3,7 @@
 import type { Selection } from "@nextui-org/react";
 import Modalbt from "@/components/Modalbt";
 import Find from "@/components/Find";
-import Pagination from "@/components/pagination";
+
 import {
   Dropdown,
   DropdownTrigger,
@@ -24,6 +24,8 @@ import {
   Chip,
   Tooltip,
   ChipProps,
+  Pagination,
+  Spinner,
 } from "@nextui-org/react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -84,28 +86,37 @@ type User = {
 };
 
 export default function App() {
+  
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set(["Columns"])
   );
-  
+  const [searchQuery, setSearchQuery] = useState(""); // เก็บคำค้นหา
+
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replace(/_/g, ""),
     [selectedKeys]
   );
+  const filteredUsers = React.useMemo(() => {
+     return users.filter((user) =>
+       user.name.toLowerCase().includes(searchQuery.toLowerCase())
+     ); 
+   }, [users, searchQuery]);
   
+
   const [page, setPage] = React.useState(1);
-  const rowsPerPage = 3;
-
+  const rowsPerPage = 6;
+  
   const pages = Math.ceil(users.length / rowsPerPage);
-
+  
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return users.slice(start, end);
-  }, [page, users]);
-  
+    return filteredUsers.slice(start, end);
+  }, [page, filteredUsers]);
+
+
   function formatPhoneNumber(phone: string) {
     if (phone) {
       return phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
@@ -113,8 +124,6 @@ export default function App() {
       return false;
     }
   }
-
-
 
   // Fetch users from API
   useEffect(() => {
@@ -177,14 +186,19 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Spinner className="flex justify-center items-center m-auto w-1/2 h-1/2" size="lg" color="primary"  labelColor="primary" />;
   }
 
   return (
     <>
       <div className="flex-row">
-        <div className="flex justify-end pb-5 gap-5"> 
-        <Find/>
+        <div className="flex justify-end pb-5 gap-5">
+          <Find 
+
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
+          className="border rounded px-2 py-1"
+          />
           <Dropdown className="">
             <DropdownTrigger>
               <Button className="capitalize" variant="bordered">
@@ -207,10 +221,8 @@ export default function App() {
               <DropdownItem key="Tell">phone</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Modalbt/>
+          <Modalbt />
         </div>
-
-        
 
         <Table aria-label="Example table with custom cells">
           <TableHeader columns={columns}>
@@ -233,12 +245,16 @@ export default function App() {
             )}
           </TableBody>
         </Table>
-        <div className="flex justify-end pt-5">
 
+        <div className="flex justify-end pt-5">
+          {/* แก้ไขส่วน Pagination */}
           <Pagination
-          
-            currentpage={page}
-            totalPage={pages}
+            isCompact
+            showControls
+            showShadow
+            color="primary"
+            page={page}
+            total={pages}
             onChange={(page) => setPage(page)}
           />
         </div>

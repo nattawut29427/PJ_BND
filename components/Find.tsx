@@ -1,6 +1,15 @@
-import {Input} from "@nextui-org/react";
+"use client"
 
-export const SearchIcon = (props) => {
+import React, { useState } from "react";
+import { Input } from "@nextui-org/react";
+
+interface FindProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
+}
+
+export const SearchIcon = (props: any) => {
   return (
     <svg
       aria-hidden="true"
@@ -30,7 +39,13 @@ export const SearchIcon = (props) => {
   );
 };
 
-export default function App() {
+const Find: React.FC<FindProps> = ({ value, onChange, className }) => {
+  const [searchQuery, setSearchQuery] = useState(""); // เก็บค่าการค้นหา
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="rounded-2xl h-1 flex">
       <Input
@@ -59,6 +74,8 @@ export default function App() {
         label=""
         placeholder="Search by name..."
         radius="lg"
+        value={value} // ใส่ค่าของ searchQuery
+        onChange={onChange} // เมื่อมีการพิมพ์
         startContent={
           <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
         }
@@ -66,3 +83,4 @@ export default function App() {
     </div>
   );
 }
+export default Find;
