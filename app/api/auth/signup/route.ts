@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient()
 
-export async function POST(request) {
+export async function POST(request:any) {
   try {
     const { email, password, name } = await request.json()
     const hashedPassword = bcrypt.hashSync(password, 10)

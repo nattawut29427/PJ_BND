@@ -3,7 +3,7 @@
 import type { Selection } from "@nextui-org/react";
 import Modalbt from "@/components/Modalbt";
 import Find from "@/components/Find";
-
+import Pagination from "@/components/pagination";
 import {
   Dropdown,
   DropdownTrigger,
@@ -89,12 +89,23 @@ export default function App() {
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set(["Columns"])
   );
-
+  
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replace(/_/g, ""),
     [selectedKeys]
   );
+  
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 3;
 
+  const pages = Math.ceil(users.length / rowsPerPage);
+
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return users.slice(start, end);
+  }, [page, users]);
+  
   function formatPhoneNumber(phone: string) {
     if (phone) {
       return phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
@@ -102,6 +113,7 @@ export default function App() {
       return false;
     }
   }
+
 
 
   // Fetch users from API
@@ -154,12 +166,8 @@ export default function App() {
         ) : null;
       case "actions":
         return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
-              </span>
-            </Tooltip>
+          <div className="relative flex items-center justify-center gap-2">
+            <Button color="danger">Edit</Button>
             {/* Other action icons */}
           </div>
         );
@@ -215,7 +223,7 @@ export default function App() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={users}>
+          <TableBody items={items}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -225,6 +233,15 @@ export default function App() {
             )}
           </TableBody>
         </Table>
+        <div className="flex justify-end pt-5">
+
+          <Pagination
+          
+            currentpage={page}
+            totalPage={pages}
+            onChange={(page) => setPage(page)}
+          />
+        </div>
       </div>
     </>
   );
