@@ -10,9 +10,14 @@ export async function middleware(request:any) {
 
   const { pathname } = request.nextUrl
 
+  if (pathname.startsWith('/api/productService') && !user) {
+    return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+  }
+
   if (pathname.startsWith('/auth/signin') && user) {
     return NextResponse.redirect(new URL('/', request.url));
   }
+
   
   if (
     pathname.startsWith('/admin') &&
