@@ -154,6 +154,7 @@ export default function SkewerUpload() {
             quantity: formData.quantity,
           }}
         />
+      <button type="submit">Submit</button>
       </form>
     </div>
   );

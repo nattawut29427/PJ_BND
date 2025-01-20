@@ -83,8 +83,8 @@ type Skewer = {
   status: string;
   images: string;
   category: string;
-  quantity: float;
-  price: float;
+  quantity: GLfloat;
+  price: GLfloat;
 };
 
 export default function App() {

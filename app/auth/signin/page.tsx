@@ -16,7 +16,7 @@ const SignIn = () => {
       setLoading(true);
       setError(null); 
       const result = await signIn("credentials", {
-        redirect: fals  e,
+        redirect: false,
         email,
         password,
       });

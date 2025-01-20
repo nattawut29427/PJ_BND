@@ -20,6 +20,7 @@ export default function AboutPage() {
       <div>
         <h2>Welcome, {session?.user?.name}</h2>
         <p>Email: {session?.user?.email}</p>
+        <p>Role: {session?.user?.role}</p>
         <img src={session?.user?.image || "/default-profile.jpg"} alt="Profile" width={100} height={100} />
       </div>
       {/* ปุ่ม Sign Out */}
