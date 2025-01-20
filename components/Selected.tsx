@@ -1,33 +1,38 @@
 import React from "react";
-import {Select, SelectItem} from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 
-export const animals = [
-  {key: "Admin", label: "Admin"},
-  {key: "Staff", label: "Staff"},
-  {key: "Customer", label: "Customer"},
-];
+type AppProps = {
+  label: string;
+  placeholder: string;
+  options: { key: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+};
 
-export default function App() {
-  const [value, setValue] = React.useState<string>("");
-
-  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setValue(e.target.value);
-  };
-
+export default function App({
+  label,
+  placeholder,
+  options,
+  value,
+  onChange,
+}: AppProps) {
   return (
-    <div className="flex w-full  m-auto flex-col gap-2">
+    <div className="flex w-full m-auto flex-col gap-2">
       <Select
-        className="flex pt-6 "
-        label="Role"
-        placeholder="Select an role"
+        className="flex pt-6"
+        label={label}
+        placeholder={placeholder}
         selectedKeys={[value]}
         variant="bordered"
-        onChange={handleSelectionChange}
+        onSelectionChange={(selected) =>
+          onChange(Array.from(selected)[0]?.toString() || "")
+        } // อัปเดต key
+  
         size="sm"
         radius="lg"
       >
-        {animals.map((animal) => (
-          <SelectItem key={animal.key}>{animal.label}</SelectItem>
+        {options.map((option) => (
+          <SelectItem key={option.key}>{option.label}</SelectItem>
         ))}
       </Select>
     </div>

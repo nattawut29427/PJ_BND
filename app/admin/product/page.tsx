@@ -1,7 +1,7 @@
 "use client";
 
 import type { Selection } from "@nextui-org/react";
-import Modalbt from "@/components/Modalbt";
+import ModalPD from "@/app/admin/product/Component/ModalPD";
 import Find from "@/components/Find";
 
 import {
@@ -26,6 +26,7 @@ import {
   ChipProps,
   Pagination,
   Spinner,
+  Image,
 } from "@nextui-org/react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -33,9 +34,10 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export const columns = [
-  { name: "NAME", uid: "name" },
-  { name: "ROLE", uid: "role" },
-  { name: "Phone", uid: "phone" },
+  { name: "Images", uid: "images" },
+  { name: "Name", uid: "name" },
+  { name: "Price", uid: "price" },
+  { name: "Quantity", uid: "quantity" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
@@ -75,19 +77,18 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   vacation: "warning",
 };
 
-type User = {
+type Skewer = {
   id: number;
   name: string;
-  role: string;
-  phone: string;
   status: string;
-  image: string;
-  email: string;
+  images: string;
+  category: string;
+  quantity: float;
+  price: float;
 };
 
 export default function App() {
-  
-  const [users, setUsers] = useState<User[]>([]);
+  const [skewer, setSkewer] = useState<Skewer[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set(["Columns"])
@@ -99,39 +100,39 @@ export default function App() {
     [selectedKeys]
   );
   const filteredUsers = React.useMemo(() => {
-     return users.filter((user) =>
-       user.name.toLowerCase().includes(searchQuery.toLowerCase())
-     ); 
-   }, [users, searchQuery]);
-  
+    return skewer.filter((skewer) =>
+      skewer.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [skewer, searchQuery]);
 
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 6;
-  
-  const pages = Math.ceil(users.length / rowsPerPage);
-  
+
+  const pages = Math.ceil(skewer.length / rowsPerPage);
+
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return filteredUsers.slice(start, end);
   }, [page, filteredUsers]);
 
-
-  function formatPhoneNumber(phone: string) {
-    if (phone) {
-      return phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
-    } else {
-      return false;
-    }
-  }
+  // function formatPhoneNumber(phone: string) {
+  //   if (phone) {
+  //     return phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users"); // Replace with your API URL
+        const response = await fetch(
+          "http://localhost:3000/api/productService"
+        ); // Replace with your API URL
         const data = await response.json();
-        setUsers(data);
+        setSkewer(data);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       } finally {
@@ -142,61 +143,62 @@ export default function App() {
     fetchUsers();
   }, []);
 
-  const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
-
-    switch (columnKey) {
-      case "name":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: user.image }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-          </div>
-        );
-      case "phone":
-        return cellValue ? (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.phone] || undefined}
-            size="sm"
-            variant="flat"
-          >
-            {formatPhoneNumber(cellValue as string)}
-          </Chip>
-        ) : null;
-      case "actions":
-        return (
-          <div className="relative flex items-center justify-center gap-2">
-            <Button color="danger">Edit</Button>
-            {/* Other action icons */}
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+  const renderCell = React.useCallback(
+    (skewer: Skewer, columnKey: React.Key) => {
+      const cellValue = skewer[columnKey as keyof Skewer];
+  
+      switch (columnKey) {
+        case "images":
+          return (
+            <Image
+              src={skewer.images}
+              width={300}
+              height={300}
+              className="object-cover"
+            />
+          );
+        case "name":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{skewer.name}</p>
+            </div>
+          );
+        case "quantity":
+          return <p>{skewer.quantity}</p>;
+        case "price":
+          return <p>${skewer.price.toFixed(2)}</p>;
+        case "actions":
+          return (
+            <div className="relative flex items-center justify-center gap-2">
+              <Button color="danger">Edit</Button>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   if (loading) {
-    return <Spinner className="flex justify-center items-center m-auto w-1/2 h-1/2" size="lg" color="primary"  labelColor="primary" />;
+    return (
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2"
+        size="lg"
+        color="primary"
+        labelColor="primary"
+      />
+    );
   }
 
   return (
     <>
       <div className="flex-row">
         <div className="flex justify-end pb-5 gap-5">
-          <Find 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
-          className="border rounded px-2 py-1"
+          <Find
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
+            className="border rounded px-2 py-1"
           />
           <Dropdown className="">
             <DropdownTrigger>
@@ -220,7 +222,7 @@ export default function App() {
               <DropdownItem key="Tell">phone</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Modalbt />
+          <ModalPD />
         </div>
 
         <Table aria-label="Example table with custom cells">
