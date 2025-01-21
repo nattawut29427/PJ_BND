@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 import Selected from "@/components/Selected";
 import { UploadButton } from "@uploadthing/react";
-import {Button , Alert } from "@nextui-org/react";
+import {Button , Alert } from "@heroui/react";
 
 export default function SkewerUpload() {
   const [formData, setFormData] = useState({

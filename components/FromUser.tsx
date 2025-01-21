@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 import Selected from "./Selected";
 import { useState } from "react";
 import { UploadButton } from "@uploadthing/react";

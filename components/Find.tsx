@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 
 interface FindProps {
   value: string;

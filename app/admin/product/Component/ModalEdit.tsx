@@ -6,7 +6,7 @@ import {
     ModalFooter,
     Button,
     useDisclosure,
-  } from "@nextui-org/react";
+  } from "@heroui/react";
 
   import FromPoduct from "@/app/admin/product/Component/FormPoduct";
   

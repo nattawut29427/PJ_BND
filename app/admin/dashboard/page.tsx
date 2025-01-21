@@ -1,6 +1,6 @@
 "use client";
 
-import type { Selection } from "@nextui-org/react";
+import type { Selection } from "@heroui/react";
 import Modalbt from "@/components/Modalbt";
 import Find from "@/components/Find";
 
@@ -10,7 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 import React, { useEffect, useState, SVGProps } from "react";
 import {
@@ -26,7 +26,7 @@ import {
   ChipProps,
   Pagination,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;

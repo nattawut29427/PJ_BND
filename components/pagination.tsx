@@ -4,7 +4,7 @@ import {
   Pagination,
   PaginationItemType,
   PaginationItemRenderProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 type IconSvgProps = SVGProps<SVGSVGElement>;
 

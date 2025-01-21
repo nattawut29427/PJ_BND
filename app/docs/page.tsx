@@ -10,7 +10,7 @@ import {
   TableCell,
   Pagination,
   getKeyValue,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export const users = [
   {
