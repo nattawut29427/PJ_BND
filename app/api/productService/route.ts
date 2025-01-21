@@ -40,13 +40,18 @@ export async function GET() {
   }
 }
 
-export async function PUT(req) {
+export async function PUT(req: Request) {
   try {
     const body = await req.json();
     const { id, name, price, categoryId, images, quantity } = body;
 
     if (!id) {
-      return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400 });
+      return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
+    }
+
+    // ตรวจสอบว่าข้อมูลใหม่ไม่ทำให้ quantity ติดลบ
+    if (quantity !== undefined && quantity < 0) {
+      return new Response(JSON.stringify({ error: "Quantity cannot be negative" }), { status: 400 });
     }
 
     const updatedSkewer = await prisma.skewer.update({
@@ -56,14 +61,14 @@ export async function PUT(req) {
         price,
         categoryId,
         images,
-        quantity
+        quantity,
       },
     });
 
     return new Response(JSON.stringify(updatedSkewer), { status: 200 });
   } catch (error) {
-    console.error('Error updating skewer:', error);
-    return new Response(JSON.stringify({ error: 'Unable to update skewer' }), { status: 500 });
+    console.error("Error updating skewer:", error);
+    return new Response(JSON.stringify({ error: "Unable to update skewer" }), { status: 500 });
   }
 }
 
@@ -88,3 +93,40 @@ export async function DELETE(req) {
 }
 
 
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, quantityChange } = body; // `quantityChange` ใช้เพิ่มหรือลดจำนวนสินค้า
+
+    if (!id || typeof quantityChange !== "number") {
+      return new Response(JSON.stringify({ error: "Invalid input data" }), { status: 400 });
+    }
+
+    // ค้นหา Skewer ในฐานข้อมูล
+    const skewer = await prisma.skewer.findUnique({
+      where: { id },
+    });
+
+    if (!skewer) {
+      return new Response(JSON.stringify({ error: "Skewer not found" }), { status: 404 });
+    }
+
+    // คำนวณจำนวนใหม่
+    const newQuantity = skewer.quantity + quantityChange;
+
+    if (newQuantity < 0) {
+      return new Response(JSON.stringify({ error: "Insufficient quantity" }), { status: 400 });
+    }
+
+    // อัปเดตจำนวนสินค้า
+    const updatedSkewer = await prisma.skewer.update({
+      where: { id },
+      data: { quantity: newQuantity },
+    });
+
+    return new Response(JSON.stringify(updatedSkewer), { status: 200 });
+  } catch (error) {
+    console.error("Error updating skewer quantity:", error);
+    return new Response(JSON.stringify({ error: "Unable to update skewer quantity" }), { status: 500 });
+  }
+}
