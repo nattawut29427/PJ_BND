@@ -8,14 +8,14 @@ import {
     useDisclosure,
   } from "@nextui-org/react";
 
-  import UpdateProduct from "@/app/admin/product/Component/๊UpdateProduct";
+  import FromPoduct from "@/app/admin/product/Component/FormPoduct";
   
   export default function modalbt() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
   
     return (
       <>
-        <Button className="bg-blue-600" onPress={onOpen}>Add</Button>
+        <Button className="bg-red-600" onPress={onOpen}>Edit</Button>
         <Modal
           isDismissable={false}
           isKeyboardDismissDisabled={true}
@@ -27,9 +27,9 @@ import {
           <ModalContent className="">
             {(onClose) => (
               <>
-                <ModalHeader className="flex flex-col gap-1">Add product</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">Update Product</ModalHeader>
                 <ModalBody>
-                  <UpdateProduct/>
+                  <FromPoduct/>
                 </ModalBody>
                 <ModalFooter>
                 </ModalFooter>

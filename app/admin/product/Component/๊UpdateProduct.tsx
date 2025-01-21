@@ -78,7 +78,7 @@ export default function SkewerUpload() {
 
       try {
         const response = await fetch("/api/productService", {
-          method: "POST",
+          method: "Put",
           headers: {
             "Content-Type": "application/json",
           },
