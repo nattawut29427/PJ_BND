@@ -3,6 +3,7 @@
 import type { Selection } from "@nextui-org/react";
 import ModalPD from "@/app/admin/product/Component/ModalPD";
 import Find from "@/components/Find";
+import ModalEdit from "@/app/admin/product/Component/ModalEdit";
 
 import {
   Dropdown,
@@ -34,6 +35,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export const columns = [
+  { name: "Id", uid: "id" },
   { name: "Images", uid: "images" },
   { name: "Name", uid: "name" },
   { name: "Price", uid: "price" },
@@ -148,6 +150,10 @@ export default function App() {
       const cellValue = skewer[columnKey as keyof Skewer];
   
       switch (columnKey) {
+        case "id" :
+          return (
+           <p>{skewer.id}</p>
+          )
         case "images":
           return (
             <Image
@@ -170,7 +176,7 @@ export default function App() {
         case "actions":
           return (
             <div className="relative flex items-center justify-center gap-2">
-              <Button color="danger">Edit</Button>
+              <ModalEdit/>
             </div>
           );
         default:
