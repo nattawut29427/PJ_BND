@@ -1,10 +1,10 @@
-"use client"
-
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Input } from "@nextui-org/react";
 import Selected from "@/components/Selected";
 import { UploadButton } from "@uploadthing/react";
+import {Button} from "@nextui-org/react";
 
 export default function SkewerUpload() {
   const [formData, setFormData] = useState({
@@ -55,10 +55,9 @@ export default function SkewerUpload() {
   };
 
   const handleUploadComplete = (res: any) => {
-    
     console.log("Upload complete response:", res);
     if (res[0]?.url) {
-      setFileUrl(res[0]?.url); 
+      setFileUrl(res[0]?.url);
       alert("Upload complete! Please submit the form to save data.");
     } else {
       alert("Upload failed, please try again.");
@@ -140,21 +139,28 @@ export default function SkewerUpload() {
             placeholder="เลือกประเภท"
             options={roles}
             value={formData.categoryId}
-            onChange={(newCategoryId) => setFormData({ ...formData, categoryId: newCategoryId })}
+            onChange={(newCategoryId) =>
+              setFormData({ ...formData, categoryId: newCategoryId })
+            }
           />
         </div>
+          <p className="pt-5">Upload image</p>
+        <div className="flex justify-start pt-3 ">
+          <UploadButton<FileRouter>
+            endpoint="skewerImageUpload"
+            onClientUploadComplete={handleUploadComplete}
+            metadata={{
+              name: formData.name,
+              price: formData.price,
+              categoryId: formData.categoryId,
+              quantity: formData.quantity,
+            }}
+          />
+        </div>
+        <div className="flex justify-end ">
 
-        <UploadButton<FileRouter>
-          endpoint="skewerImageUpload"
-          onClientUploadComplete={handleUploadComplete}
-          metadata={{
-            name: formData.name,
-            price: formData.price,
-            categoryId: formData.categoryId,
-            quantity: formData.quantity,
-          }}
-        />
-      <button type="submit">Submit</button>
+        <Button type="submit" color="primary">Save</Button>
+        </div>
       </form>
     </div>
   );
