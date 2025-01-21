@@ -8,7 +8,7 @@ import {
     useDisclosure,
   } from "@heroui/react";
 
-  import UpdateProduct from "@/app/admin/product/Component/๊UpdateProduct";
+  import FormPoduct from "@/app/admin/product/Component/FormPoduct";
   
   export default function modalbt() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -29,7 +29,7 @@ import {
               <>
                 <ModalHeader className="flex flex-col gap-1">Add product</ModalHeader>
                 <ModalBody>
-                  <UpdateProduct/>
+                  <FormPoduct/>
                 </ModalBody>
                 <ModalFooter>
                 </ModalFooter>

@@ -8,6 +8,7 @@ import {Button , Alert } from "@heroui/react";
 
 export default function SkewerUpload() {
   const [formData, setFormData] = useState({
+    id: "",
     name: "",
     price: "",
     categoryId: "",
@@ -67,18 +68,18 @@ export default function SkewerUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
       const metadata = {
-        name: formData.name,
-        price: formData.price,
-        categoryId: formData.categoryId,
-        quantity: formData.quantity,
-        fileUrl,
+        id: formData.id,
+        name: formData.name || undefined,
+        price: formData.price || undefined, 
+        categoryId: formData.categoryId || undefined,
+        quantityChange: formData.quantity ,
+        fileUrl: fileUrl || null,
       };
 
       try {
         const response = await fetch("/api/productService", {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -100,6 +101,16 @@ export default function SkewerUpload() {
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit}>
         <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
+        <Input
+            label="ID"
+            labelPlacement="outside"
+            placeholder="Name product..."
+            value={formData.id}
+            onChange={handleChange}
+            size="lg"
+            type="text"
+            name="id"
+          />
           <Input
             label="Name"
             labelPlacement="outside"
