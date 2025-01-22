@@ -176,7 +176,7 @@ export default function App() {
         case "actions":
           return (
             <div className="relative flex items-center justify-center gap-2">
-              <ModalEdit/>
+              <ModalEdit id={skewer.id} />
             </div>
           );
         default:
