@@ -1,7 +1,7 @@
 "use client";
 
 import type { Selection } from "@heroui/react";
-import Modalbt from "@/components/Modalbt";
+import ModalUS from "@/app/admin/dashboard/Component/ModalUS";
 import Find from "@/components/Find";
 
 import {
@@ -220,7 +220,7 @@ export default function App() {
               <DropdownItem key="Tell">phone</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Modalbt />
+          <ModalUS />
         </div>
 
         <Table aria-label="Example table with custom cells">
