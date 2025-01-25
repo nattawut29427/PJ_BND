@@ -1,13 +1,117 @@
 
-import { PrismaClient } from "@prisma/client";
+  import { PrismaClient } from "@prisma/client";
+  import { NextResponse } from 'next/server';
+  import bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+  const prisma = new PrismaClient();
 
-export async function GET() {
-  try {
-    const users = await prisma.user.findMany();
-    return new Response(JSON.stringify(users), { status: 200 });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: 'Unable to fetch users' }), { status: 500 });
+  export async function GET(req: Request) {
+    try {
+      const { searchParams } = new URL(req.url);
+      const email = searchParams.get("email"); // เปลี่ยนจาก id เป็น email
+  
+      if (email) {
+        const user = await prisma.user.findUnique({
+          where: { email },
+          select: { email: true }
+        });
+  
+        if (!user) {
+          return NextResponse.json(
+            { error: "User not found" },
+            { status: 404 }
+          );
+        }
+  
+        return NextResponse.json(user);
+      }
+  
+      // ดึงข้อมูลทั้งหมดเหมือนเดิม
+      const users = await prisma.user.findMany({
+        orderBy: { id: 'asc' },
+      });
+      
+      return NextResponse.json(users);
+    } catch (error) {
+      // จัดการ error เหมือนเดิม
+    }
   }
-}
+
+  export async function PATCH(req: Request) {
+    try {
+      // ตรวจสอบ request body
+      if (!req.body) {
+        return NextResponse.json(
+          { error: "Request body is required" },
+          { status: 400 }
+        );
+      }
+
+      // รับข้อมูลจาก request body
+      const body = await req.json();
+
+      // ตรวจสอบข้อมูลที่จำเป็น
+      if (!body || typeof body !== "object" || !body.email) {
+        return NextResponse.json(
+          { error: "Invalid input data: email is required" },
+          { status: 400 }
+        );
+      }
+
+      const { email, name, password, roles } = body;
+      const hashedPassword = bcrypt.hashSync(password, 10)
+
+
+      // if (isNaN(parsedId)) {
+      //   return NextResponse.json(
+      //     { error: "Invalid id: id must be a number" },
+      //     { status: 400 }
+      //   );
+      // }
+
+      // ค้นหา Skewer ในฐานข้อมูล
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        return NextResponse.json(
+          { error: "User not found" },
+          { status: 404 }
+        );
+      }
+
+
+      const updatedUser = await prisma.user.update({
+        where: { email },
+        data: {
+          name: name !== undefined ? name : user.name,  
+          password: hashedPassword !== undefined ? hashedPassword : user.password, 
+          role: roles !== undefined ?  roles : user.role, 
+        },
+      });
+
+      // ส่งกลับ response สำเร็จ
+      return NextResponse.json(
+        { message: "User updated successfully", data: updatedUser },
+        { status: 200 }
+      );
+    } catch (error) {
+      // Log ข้อผิดพลาด
+      if (error instanceof Error) {
+        console.error("Error updating user:", error.message);
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
+
+      // ส่งกลับข้อความ error ที่ชัดเจน
+      return NextResponse.json(
+        {
+          error:
+            "Unable to update product: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
+    }
+  }

@@ -1,3 +1,6 @@
+// ในไฟล์ ModalEdit.tsx
+"use client";
+
 import {
   Modal,
   ModalContent,
@@ -7,51 +10,38 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
-import { useState } from "react";
-import UpdateProduct from "@/app/admin/product/Component/UpdateProduct";
+import UpdateUser from "./UpdateUser";
 
 type Props = {
-  id: number;
+  email: string; // รับค่า email เป็น string
 };
 
-export default function ModalBt({ id }: Props) {
+export default function ModalEdit({ email }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  const handleOpen = () => {
-    setSelectedId(id); // ใช้ ID จาก props โดยตรง
-    onOpen();
-  };
 
   return (
     <>
       <Button 
         className="bg-red-600" 
-        onPress={handleOpen} // ไม่ต้องส่งพารามิเตอร์
+        onPress={onOpen}
       >
         Edit
       </Button>
       
       <Modal
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         size="5xl"
         backdrop="blur"
+        isDismissable={false}
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Update Product
-              </ModalHeader>
+              <ModalHeader>Update User</ModalHeader>
               <ModalBody>
-                {selectedId !== null && (
-                  <UpdateProduct id={selectedId} />
-                )}
+                <UpdateUser email={email} />
               </ModalBody>
-              <ModalFooter></ModalFooter>
             </>
           )}
         </ModalContent>

@@ -148,12 +148,12 @@ export default function UserUpload() {
           <UploadButton<FileRouter>
             endpoint="skewerImageUpload"
             onClientUploadComplete={handleUploadComplete}
-            metadata={{
-              name: formData.name,
-              price: formData.price,
-              categoryId: formData.categoryId,
-              quantity: formData.quantity,
-            }}
+            // metadata={{
+            //   name: formData.name,
+            //   price: formData.price,
+            //   categoryId: formData.categoryId,
+            //   quantity: formData.quantity,
+            // }}
           />
         </div>
         <div className="flex justify-end ">

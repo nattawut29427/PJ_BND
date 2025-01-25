@@ -3,6 +3,7 @@
 import type { Selection } from "@heroui/react";
 import ModalUS from "@/app/admin/dashboard/Component/ModalUS";
 import Find from "@/components/Find";
+import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit"
 
 import {
   Dropdown,
@@ -176,7 +177,7 @@ export default function App() {
       case "actions":
         return (
           <div className="relative flex items-center justify-center gap-2">
-            <Button color="danger">Edit</Button>
+            <ModalEdit email={user.email}/>
             {/* Other action icons */}
           </div>
         );
