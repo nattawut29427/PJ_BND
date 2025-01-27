@@ -112,7 +112,7 @@
 
       const metadata = {
         email: formData.email,
-        name: formData.name,
+        name: formData.name || undefined,
         password: formData.password || undefined,
         roles: formData.role || undefined,
         fileUrl: fileUrl || null,

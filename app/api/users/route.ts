@@ -26,14 +26,13 @@
         return NextResponse.json(user);
       }
   
-      // ดึงข้อมูลทั้งหมดเหมือนเดิม
       const users = await prisma.user.findMany({
         orderBy: { id: 'asc' },
       });
       
       return NextResponse.json(users);
     } catch (error) {
-      // จัดการ error เหมือนเดิม
+     
     }
   }
 
@@ -59,7 +58,7 @@
       }
 
       const { email, name, password, roles } = body;
-      const hashedPassword = bcrypt.hashSync(password, 10)
+      const hashedPassword = password ? bcrypt.hashSync(password, 10) : undefined;
 
 
       // if (isNaN(parsedId)) {
