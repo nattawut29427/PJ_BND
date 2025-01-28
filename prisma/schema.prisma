@@ -180,9 +180,18 @@ model VerificationToken {
 }
 
 model Sale {
-  id       Int      @id @default(autoincrement())
-  skewerId Int
-  quantity Float
-  saleDate DateTime @default(now())
-  skewer   Skewer   @relation(fields: [skewerId], references: [id])
+  id        Int         @id @default(autoincrement())
+  skewerId  Int
+  quantity  Float
+  saleDate  DateTime    @default(now())
+  skewer    Skewer      @relation(fields: [skewerId], references: [id])
+  TotalSale TotalSale[]
+}
+
+model TotalSale {
+  id         Int      @id @default(autoincrement())
+  saleId     Int
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  sale       Sale     @relation(fields: [saleId], references: [id])
 }

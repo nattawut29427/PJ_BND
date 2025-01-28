@@ -1,31 +1,53 @@
-// pages/api/sale.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      const { skewerId, quantity } = req.body;
+// POST /api/saleService
+export async function POST(request: Request) {
+  try {
+    // รับข้อมูลจาก Request Body
+    const { sales, totalPrice } = await request.json();
 
-      if (!quantity) {
-        return res.status(400).json({ error: 'Missing skewerId or quantity' });
-      }
+    // ตรวจสอบข้อมูล
+    if (!Array.isArray(sales) || typeof totalPrice !== 'number') {
+      return NextResponse.json(
+        { error: 'Invalid data format' },
+        { status: 400 }
+      );
+    }
 
+    // สร้าง Transaction สำหรับบันทึกข้อมูลหลายรายการ
+    const createdSales = await prisma.$transaction(async (tx) => {
       // บันทึกข้อมูลการขาย
-      const sale = await prisma.sale.create({
+      const salesRecords = await Promise.all(
+        sales.map((item) =>
+          tx.sale.create({
+            data: {
+              skewerId: item.skewerId,
+              quantity: item.quantity,
+            },
+          })
+        )
+      );
+
+      // บันทึกข้อมูลราคารวม (หากต้องการ)
+      const totalSaleRecord = await tx.totalSale.create({
         data: {
-          skewerId: skewerId || undefined,
-          quantity,
+          totalPrice,
         },
       });
 
-      res.status(201).json(sale);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to create sale' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+      return { salesRecords, totalSaleRecord };
+    });
+
+    // ส่ง Response กลับ
+    return NextResponse.json(createdSales, { status: 201 });
+  } catch (error) {
+    console.error('Error creating sales:', error);
+    return NextResponse.json(
+      { error: 'Failed to create sales' },
+      { status: 500 }
+    );
   }
 }
