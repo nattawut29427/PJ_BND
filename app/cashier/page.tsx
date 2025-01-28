@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Image, Button } from "@heroui/react";
+import React, { useState, useEffect, useRef } from "react";
+import { Image } from "@heroui/react";
+import { Button } from "@heroui/react";
 
 type Skewer = {
   id: number;
@@ -27,7 +28,104 @@ export default function Page() {
   const [message, setMessage] = useState<string>("");
   const cashInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Fetch products
+  // เพิ่มสินค้าในตะกร้า
+  const handleAddToCart = (
+    id: number,
+    name: string,
+    price: number,
+    quantity: number
+  ) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        return [...prevCart, { id, name, quantity, price }];
+      }
+    });
+  };
+
+  // ลบสินค้าออกจากตะกร้า
+  const handleRemoveFromCart = (id: number, quantityToRemove: number) => {
+    setCart((prevCart) => {
+      return prevCart
+        .map((item) => {
+          if (item.id === id) {
+            const newQuantity = item.quantity - quantityToRemove;
+            return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
+          }
+          return item;
+        })
+        .filter((item) => item !== null) as CartItem[];
+    });
+  };
+
+  // คำนวณราคารวม
+  const calculateTotal = (): number => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  // คำนวณเงินทอน
+  const calculateChange = (): number => {
+    const total = calculateTotal();
+    return cash >= total ? cash - total : 0;
+  };
+
+  // จัดการการชำระเงิน
+  const handleCashChoice = (amount: number) => {
+    if (calculateTotal()) {
+      setCash(amount);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+  
+    // ตรวจสอบว่าตะกร้าไม่ว่าง
+    if (cart.length === 0) {
+      setMessage('กรุณาเพิ่มสินค้าในตะกร้าก่อนชำระเงิน');
+      return;
+    }
+
+    const totalPrice = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  
+  
+    try {
+      const response = await fetch('/api/saleService', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sales: cart.map((item) => ({
+            skewerId: item.id,
+            quantity: item.quantity,
+          })),
+          totalPrice, 
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      }
+  
+      // ล้างข้อมูลหลังบันทึกสำเร็จ
+      setCart([]);
+      setCash(0);
+      setMessage('ชำระเงินสำเร็จ!');
+    } catch (error) {
+      setMessage('เกิดข้อผิดพลาด: ' + error.message);
+    }
+  };
+
+  // ดึงข้อมูลสินค้า
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -40,81 +138,35 @@ export default function Page() {
         setLoading(false);
       }
     };
+
     fetchProduct();
   }, []);
 
-  // Add item to cart
-  const handleAddToCart = (id: number, name: string, price: number, quantity: number) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + quantity } : item
-        );
-      } else {
-        return [...prevCart, { id, name, quantity, price }];
-      }
-    });
-  };
-
-  // Remove item from cart
-  const handleRemoveFromCart = (id: number, quantityToRemove: number) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) => {
-          if (item.id === id) {
-            const newQuantity = item.quantity - quantityToRemove;
-            return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-          }
-          return item;
-        })
-        .filter((item) => item !== null) as CartItem[]
-    );
-  };
-
-  // Calculate total price
-  const totalPrice = useMemo(() => cart.reduce((total, item) => total + item.price * item.quantity, 0), [cart]);
-
-  // Calculate change
-  const change = useMemo(() => (cash >= totalPrice ? cash - totalPrice : 0), [cash, totalPrice]);
-
-  // Handle payment submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (cart.length === 0) {
-      setMessage("กรุณาเพิ่มสินค้าในตะกร้าก่อนชำระเงิน");
-      return;
+  // รีเซ็ทเงินเมื่อตะกร้าว่าง
+  useEffect(() => {
+    const total = calculateTotal();
+    if (total === 0) {
+      setCash(0);
+      if (cashInputRef.current) cashInputRef.current.value = "";
     }
-    try {
-      const response = await fetch("/api/saleService", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sales: cart.map((item) => ({ skewerId: item.id, quantity: item.quantity })),
-          totalPrice,
-        }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("ชำระเงินสำเร็จ! รายการสั่งซื้อถูกบันทึกแล้ว");
-        setCart([]);
-        setCash(0);
-      } else {
-        setMessage(`เกิดข้อผิดพลาด: ${data.error || "ไม่สามารถบันทึกข้อมูลได้"}`);
-      }
-    } catch (error) {
-      setMessage("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-    }
-  };
+  }, [cart]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <div className="grid grid-cols-3 gap-4 p-4">
         {skewer.map((item, index) => (
           <div key={index} className="p-2 border rounded shadow">
-            <Image alt={item.name} src={item.images} width={300} height={300} className="rounded" />
+            <Image
+              alt={`Product ${index + 1}`}
+              src={item.images}
+              width={300}
+              height={300}
+              className="rounded"
+            />
             <h2 className="text-lg font-semibold mt-2">{item.name}</h2>
             <p className="text-gray-600">Price: ${item.price.toFixed(2)}</p>
             <div className="flex items-center gap-2 mt-2">
@@ -128,7 +180,11 @@ export default function Page() {
               <Button
                 onClick={() => {
                   const quantity = parseInt(
-                    (document.getElementById(`quantity-${index}`) as HTMLInputElement).value
+                    (
+                      document.getElementById(
+                        `quantity-${index}`
+                      ) as HTMLInputElement
+                    ).value
                   );
                   handleAddToCart(item.id, item.name, item.price, quantity);
                 }}
@@ -148,9 +204,13 @@ export default function Page() {
             <h2 className="text-lg font-semibold">Cart Items:</h2>
             <ul>
               {cart.map((item) => (
-                <li key={item.id} className="mb-2 flex justify-between items-center">
+                <li
+                  key={item.id}
+                  className="mb-2 flex justify-between items-center"
+                >
                   <span>
-                    {item.name} - {item.quantity} quantity - ${(item.price * item.quantity).toFixed(2)}
+                    {item.name} - {item.quantity} quantity - $
+                    {(item.price * item.quantity).toFixed(2)}
                   </span>
                   <div>
                     <input
@@ -163,7 +223,11 @@ export default function Page() {
                     <Button
                       onClick={() => {
                         const quantityToRemove = parseInt(
-                          (document.getElementById(`remove-quantity-${item.id}`) as HTMLInputElement).value
+                          (
+                            document.getElementById(
+                              `remove-quantity-${item.id}`
+                            ) as HTMLInputElement
+                          ).value
                         );
                         handleRemoveFromCart(item.id, quantityToRemove);
                       }}
@@ -176,7 +240,9 @@ export default function Page() {
               ))}
             </ul>
           </div>
-          <div className="text-lg font-bold mt-4">Total: ${totalPrice.toFixed(2)}</div>
+          <div className="text-lg font-bold mt-4">
+            Total: ${calculateTotal().toFixed(2)}
+          </div>
           <div>
             <p>Amount Paid:</p>
             <input
@@ -188,15 +254,17 @@ export default function Page() {
               className="border p-2 rounded w-64"
             />
             <div className="pt-4 gap-2 flex">
-              <Button onPress={() => setCash(100)}>100</Button>
-              <Button onPress={() => setCash(500)}>500</Button>
-              <Button onPress={() => setCash(1000)}>1000</Button>
-              <Button onPress={() => setCash(totalPrice)}>พอดี</Button>
+              <Button onPress={() => handleCashChoice(100)}>100</Button>
+              <Button onPress={() => handleCashChoice(500)}>500</Button>
+              <Button onPress={() => handleCashChoice(1000)}>1000</Button>
+              <Button onPress={() => handleCashChoice(calculateTotal())}>
+                พอดี
+              </Button>
             </div>
           </div>
-          {cash >= totalPrice && (
+          {cash >= calculateTotal() && (
             <div className="mt-4">
-              <p>Change: ${change.toFixed(2)}</p>
+              <p>Change: ${calculateChange().toFixed(2)}</p>
             </div>
           )}
           <Button type="submit" color="primary">

@@ -3,45 +3,48 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// POST /api/saleService
 export async function POST(request: Request) {
   try {
-    // รับข้อมูลจาก Request Body
     const { sales, totalPrice } = await request.json();
 
-    // ตรวจสอบข้อมูล
-    if (!Array.isArray(sales) || typeof totalPrice !== 'number') {
+    if (!Array.isArray(sales) || sales.length === 0) {
       return NextResponse.json(
         { error: 'Invalid data format' },
         { status: 400 }
       );
     }
 
-    // สร้าง Transaction สำหรับบันทึกข้อมูลหลายรายการ
     const createdSales = await prisma.$transaction(async (tx) => {
-      // บันทึกข้อมูลการขาย
-      const salesRecords = await Promise.all(
-        sales.map((item) =>
-          tx.sale.create({
-            data: {
-              skewerId: item.skewerId,
-              quantity: item.quantity,
-            },
-          })
-        )
-      );
-
-      // บันทึกข้อมูลราคารวม (หากต้องการ)
+      // สร้าง TotalSale ก่อน
       const totalSaleRecord = await tx.totalSale.create({
         data: {
           totalPrice,
         },
       });
 
+      // สร้าง Sale และเชื่อมโยงกับ TotalSale
+      const salesRecords = await Promise.all(
+        sales.map((item) =>
+          tx.sale.create({
+            data: {
+              skewerId: item.skewerId,
+              quantity: item.quantity,
+              totalSaleId: totalSaleRecord.id, // เชื่อมโยงกับ TotalSale
+            },
+          })
+        )
+      );
+
       return { salesRecords, totalSaleRecord };
     });
 
-    // ส่ง Response กลับ
+    if (!createdSales || !createdSales.salesRecords || !createdSales.totalSaleRecord) {
+      return NextResponse.json(
+        { error: 'Failed to create sales' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(createdSales, { status: 201 });
   } catch (error) {
     console.error('Error creating sales:', error);
