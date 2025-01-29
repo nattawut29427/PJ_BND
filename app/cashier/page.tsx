@@ -1,164 +1,66 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { Image } from "@heroui/react";
-import { Button } from "@heroui/react";
 
-type Skewer = {
-  id: number;
-  name: string;
-  status: string;
-  images: string;
-  category: string;
-  quantity: number;
-  price: number;
-};
-
-type CartItem = {
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-};
+import React, { useState, useRef } from "react";
+import { Button, Image } from "@heroui/react";
+import { useCart } from "@/app/cashier/actionCh/useCart"; 
+import { useProducts } from "./actionCh/useProducts";
 
 export default function Page() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [skewer, setSkewer] = useState<Skewer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { cart, addToCart, removeFromCart, calculateTotal, clearCart } = useCart();
+  const { products, loading, updateProductQuantity, revertProductQuantity } = useProducts();
+
   const [cash, setCash] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const cashInputRef = useRef<HTMLInputElement | null>(null);
 
-  // เพิ่มสินค้าในตะกร้า
-  const handleAddToCart = (
-    id: number,
-    name: string,
-    price: number,
-    quantity: number
-  ) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevCart, { id, name, quantity, price }];
-      }
-    });
-  };
-
-  // ลบสินค้าออกจากตะกร้า
-  const handleRemoveFromCart = (id: number, quantityToRemove: number) => {
-    setCart((prevCart) => {
-      return prevCart
-        .map((item) => {
-          if (item.id === id) {
-            const newQuantity = item.quantity - quantityToRemove;
-            return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-          }
-          return item;
-        })
-        .filter((item) => item !== null) as CartItem[];
-    });
-  };
-
-  // คำนวณราคารวม
-  const calculateTotal = (): number => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
-  // คำนวณเงินทอน
-  const calculateChange = (): number => {
-    const total = calculateTotal();
-    return cash >= total ? cash - total : 0;
-  };
-
-  // จัดการการชำระเงิน
-  const handleCashChoice = (amount: number) => {
-    if (calculateTotal()) {
-      setCash(amount);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); 
-  
-    // ตรวจสอบว่าตะกร้าไม่ว่าง
+    e.preventDefault();
     if (cart.length === 0) {
-      setMessage('กรุณาเพิ่มสินค้าในตะกร้าก่อนชำระเงิน');
+      setMessage("กรุณาเพิ่มสินค้าในตะกร้าก่อนชำระเงิน");
       return;
     }
 
-    const totalPrice = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  
-  
+    const totalPrice = calculateTotal();
+   
     try {
-      const response = await fetch('/api/saleService', {
-        method: 'POST',
+ 
+      const response = await fetch("/api/saleService", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
+        
         body: JSON.stringify({
           sales: cart.map((item) => ({
             skewerId: item.id,
             quantity: item.quantity,
           })),
-          totalPrice, 
-        })
+          totalPrice,
+        }),
       });
-  
+
       if (!response.ok) {
-        throw new Error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+        throw new Error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
       }
-  
-      // ล้างข้อมูลหลังบันทึกสำเร็จ
-      setCart([]);
+
+      // เคลียร์ cart หลังจากการชำระเงินสำเร็จ
+      clearCart();
+
       setCash(0);
-      setMessage('ชำระเงินสำเร็จ!');
+      setMessage("ชำระเงินสำเร็จ!");
     } catch (error) {
-      setMessage('เกิดข้อผิดพลาด: ' + error.message);
+      setMessage("เกิดข้อผิดพลาด: " + error.message);
     }
   };
-
-  // ดึงข้อมูลสินค้า
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/productService");
-        const data = await response.json();
-        setSkewer(data);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, []);
-
-  // รีเซ็ทเงินเมื่อตะกร้าว่าง
-  useEffect(() => {
-    const total = calculateTotal();
-    if (total === 0) {
-      setCash(0);
-      if (cashInputRef.current) cashInputRef.current.value = "";
-    }
-  }, [cart]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
+    <div>
       <div className="grid grid-cols-3 gap-4 p-4">
-        {skewer.map((item, index) => (
+        {products.map((item, index) => (
           <div key={index} className="p-2 border rounded shadow">
             <Image
               alt={`Product ${index + 1}`}
@@ -169,6 +71,7 @@ export default function Page() {
             />
             <h2 className="text-lg font-semibold mt-2">{item.name}</h2>
             <p className="text-gray-600">Price: ${item.price.toFixed(2)}</p>
+            <p className="text-gray-600">Quantity: {item.quantity}</p>
             <div className="flex items-center gap-2 mt-2">
               <input
                 type="number"
@@ -176,9 +79,11 @@ export default function Page() {
                 defaultValue="1"
                 className="border p-1 rounded w-16 text-center"
                 id={`quantity-${index}`}
+                max={item.quantity} // ไม่ให้เลือกจำนวนเกินสินค้าคงเหลือ
               />
               <Button
                 onClick={() => {
+                  if (item.quantity === 0) return; // ไม่ให้เพิ่มสินค้าเมื่อสินค้าหมด
                   const quantity = parseInt(
                     (
                       document.getElementById(
@@ -186,10 +91,22 @@ export default function Page() {
                       ) as HTMLInputElement
                     ).value
                   );
-                  handleAddToCart(item.id, item.name, item.price, quantity);
+                 
+                  if (quantity > item.quantity) {
+                    alert("ไม่สามารถเพิ่มจำนวนสินค้ามากกว่าจำนวนที่มีในสต็อก");
+                    return;
+                  }
+                  addToCart(item.id, item.name, item.price, quantity);
+                  updateProductQuantity(item.id, quantity); // ลดจำนวนสินค้าในสต็อก
                 }}
-                className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
+               
+                className={`${
+                  item.quantity === 0
+                    ? "bg-gray-500"
+                    : "bg-gradient-to-tr from-pink-500 to-yellow-500"
+                } text-white shadow-lg`}
                 radius="full"
+                disabled={item.quantity === 0} // ถ้าหมด ไม่ให้กดปุ่ม
               >
                 Add to Cart
               </Button>
@@ -197,6 +114,7 @@ export default function Page() {
           </div>
         ))}
       </div>
+
       <div className="p-4">
         <h1 className="text-xl font-bold mb-4">Cart Summary</h1>
         <form onSubmit={handleSubmit}>
@@ -221,7 +139,9 @@ export default function Page() {
                       id={`remove-quantity-${item.id}`}
                     />
                     <Button
-                      onClick={() => {
+                     
+                     onPress={() => {
+                       
                         const quantityToRemove = parseInt(
                           (
                             document.getElementById(
@@ -229,8 +149,15 @@ export default function Page() {
                             ) as HTMLInputElement
                           ).value
                         );
-                        handleRemoveFromCart(item.id, quantityToRemove);
+                      
+                        if (quantityToRemove > item.quantity) {
+                          alert("ไม่สามารถลบจำนวนสินค้ามากกว่าที่มีในตะกร้า");
+                          return;
+                        }
+                        removeFromCart(item.id, quantityToRemove);
+                        revertProductQuantity(item.id, quantityToRemove); // คืนจำนวนสินค้าในสต็อก
                       }}
+                     
                       className="bg-red-500 text-white shadow-lg"
                     >
                       Remove
@@ -240,9 +167,11 @@ export default function Page() {
               ))}
             </ul>
           </div>
+
           <div className="text-lg font-bold mt-4">
             Total: ${calculateTotal().toFixed(2)}
           </div>
+
           <div>
             <p>Amount Paid:</p>
             <input
@@ -253,34 +182,38 @@ export default function Page() {
               onChange={(e) => setCash(parseFloat(e.target.value))}
               className="border p-2 rounded w-64"
             />
+
             <div className="pt-4 gap-2 flex">
-              <Button onPress={() => handleCashChoice(100)}>100</Button>
-              <Button onPress={() => handleCashChoice(500)}>500</Button>
-              <Button onPress={() => handleCashChoice(1000)}>1000</Button>
-              <Button onPress={() => handleCashChoice(calculateTotal())}>
-                พอดี
-              </Button>
+              <Button onPress={() => setCash(100)}>100</Button>
+              <Button onPress={() => setCash(500)}>500</Button>
+              <Button onPress={() => setCash(1000)}>1000</Button>
+              <Button onPress={() => setCash(calculateTotal())}>Exact</Button>
             </div>
           </div>
+
           {cash >= calculateTotal() && (
             <div className="mt-4">
-              <p>Change: ${calculateChange().toFixed(2)}</p>
+              <p>Change: ${calculateTotal() - cash}</p>
             </div>
           )}
+
           <Button type="submit" color="primary">
             ชำระเงิน
           </Button>
         </form>
       </div>
+
       {message && (
         <div
           className={`mt-4 p-4 rounded-lg ${
-            message.includes("สำเร็จ") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            message.includes("สำเร็จ")
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {message}
         </div>
       )}
-    </>
+    </div>
   );
 }
