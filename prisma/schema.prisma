@@ -180,9 +180,18 @@ model VerificationToken {
 }
 
 model Sale {
-  id       Int      @id @default(autoincrement())
-  skewerId Int
-  quantity Float
-  saleDate DateTime @default(now())
-  skewer   Skewer   @relation(fields: [skewerId], references: [id])
+  id          Int        @id @default(autoincrement())
+  skewerId    Int
+  quantity    Float
+  saleDate    DateTime   @default(now())
+  totalSaleId Int? // เพิ่มฟิลด์นี้เพื่อเชื่อมโยงกับ TotalSale
+  skewer      Skewer     @relation(fields: [skewerId], references: [id])
+  totalSale   TotalSale? @relation(fields: [totalSaleId], references: [id]) // ความสัมพันธ์กับ TotalSale
+}
+
+model TotalSale {
+  id         Int      @id @default(autoincrement())
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  sales      Sale[] // ความสัมพันธ์กับ Sale หลายรายการ
 }

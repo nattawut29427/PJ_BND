@@ -126,9 +126,9 @@ export default function App() {
   //   }
   // }
 
-  // Fetch users from API
+  // Fetch Product from API
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchProduct = async () => {
       try {
         const response = await fetch(
           "http://localhost:3000/api/productService"
@@ -142,7 +142,7 @@ export default function App() {
       }
     };
 
-    fetchUsers();
+    fetchProduct();
   }, []);
 
   const renderCell = React.useCallback(
