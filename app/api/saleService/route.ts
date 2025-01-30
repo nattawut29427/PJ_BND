@@ -22,34 +22,49 @@ export async function POST(request: Request) {
         },
       });
 
-      // สร้าง Sale และเชื่อมโยงกับ TotalSale
-      const salesRecords = await Promise.all(
-        sales.map((item) =>
-          tx.sale.create({
+      // 2. สร้าง Sale แต่ละรายการและอัปเดตสต็อก
+      const createdSales = await Promise.all(
+        sales.map(async (saleItem) => {
+          // สร้าง Sale
+          const sale = await tx.sale.create({
             data: {
-              skewerId: item.skewerId,
-              quantity: item.quantity,
-              totalSaleId: totalSaleRecord.id, // เชื่อมโยงกับ TotalSale
+              skewerId: saleItem.skewerId,
+              quantity: saleItem.quantity,
+              totalSaleId:  totalSaleRecord.id,
             },
-          })
-        )
+          });
+
+          // อัปเดตจำนวนสินค้าใน Skewer
+          await tx.skewer.update({
+            where: { id: saleItem.skewerId },
+            data: {
+              quantity: { decrement: saleItem.quantity }, // หักลบจำนวน
+            },
+            select: {
+              quantity: true,
+            },
+          });
+
+          const updatedSkewer = await tx.skewer.findUnique({
+            where: { id: saleItem.skewerId },
+          });
+          
+          if (updatedSkewer!.quantity < 0) {
+            throw new Error("สต็อกสินค้าไม่เพียงพอ");
+          }
+
+          return sale;
+        })
       );
 
-      return { salesRecords, totalSaleRecord };
+      return {  totalSaleRecord, sales: createdSales };
     });
-
-    if (!createdSales || !createdSales.salesRecords || !createdSales.totalSaleRecord) {
-      return NextResponse.json(
-        { error: 'Failed to create sales' },
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(createdSales, { status: 201 });
   } catch (error) {
-    console.error('Error creating sales:', error);
+    console.error("Error:", error);
     return NextResponse.json(
-      { error: 'Failed to create sales' },
+      { error: "Failed to process sale" },
       { status: 500 }
     );
   }
