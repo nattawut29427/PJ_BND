@@ -1,0 +1,25 @@
+API ทั้งหมด
+
+API auth
+   - Post ใช้เเค่หลังบ้านไม่มีอะไร
+
+API Users
+  - /api/users                           # ดึงข้อมูล user ทั้งหมดที่มี
+  - /api/users?email=${email}            # ดึง ข้อมูลจาก email
+  - /api/users?count=true                # ดึง จำนวน ผู้ใช้ทั้งหมด ex userTotal 20 คน
+
+API uploadthing
+  - ไว้ อัพรูป
+
+API saleService
+  - /api/saleService?sum=true            # ดึงจำนวนเงินทั้งหมดที่ขายได้
+  - /api/saleService?dailSale=true       # ดึงจำนวนเงินทั้งหมดที่ขายได้ในเเต่ล่ะวัน
+  - /api/saleService?quantitySale=true   # ดึงจำนวนสินค้าทั้งหมดที่ขายได้ว่ามีกี่ชิ้น
+
+API productService
+  - /api/productService                  # ดึงข้อมูลสินค้าทั้งหมด
+  - /api/productService?id=${id}         # ดึงข้อมูลตาม id ที่เลือก
+  - /api/productService?count=true       # ดึงข้อมูลจำนวนสินค้าทั้งหมดที่มี
+
+API Category 
+  # ยังไม่ได้ทำ (ไม่ได้สำคัญ)

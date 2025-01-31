@@ -8,12 +8,18 @@
   export async function GET(req: Request) {
     try {
       const { searchParams } = new URL(req.url);
-      const email = searchParams.get("email"); // เปลี่ยนจาก id เป็น email
+      const email = searchParams.get("email"); 
+      const count = searchParams.get("count");
+      
+      if (count) {
+        const totalUsers = await prisma.user.count();
+        return NextResponse.json({ total: totalUsers });
+      }
   
       if (email) {
         const user = await prisma.user.findUnique({
           where: { email },
-          select: { email: true }
+          select: { email: true },
         });
   
         if (!user) {
@@ -26,8 +32,9 @@
         return NextResponse.json(user);
       }
   
+      
       const users = await prisma.user.findMany({
-        orderBy: { id: 'asc' },
+        orderBy: { id: "asc" },
       });
       
       return NextResponse.json(users);
