@@ -1,5 +1,8 @@
+
 import { PrismaClient } from '@prisma/client';
+
 import { ourFileRouter } from "@/app/api/uploadthing/core"
+
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -34,8 +37,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const count = searchParams.get("count"); // เพิ่มตัวเลือก count
 
-    // หากมี id ใน query parameters ให้ดึงข้อมูลเฉพาะรายการ
     if (id) {
       const skewer = await prisma.skewer.findUnique({
         where: { id: parseInt(id, 10) },
@@ -51,16 +54,23 @@ export async function GET(req: Request) {
       return NextResponse.json(skewer);
     }
 
-    // หากไม่มี id ให้ดึงข้อมูลทั้งหมดและเรียงตาม id
+    if (count) {
+      
+      const totalSkewers = await prisma.skewer.count();
+     
+      return NextResponse.json({ total: totalSkewers });
+    }
+
     const skewers = await prisma.skewer.findMany({
-      orderBy: {
-        id: 'asc', // เรียงจากน้อยไปมาก (asc) หรือมากไปน้อย (desc)
-      },
+      orderBy: { id: "asc" },
     });
-    
+
     return NextResponse.json(skewers);
+  
   } catch (error) {
+    
     console.error("Error fetching skewer data:", error);
+   
     return NextResponse.json(
       { error: "Unable to fetch skewer data" },
       { status: 500 }
@@ -168,9 +178,13 @@ export async function PATCH(req: Request) {
 
     // คำนวณจำนวนใหม่ (หากมี quantityChange)
     let newQuantity = skewer.quantity;
+   
     if (typeof quantityChange === "number") {
+    
       newQuantity = skewer.quantity + quantityChange;
+     
       if (newQuantity < 0) {
+      
         return NextResponse.json(
           { error: "Insufficient quantity" },
           { status: 400 }

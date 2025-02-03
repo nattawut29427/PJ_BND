@@ -3,6 +3,88 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const sum = searchParams.get("sum")
+    const dailySale = searchParams.get("dailySale");
+    const quantitySale = searchParams.get("quanSale")
+
+    if (quantitySale) {
+      const totalSaleAmount = await prisma.sale.aggregate({
+        _sum: {
+          quantity: true,
+        },
+      });
+
+      return NextResponse.json({
+        totalAmount: totalSaleAmount._sum.quantity || 0,
+      });
+    }
+
+    if (dailySale) {
+      
+      const dailySaleAmount = await prisma.totalSale.groupBy({
+        by: ["createdAt"], 
+        _sum: {
+          totalPrice: true, 
+        },
+        orderBy: {
+          createdAt: "asc", 
+        },
+      });
+
+      const aggregatedData = dailySaleAmount.reduce((acc: { [key: string]: number }, item) => {
+        const date = item.createdAt.toISOString().split("T")[0];
+        
+        const totalPrice = item._sum.totalPrice ?? 0;
+      
+        if (!acc[date]) {
+          acc[date] = 0;
+        }
+        acc[date] += totalPrice;
+        return acc;
+      }, {});
+  
+      const formattedData = Object.keys(aggregatedData).map(date => ({
+        date,
+        totalAmount: aggregatedData[date],
+      }));
+
+      return NextResponse.json(formattedData);
+    }
+
+
+    if (sum) {
+      const totalSaleAmount = await prisma.totalSale.aggregate({
+        _sum: {
+          totalPrice: true,
+        },
+      });
+
+      return NextResponse.json({
+        totalAmount: totalSaleAmount._sum.totalPrice || 0,
+      });
+    }
+
+    
+    return NextResponse.json({ message: 'Please specify query parameters.' });
+
+  } catch (error) {
+    
+    console.error("Error fetching daily sale data:", error);
+    
+    return NextResponse.json(
+      
+      { error: "Unable to fetch daily sale data" },
+      
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const { sales, totalPrice } = await request.json();
@@ -15,17 +97,17 @@ export async function POST(request: Request) {
     }
 
     const createdSales = await prisma.$transaction(async (tx) => {
-      // สร้าง TotalSale ก่อน
+      
       const totalSaleRecord = await tx.totalSale.create({
         data: {
           totalPrice,
         },
       });
 
-      // 2. สร้าง Sale แต่ละรายการและอัปเดตสต็อก
+     // Sale แต่ละรายการและอัปเดตสต็อก
       const createdSales = await Promise.all(
         sales.map(async (saleItem) => {
-          // สร้าง Sale
+          
           const sale = await tx.sale.create({
             data: {
               skewerId: saleItem.skewerId,
@@ -62,9 +144,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json(createdSales, { status: 201 });
   } catch (error) {
+   
     console.error("Error:", error);
+   
     return NextResponse.json(
+    
       { error: "Failed to process sale" },
+      
       { status: 500 }
     );
   }

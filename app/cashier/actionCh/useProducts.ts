@@ -27,6 +27,18 @@ export const useProducts = () => {
       }
     };
 
+    // ดึงจำนวนสินค้า ทั้งหมด
+    const fetchTotalProducts = async () => {
+      try {
+        const response = await fetch("/api/productService?count=true");
+        const { total } = await response.json();
+        setProducts(total);
+      } catch (error) {
+        console.error("Failed to fetch total products:", error);
+      }
+    };
+
+
     fetchProducts();
   }, []);
 
@@ -47,8 +59,9 @@ export const useProducts = () => {
           ? { ...product, quantity: product.quantity + quantity }
           : product
       )
-    );  
-  };
+    );
+  };  
+    
 
-  return { products, loading, updateProductQuantity, revertProductQuantity  };
+  return { products, loading, updateProductQuantity, revertProductQuantity };
 };

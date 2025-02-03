@@ -1,0 +1,6 @@
+ActionCh 
+ - UseCart
+   -- มี function addToCart (เพิ่มสินค้าในตะกร้า),removeFromCart (ลบสินค้าออกจากตะกร้า),calculateTotal (คำนวณราคารวม), clearCart (เอาไว้ เคลียตะกร้า เมื่อซิ้อเสร็จ)
+
+ - UseProducts 
+   -- มี function ดึงสินค้าจาก api , updateProductQuantity (เวลากด add สินค้าเเล้วจำนวนจะลด) , revertProductQuantity (เวลาลบสินค้าจำนวนจะคืนกลับมา)

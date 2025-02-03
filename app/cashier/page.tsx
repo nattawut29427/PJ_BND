@@ -23,7 +23,8 @@ export default function Page() {
     const totalPrice = calculateTotal();
    
     try {
- 
+
+      // ส่งข้อมูลเพื่อทำรายการสินค้า ไปบันทึกใน db
       const response = await fetch("/api/saleService", {
         method: "POST",
         headers: {
@@ -49,7 +50,7 @@ export default function Page() {
       setCash(0);
       setMessage("ชำระเงินสำเร็จ!");
     } catch (error) {
-      setMessage("เกิดข้อผิดพลาด: " + error.message);
+      setMessage("เกิดข้อผิดพลาด: " + message);
     }
   };
 
@@ -82,7 +83,7 @@ export default function Page() {
                 max={item.quantity} // ไม่ให้เลือกจำนวนเกินสินค้าคงเหลือ
               />
               <Button
-                onClick={() => {
+                onPress={() => {
                   if (item.quantity === 0) return; // ไม่ให้เพิ่มสินค้าเมื่อสินค้าหมด
                   const quantity = parseInt(
                     (
