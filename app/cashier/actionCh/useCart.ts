@@ -14,6 +14,7 @@ export const useCart = () => {
   const addToCart = (id: number, name: string, price: number, quantity: number) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === id);
+     
       if (existingItem) {
         return prevCart.map((item) =>
           item.id === id
@@ -33,8 +34,10 @@ export const useCart = () => {
         .map((item) => {
           if (item.id === id) {
             const newQuantity = item.quantity - quantityToRemove;
+           
             return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
           }
+         
           return item;
         })
         .filter((item) => item !== null) as CartItem[];

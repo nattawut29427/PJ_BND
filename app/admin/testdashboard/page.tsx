@@ -1,103 +1,90 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Spinner } from "@heroui/react"; // หรือ component spinner ที่คุณใช้
+import { Spinner } from "@heroui/react"; 
 
-interface Sale {
-  date: string;
+interface SaleData {
+  date?: string;
+  month?: string;
+  year?: string;
   totalAmount: number;
 }
 
 export default function Page() {
-  const [totalsale, setTotalsale] = useState<Sale[]>([]);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [totalUser, setTotalUser] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [totalProduct, setTotalProduct] = useState<number>(0);
-  const [quanSale, setQuanSale] = useState<number>(0)
-  const [error, setError] = useState<string>("");
+  const [dailySale, setDailySale] = useState<SaleData[]>([]);
+  const [monthlySale, setMonthlySale] = useState<SaleData[]>([]);
+  const [yearlySale, setYearlySale] = useState<SaleData[]>([]);
+  const [stats, setStats] = useState({ totalAmount: 0, totalUser: 0, totalProduct: 0, quanSale: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
-      setError("");
+    const fetchData = async (key: string, setter: (data: SaleData[]) => void) => {
       try {
-        const [
-          dailySaleResponse,
-          totalSaleResponse,
-          totalUserResponse,
-          totalProductResponse,
-          totalQuanSaleResponse
-        ] = await Promise.all([
-          fetch("/api/saleService?dailySale=true"),
-          fetch("/api/saleService?sum=true"),
-          fetch("/api/users?count=true"),
-          fetch("/api/productService?count=true"),
-          fetch("/api/saleService?quanSale=true")
-        ]);
-
-        if (
-          !dailySaleResponse.ok ||
-          !totalSaleResponse.ok ||
-          !totalUserResponse.ok ||
-          !totalProductResponse.ok ||
-          !totalQuanSaleResponse.ok 
-        ) {
-          throw new Error("Failed to fetch sales data");
-        }
-        
-        const totalQuanSale = await totalQuanSaleResponse.json();
-        const totalProduct = await totalProductResponse.json();
-        const totalUserData = await totalUserResponse.json();
-        const dailySaleData = await dailySaleResponse.json();
-        const totalSaleData = await totalSaleResponse.json();
-
-        // อัปเดต state
-        setQuanSale(totalQuanSale.totalAmount || 0);
-        setTotalProduct(totalProduct.total || 0);
-        setTotalsale(dailySaleData);
-        setTotalAmount(totalSaleData.totalAmount || 0);
-        setTotalUser(totalUserData.total || 0);
-      } catch (error) {
-        console.error("Failed to fetch sales:", error);
-
-        setError("Failed to fetch sales data");
-      } finally {
-        setLoading(false);
+        const res = await fetch(`/api/saleService?${key}=true`);
+        if (!res.ok) throw new Error(`Failed to fetch ${key}`);
+        setter(await res.json());
+      } catch {
+        setError(`Error loading ${key}`);
       }
     };
 
-    fetchAllData();
+    const fetchStats = async () => {
+      try {
+        const [sumRes, userRes, productRes, quanRes] = await Promise.all([
+          fetch("/api/saleService?sum=true"),
+          fetch("/api/users?count=true"),
+          fetch("/api/productService?count=true"),
+          fetch("/api/saleService?quanSale=true"),
+        ]);
+
+        if (![sumRes, userRes, productRes, quanRes].every(res => res.ok)) throw new Error("Failed to fetch stats");
+
+        setStats({
+          totalAmount: (await sumRes.json()).totalAmount || 0,
+          totalUser: (await userRes.json()).total || 0,
+          totalProduct: (await productRes.json()).total || 0,
+          quanSale: (await quanRes.json()).totalAmount || 0,
+        });
+      } catch {
+        setError("Error loading stats");
+      }
+    };
+
+    (async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchData("dailySale", setDailySale),
+        fetchData("monthlySale", setMonthlySale),
+        fetchData("yearlySale", setYearlySale),
+        fetchStats(),
+      ]);
+      setLoading(false);
+    })();
   }, []);
 
-  if (loading) {
-    return (
-      <Spinner
-        className="flex justify-center items-center m-auto w-1/2 h-1/2"
-        size="lg"
-        color="primary"
-        labelColor="primary"
-      />
-    );
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <Spinner className="flex justify-center items-center m-auto w-1/2 h-1/2" size="lg" color="primary" />;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <h2>Total Users (total): {totalUser}</h2>
-      <h2>Total Product Sale (total): {quanSale}</h2>
-      <h2>Total Product (total): {totalProduct}</h2>
-      <h2>Total Sales (Sum): {totalAmount}</h2>
-      <ul>
-        {totalsale.map((sale, index) => (
-          <li key={index}>
-            Date: {sale.date} | Total: {sale.totalAmount}
-          </li>
-        ))}
-      </ul>
+      <h2>Total Users: {stats.totalUser} คน</h2>
+      <h2>Total Product Sale: {stats.quanSale} ชิ้น</h2>
+      <h2>Total Product: {stats.totalProduct} ชิ้น</h2>
+      <h2>Total Sales: {stats.totalAmount} บาท</h2>
+
+      {[{ title: " รายการขายรายวัน", data: dailySale, key: "date" },
+        { title: " รายการขายรายเดือน", data: monthlySale, key: "month" },
+        { title: " รายการขายรายปี", data: yearlySale, key: "year" }].map(({ title, data, key }) => (
+        <div key={title}>
+          <h3 className="mt-4 font-bold">{title}</h3>
+          <ul>
+            {data.map((sale, index) => (
+              <li key={index}> {sale[key as keyof SaleData]} |  {sale.totalAmount} บาท</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }
