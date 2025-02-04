@@ -14,7 +14,7 @@ const SignIn = () => {
     async (e: React.FormEvent) => {
       e.preventDefault();
       setLoading(true);
-      setError(null); 
+      setError(null);
       const result = await signIn("credentials", {
         redirect: false,
         email,
@@ -24,81 +24,79 @@ const SignIn = () => {
       setLoading(false);
 
       if (result?.error) {
-        setError(result.error); 
+        setError(result.error);
       } else {
-       
         router.push("/");
       }
     },
     [email, password, router]
   );
 
-  const handleGoogleSignIn = useCallback(
-    async () => {
-      setLoading(true);
-      setError(null); // Clear previous error message
+  const handleGoogleSignIn = useCallback(async () => {
+    setLoading(true);
+    setError(null); // Clear previous error message
 
-      const result = await signIn("google", {
-        redirect: false, // Don't redirect immediately
-      });
+    const result = await signIn("google", {
+      redirect: false, // Don't redirect immediately
+    });
 
-      setLoading(false);
+    setLoading(false);
 
-      if (result?.error) {
-        setError("Google login failed! Please try again.");
-      } else {
-        // Redirect after successful Google login
-      }
-    },
-    [router]
-  );
+    if (result?.error) {
+      setError("Google login failed! Please try again.");
+    } else {
+      // Redirect after successful Google login
+    }
+  }, [router]);
 
   return (
     <div className="max-w-sm mx-auto p-4">
-      <h1 className="text-xl font-bold text-center mb-4">Sign In</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">Sign In</h1>
 
       {/* Error message display */}
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       {/* Credentials form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full p-2 border rounded-md"
+            placeholder="Email"
+            className="w-full p-2 border rounded-md text-base font-medium "
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-2 border rounded-md"
+            placeholder="Password"
+            className="w-full p-2 border rounded-md text-base font-medium"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-2 bg-blue-500 text-white rounded-md"
+          className="w-full p-2 bg-blue-500 text-white font-semibold rounded-md"
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
+        
       </form>
-
+      <div className="flex divider text-sm font-bold justify-center items-center mt-2 text-gray-400">or</div>
       {/* Google SignIn button */}
-      <div className="mt-4 text-center">
+      <div className="mt-2 text-center">
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full p-2 bg-red-500 text-white rounded-md"
+          className="w-full p-2 bg-gray-500 text-white rounded-md"
         >
-          {loading ? "Signing In with Google..." : "Sign In with Google"}
+          <i className="fa-brands fa-google mr-3"></i>
+          {loading ? "Google..." : "Google"}
         </button>
       </div>
     </div>
