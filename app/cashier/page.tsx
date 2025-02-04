@@ -59,17 +59,20 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-3 gap-4 p-4">
+  <>
+    <div className="flex">
+      <div className="w-4/6 h-full rounded-xl grid grid-cols-3 gap-4 p-4">
         {products.map((item, index) => (
           <div key={index} className="p-2 border rounded shadow">
+            <div className="flex justify-center">
             <Image
               alt={`Product ${index + 1}`}
               src={item.images}
-              width={300}
-              height={300}
-              className="rounded"
+              width={200}
+              height={200}
+              className="rounded-xl "
             />
+            </div>
             <h2 className="text-lg font-semibold mt-2">{item.name}</h2>
             <p className="text-gray-600">Price: ${item.price.toFixed(2)}</p>
             <p className="text-gray-600">Quantity: {item.quantity}</p>
@@ -116,7 +119,8 @@ export default function Page() {
         ))}
       </div>
 
-      <div className="p-4">
+      
+      <div className="p-4 border-1 rounded-xl">
         <h1 className="text-xl font-bold mb-4">Cart Summary</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -125,20 +129,30 @@ export default function Page() {
               {cart.map((item) => (
                 <li
                   key={item.id}
-                  className="mb-2 flex justify-between items-center"
+                  className="mb-2 flex justify-between items-center h-full rounded-xl p-3 border-2"
                 >
                   <span>
-                    {item.name} - {item.quantity} quantity - $
-                    {(item.price * item.quantity).toFixed(2)}
+                    <div className="text-xl font-bold">
+                      {item.name} 
+                    </div>
+                    <div>
+                    - {item.quantity} quantity - 
+                    </div>
+                    <div>
+                    {(item.price * item.quantity).toFixed(2)} $
+                    </div>
                   </span>
-                  <div>
+                  <div className="">
+                    <div className="flex justify-center pb-2">
                     <input
                       type="number"
                       min="1"
                       defaultValue="1"
-                      className="border p-1 rounded w-16 text-center mr-2"
+                      className="border p-1 rounded w-16 text-center "
                       id={`remove-quantity-${item.id}`}
                     />
+                    </div>
+                    <div>
                     <Button
                      
                      onPress={() => {
@@ -164,6 +178,8 @@ export default function Page() {
                       Remove
                     </Button>
                   </div>
+                  </div>
+                  
                 </li>
               ))}
             </ul>
@@ -184,7 +200,7 @@ export default function Page() {
               className="border p-2 rounded w-64"
             />
 
-            <div className="pt-4 gap-2 flex">
+            <div className="pt-4 gap-2 flex mb-2">
               <Button onPress={() => setCash(100)}>100</Button>
               <Button onPress={() => setCash(500)}>500</Button>
               <Button onPress={() => setCash(1000)}>1000</Button>
@@ -203,7 +219,9 @@ export default function Page() {
           </Button>
         </form>
       </div>
+      
 
+      </div>
       {message && (
         <div
           className={`mt-4 p-4 rounded-lg ${
@@ -215,6 +233,7 @@ export default function Page() {
           {message}
         </div>
       )}
-    </div>
+    
+    </>
   );
 }
