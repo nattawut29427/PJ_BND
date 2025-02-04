@@ -10,6 +10,7 @@ interface SaleData {
   month?: string;
   year?: string;
   totalAmount: number;
+  labels: string;
 }
 
 export default function App() {
@@ -17,10 +18,24 @@ export default function App() {
   const [monthlySale, setMonthlySale] = useState<SaleData[]>([]);
   const [yearlySale, setYearlySale] = useState<SaleData[]>([]);
   const [stats, setStats] = useState({ totalAmount: 0, totalUser: 0, totalProduct: 0, quanSale: 0 });
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [chartTitle, setChartTitle] = useState("ยอดขายรายวัน");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [chartData, setChartData] = useState<{
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string[];
+      borderColor: string[];
+      borderWidth: number;
+    }[];
+  }>({
+    labels: [],
+    datasets: [],
+  });
+  
 
   useEffect(() => {
     const fetchData = async (key: string, setter: (data: SaleData[]) => void) => {
@@ -74,7 +89,10 @@ export default function App() {
   }, [dailySale]);
 
   const updateChartData = (sales: SaleData[], label: string) => {
-    const labels = sales.map(sale => sale.date || sale.month || sale.year);
+    const labels = sales
+      .map(sale => sale.date || sale.month || sale.year)
+      .filter((label): label is string => label !== undefined);
+  
     const data = sales.map(sale => sale.totalAmount);
     const backgroundColors = data.map((_, index) => {
       const colors = [
@@ -98,7 +116,7 @@ export default function App() {
       ];
       return colors[index % colors.length];
     });
-
+  
     setChartData({
       labels,
       datasets: [
@@ -113,6 +131,7 @@ export default function App() {
     });
     setChartTitle(label);
   };
+  
 
   if (loading) return <Spinner className="flex justify-center items-center m-auto w-1/2 h-1/2" size="lg" color="primary" />;
   if (error) return <div>{error}</div>;
