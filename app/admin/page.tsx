@@ -139,7 +139,6 @@ export default function App() {
   return (
     <>
       <h1 className="text-2xl pb-6">Dashboard/รายงาน ระบบร้านอาหาร</h1>
-      <div className="">
         <div className="grid grid-cols-4 gap-4">
           <Button color="primary" className="h-[125px]">
             <h4 className="text-white font-medium text-xl">
@@ -189,7 +188,6 @@ export default function App() {
             },
           }} />
         </div>
-      </div>
     </>
   );
 }
