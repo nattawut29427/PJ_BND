@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const SkewerUpload = () => {
   const [formData, setFormData] = useState({
+    id: "",
     name: "",
     price: "",
     spicyLevel: "medium",
@@ -33,7 +34,7 @@ const SkewerUpload = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (fileUrl) {
+
      
       const metadata = {
         name: formData.name,
@@ -46,7 +47,7 @@ const SkewerUpload = () => {
 
       try {
         const response = await fetch("/api/productService", {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -62,12 +63,20 @@ const SkewerUpload = () => {
         console.error("Error:", error);
         alert("Error saving data");
       }
-    } 
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
+      <div>
+          <label>Skewer Name:</label>
+          <input
+            type="text"
+            name="id"
+            value={formData.id}
+            onChange={handleChange}
+          />
+        </div>
         <div>
           <label>Skewer Name:</label>
           <input
@@ -130,7 +139,7 @@ const SkewerUpload = () => {
           }}
         />
 
-        {/* ปุ่ม submit เพื่อส่งข้อมูลทั้งหมด */}
+        
         <button type="submit">Submit</button>
       </form>
     </div>
