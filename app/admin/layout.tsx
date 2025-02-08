@@ -1,11 +1,17 @@
-import { ReactElement } from "react";
-import Sidebar from "./components/Sidebar";
+"use client";
 
-export default function layout({ children }: { children: ReactElement }) {
+import { ReactElement } from "react";
+import Drawer from "@/app/admin/components/Drawer";
+
+export default function Layout({ children }: { children: ReactElement }) {
   return (
-    <div className="grid">
-      <Sidebar />
-      <div className="ml-72 p-5">{children}</div>
-    </div>
+    <>
+      <div className="absolute top-5 left-5">
+        <Drawer/>
+      </div>
+      <main className="flex flex-col items-center justify-center py-8 md:py-10">
+        <div className="inline-block w-screen px-72">{children}</div>
+      </main>
+    </>
   );
 }
