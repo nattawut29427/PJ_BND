@@ -24,6 +24,8 @@ export default function SkewerUpload() {
     { key: "1", label: "เนื้อหมู" },
     { key: "2", label: "เนื้อวัว" },
     { key: "3", label: "ผัก" },
+    { key: "4", label: "เครื่องดื่ม" },
+    { key: "5", label: "อื่นๆ" }
   ];
 
   const handleRoleChange = (newRole: string) => {
