@@ -14,7 +14,6 @@ export default function RedirectHandler() {
       return;
     }
 
-    // ตรวจสอบ role ของผู้ใช้ แล้ว redirect ไปยังหน้าที่เหมาะสม
     const role = session.user?.role;
    
     if (role === "admin") {

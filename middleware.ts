@@ -29,7 +29,7 @@ export async function middleware(request:any) {
 
   if (
     pathname.startsWith('/cashier') &&
-    (!user || user.role !== 'cashier')
+    (!user || (user.role !== 'cashier' && user.role !== 'admin'))
   ) {
     console.log(user)
     return NextResponse.redirect(new URL('/', request.url))

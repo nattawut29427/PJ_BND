@@ -27,7 +27,7 @@ export default function App() {
   const filteredMenuItems =
     session?.user?.role === "admin"
       ? menuItems
-      : menuItems.filter((item) => item.name === "Dashboard" || item.name === "Settings");
+      : menuItems.filter((item) => item.name === "Settings");
 
   // ตรวจสอบว่าอยู่ใน /admin หรือไม่
   const panelTitle = pathname.startsWith("/admin") ? "Admin Panel" : "Cashier Panel";
