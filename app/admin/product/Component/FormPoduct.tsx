@@ -124,7 +124,7 @@ export default function SkewerUpload() {
           />
         </div>
 
-        <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
+        <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 pt-4">
           <Input
             label="Quantity"
             labelPlacement="outside"

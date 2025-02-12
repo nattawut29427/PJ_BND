@@ -36,7 +36,7 @@ export default function Page() {
     const totalPrice = calculateTotal();
 
     try {
-      // ส่งข้อมูลเพื่อทำรายการสินค้า ไปบันทึกใน db
+      // ส่งข้อมูลเพื่อทำรายการสินค้า 
       const response = await fetch("/api/saleService", {
         method: "POST",
         headers: {
@@ -105,7 +105,7 @@ export default function Page() {
       </div>
 
       <div className="p-6 min-h-screen flex flex-col md:flex-row gap-6 ">
-        {/* 🛍️ ฝั่งสินค้า */}
+        {/* สินค้า */}
         <div className="flex-1">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p">
             {products
@@ -126,7 +126,7 @@ export default function Page() {
                     height={150}
                     className="rounded-lg object-cover mb-4 mx-auto"
                   />
-                  <h2 className="text-lg font-semibold text-primary">
+                  <h2 className="text-lg font-semibold text-white">
                     {item.name}
                   </h2>
                   <div className="text-start">
@@ -176,7 +176,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* 💳 Cart Summary ฝั่งขวา */}
+        {/* Cart Summary ฝั่งขวา */}
         <div className="w-full md:w-[350px] lg:w-[400px]  p-4 rounded-lg shadow-lg sticky top-6 h-fit">
           <h1 className="text-2xl font-bold mb-4 text-center">
             🛒 Cart Summary
