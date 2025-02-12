@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody, Button } from "@heroui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse, faUsers, faBook, faTableCellsLarge, faFlag, faGear } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { name: "Dashboard", path: "/admin" },
-    { name: "Users", path: "/admin/dashboard" },
-    { name: "Products", path: "/admin/product" },
-    { name: "Orders", path: "/admin/orders" },
-    { name: "Reports", path: "/admin/reports" },
-    { name: "Settings", path: "/admin/settings" },
+    { name: "Dashboard", path: "/admin", icon: faHouse },
+    { name: "Users", path: "/admin/dashboard", icon: faUsers },
+    { name: "Products", path: "/admin/product", icon: faBook },
+    { name: "Orders", path: "/admin/orders", icon: faTableCellsLarge },
+    { name: "Reports", path: "/admin/reports", icon: faFlag },
+    { name: "Settings", path: "/admin/settings", icon: faGear },
   ];
 
   return (
@@ -23,7 +25,10 @@ export default function App() {
           <DrawerBody className="flex flex-col gap-5 text-start">
             {menuItems.map((item) => (
               <Link key={item.path} href={item.path}>
-                <Button className="w-full hover:bg-primary">{item.name}</Button>
+                <Button className="w-full h-14 bg-zinc-900 hover:bg-zinc-700 text-white text-base" radius="none">
+                  {item.icon && <FontAwesomeIcon icon={item.icon} className="mr-2" />}
+                  {item.name}
+                </Button>
               </Link>
             ))}
           </DrawerBody>
