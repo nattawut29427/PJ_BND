@@ -4,6 +4,7 @@ import type { Selection } from "@heroui/react";
 import ModalPD from "@/app/admin/product/Component/ModalPD";
 import Find from "@/components/Find";
 import ModalEdit from "@/app/admin/product/Component/ModalEdit";
+import Deleat from "@/app/admin/product/Component/Deleat";
 
 import {
   Dropdown,
@@ -41,6 +42,7 @@ export const columns = [
   { name: "Price", uid: "price" },
   { name: "Quantity", uid: "quantity" },
   { name: "ACTIONS", uid: "actions" },
+  { name: "DELEAT", uid: "deleat" },
 ];
 
 export const EyeIcon = (props: IconSvgProps) => (
@@ -148,12 +150,10 @@ export default function App() {
   const renderCell = React.useCallback(
     (skewer: Skewer, columnKey: React.Key) => {
       const cellValue = skewer[columnKey as keyof Skewer];
-  
+
       switch (columnKey) {
-        case "id" :
-          return (
-           <p>{skewer.id}</p>
-          )
+        case "id":
+          return <p>{skewer.id}</p>;
         case "images":
           return (
             <Image
@@ -177,6 +177,13 @@ export default function App() {
           return (
             <div className="relative flex items-center justify-center gap-2">
               <ModalEdit id={skewer.id} />
+            </div>
+          );
+
+        case "deleat":
+          return (
+            <div>
+                <Deleat  productId={skewer.id} productName={skewer.name} />
             </div>
           );
         default:

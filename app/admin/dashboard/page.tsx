@@ -3,7 +3,8 @@
 import type { Selection } from "@heroui/react";
 import ModalUS from "@/app/admin/dashboard/Component/ModalUS";
 import Find from "@/components/Find";
-import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit"
+import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit";
+import Delete from "@/app/admin/dashboard/Component/Delete";
 
 import {
   Dropdown,
@@ -27,6 +28,7 @@ import {
   ChipProps,
   Pagination,
   Spinner,
+  Alert,
 } from "@heroui/react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -38,6 +40,7 @@ export const columns = [
   { name: "ROLE", uid: "role" },
   { name: "Phone", uid: "phone" },
   { name: "ACTIONS", uid: "actions" },
+  { name: "DELETE", uid: "delete" },
 ];
 
 export const EyeIcon = (props: IconSvgProps) => (
@@ -87,7 +90,11 @@ type User = {
 };
 
 export default function App() {
-  
+  const [alertStatus, setAlertStatus] = useState<"success" | "error" | null>(
+    null
+  );
+  const [alertMessage, setAlertMessage] = useState("");
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -100,23 +107,34 @@ export default function App() {
     [selectedKeys]
   );
   const filteredUsers = React.useMemo(() => {
-     return users.filter((user) =>
-       user.name.toLowerCase().includes(searchQuery.toLowerCase())
-     ); 
-   }, [users, searchQuery]);
-  
+    return users.filter((user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [users, searchQuery]);
+
+  const showAlert = (status: "success" | "error", message: string) => {
+    setAlertStatus(status);
+    setAlertMessage(message);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000); // 3 วินาทีหลังจากแสดง Alert
+  };
+
+  const handleUserDeleted = () => {
+    showAlert("success", "User deleted successfully!");
+  };
 
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 6;
-  
+
   const pages = Math.ceil(users.length / rowsPerPage);
-  
+
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return filteredUsers.slice(start, end);
   }, [page, filteredUsers]);
-
 
   function formatPhoneNumber(phone: string) {
     if (phone) {
@@ -177,8 +195,14 @@ export default function App() {
       case "actions":
         return (
           <div className="relative flex items-center justify-center gap-2">
-            <ModalEdit email={user.email}/>
+            <ModalEdit email={user.email} />
             {/* Other action icons */}
+          </div>
+        );
+      case "delete":
+        return (
+          <div>
+            <Delete email={user.email} onUserDeleted={handleUserDeleted} />
           </div>
         );
       default:
@@ -187,17 +211,33 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <Spinner className="flex justify-center items-center m-auto w-1/2 h-1/2" size="lg" color="primary"  labelColor="primary" />;
+    return (
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2"
+        size="lg"
+        color="primary"
+        labelColor="primary"
+      />
+    );
   }
 
   return (
     <>
       <div className="flex-row">
+        {alertStatus && (
+          <Alert
+            color={alertStatus}
+            title={alertStatus === "success" ? "Success" : "Error"}
+            description={alertMessage}
+            className="fixed bottom-4 left-4 z-50"
+            onClose={() => setAlertStatus(null)}
+          />
+        )}
         <div className="flex justify-end pb-5 gap-5">
-          <Find 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
-          className="border rounded px-2 py-1"
+          <Find
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
+            className="border rounded px-2 py-1"
           />
           <Dropdown className="">
             <DropdownTrigger>

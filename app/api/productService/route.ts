@@ -78,57 +78,33 @@ export async function GET(req: Request) {
   }
 }
 
-// export async function PUT(req: Request) {
-//   try {
-//     const body = await req.json();
-//     const { id, name, price, categoryId, images, quantity } = body;
 
-//     if (!id) {
-//       return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
-//     }
-
-//     // ตรวจสอบว่าข้อมูลใหม่ไม่ทำให้ quantity ติดลบ
-//     if (quantity !== undefined && quantity < 0) {
-//       return new Response(JSON.stringify({ error: "Quantity cannot be negative" }), { status: 400 });
-//     }
-
-//     const updatedSkewer = await prisma.skewer.update({
-//       where: { id },
-//       data: {
-//         name,
-//         price,
-//         categoryId,
-//         images,
-//         quantity,
-//       },
-//     });
-
-//     return new Response(JSON.stringify(updatedSkewer), { status: 200 });
-//   } catch (error) {
-//     console.error("Error updating skewer:", error);
-//     return new Response(JSON.stringify({ error: "Unable to update skewer" }), { status: 500 });
-//   }
-// }
-
-export async function DELETE(req) {
+export async function DELETE(req: Request) {
   try {
-    const body = await req.json();
-    const { id } = body;
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
     if (!id) {
-      return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400 });
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
     }
 
-    await prisma.skewer.delete({
-      where: { id },
+    // ลบข้อมูลในตาราง Sale ที่เชื่อมโยงกับ Skewer นี้
+    await prisma.sale.deleteMany({
+      where: { skewerId: parseInt(id) },
     });
 
-    return new Response(JSON.stringify({ message: 'Skewer deleted successfully' }), { status: 200 });
+    // ลบข้อมูลในตาราง Skewer
+    await prisma.skewer.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json({ message: "Product and related sales deleted successfully" }, { status: 200 });
   } catch (error) {
-    console.error('Error deleting skewer:', error);
-    return new Response(JSON.stringify({ error: 'Unable to delete skewer' }), { status: 500 });
+    console.error("Error during deletion:", error);
+    return NextResponse.json({ error: "Unable to delete product" }, { status: 500 });
   }
 }
+
 
 
 export async function PATCH(req: Request) {

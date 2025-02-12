@@ -185,7 +185,7 @@ model Sale {
   quantity    Float
   saleDate    DateTime   @default(now())
   totalSaleId Int? // เพิ่มฟิลด์นี้เพื่อเชื่อมโยงกับ TotalSale
-  skewer      Skewer     @relation(fields: [skewerId], references: [id])
+  skewer      Skewer     @relation(fields: [skewerId], references: [id], onDelete: Cascade)
   totalSale   TotalSale? @relation(fields: [totalSaleId], references: [id]) // ความสัมพันธ์กับ TotalSale
 }
 
