@@ -120,13 +120,13 @@ model OrderItem {
 
 model Bill {
   id          Int          @id @default(autoincrement())
-  orderId     Int          @unique
+  orderId     Int          @unique @default(autoincrement())
   totalPrice  Float
   paidAt      DateTime?
-  paymentType PaymentType
-  cashierId   String
-  cashier     User         @relation("UserBills", fields: [cashierId], references: [id])
-  order       Order        @relation(fields: [orderId], references: [id])
+  paymentType PaymentType?
+  cashierId   String?
+  cashier     User?         @relation("UserBills", fields: [cashierId], references: [id])
+  order       Order?        @relation(fields: [orderId], references: [id])
   Transaction Transaction?
 }
 
@@ -165,9 +165,9 @@ model Transaction {
   billId      Int         @unique
   amountPaid  Float
   createdAt   DateTime    @default(now())
-  paymentType PaymentType
-  cashierId   String
-  cashier     User        @relation("UserTransactions", fields: [cashierId], references: [id])
+  paymentType PaymentType?
+  cashierId   String?
+  cashier     User?        @relation("UserTransactions", fields: [cashierId], references: [id])
   bill        Bill        @relation(fields: [billId], references: [id])
 }
 
