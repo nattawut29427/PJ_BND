@@ -7,6 +7,12 @@ import {
   Input,
   Avatar,
 } from "@heroui/react";
+import { Button, Image, Spinner } from "@heroui/react";
+import React, { useState, useRef } from "react";
+import { useCart } from "@/app/cashier/actionCh/useCart";
+import { useProducts } from "@/app/cashier/actionCh/useProducts"
+
+
 
 export const SearchIcon = ({
   size = 24,
@@ -44,7 +50,29 @@ export const SearchIcon = ({
   );
 };
 
+
+
 export default function App() {
+
+  const { cart, addToCart, removeFromCart, calculateTotal, clearCart } =
+      useCart();
+    const { products, loading, updateProductQuantity, revertProductQuantity } =
+      useProducts();
+  
+    const [cash, setCash] = useState<number>(0);
+    const [message, setMessage] = useState<string>("");
+    const cashInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+
+  const categories = [
+    { id: 1, name: "เนื้อหมู" },
+    { id: 2, name: "เนื้อวัว" },
+    { id: 3, name: "ผัก" },
+    { id: 4, name: "เครื่องดื่ม" },
+    { id: 5, name: "อื่น" },
+  ];
   return (
     <>
       {" "}
@@ -75,6 +103,98 @@ export default function App() {
           />
         </NavbarContent>
       </Navbar>
+
+      <div className="p-6 gap-4  flex">
+        <Button
+          className="bg-red-500"
+          onPress={() => setSelectedCategory(null)}
+        >
+          All Product
+        </Button>
+        {categories.map((category) => (
+          <Button
+            key={category.id}
+            onPress={() => setSelectedCategory(category.id)}
+            className={
+              selectedCategory === category.id
+                ? "bg-blue-500 text-white"
+                : "bg-gray-600"
+            }
+          >
+            {category.name}
+          </Button>
+        ))}
+      </div>
+
+      <div className="flex-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p">
+            {products
+              .filter(
+                (item) =>
+                  selectedCategory === null ||
+                  item.categoryId === selectedCategory
+              )
+              .map((item, index) => (
+                <div
+                  key={index}
+                  className="p-4 border rounded-lg shadow-lg flex flex-col items-center"
+                >
+                  <Image
+                    alt={`Product ${index + 1}`}
+                    src={item.images}
+                    width={150}
+                    height={150}
+                    className="rounded-lg object-cover mb-4 mx-auto"
+                  />
+                  <h2 className="text-lg font-semibold text-white">
+                    {item.name}
+                  </h2>
+                  <div className="text-start">
+                    <p className="text-gray-600">
+                      Price: ${item.price.toFixed(2)}
+                    </p>
+                    <p className="text-gray-500">Stock: {item.quantity}</p>
+                  </div>
+                  <div className="flex flex-rows items-center gap-2 mt-4">
+                    <input
+                      type="number"
+                      min="1"
+                      defaultValue="1"
+                      className="border p-2 rounded w-14 h-10  text-center"
+                      id={`quantity-${index}`}
+                      max={item.quantity}
+                    />
+                    <Button
+                      onPress={() => {
+                        if (item.quantity === 0) return;
+                        const quantity = parseInt(
+                          (
+                            document.getElementById(
+                              `quantity-${index}`
+                            ) as HTMLInputElement
+                          ).value
+                        );
+                        if (quantity > item.quantity) {
+                          alert("Cannot add more than available stock.");
+                          return;
+                        }
+                        addToCart(item.id, item.name, item.price, quantity);
+                        updateProductQuantity(item.id, quantity);
+                      }}
+                      className={`w-full py-2 ${
+                        item.quantity === 0
+                          ? "bg-gray-500"
+                          : "bg-gradient-to-tr from-pink-500 to-yellow-500"
+                      }`}
+                      disabled={item.quantity === 0}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
     </>
   );
 }
