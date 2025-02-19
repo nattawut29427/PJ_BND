@@ -2,12 +2,16 @@
 import Drawer from "@/app/user/components/Drawer";
 import { Navbar, NavbarBrand, NavbarContent, Input, Button, Image } from "@heroui/react";
 import React, { useState, useRef } from "react";
-import { useCart } from "@/app/cashier/actionCh/useCart";
+import { useCart } from "@/app/user/components/CartContext"
 import { useProducts } from "@/app/cashier/actionCh/useProducts";
+import { useRouter } from "next/navigation";
+
+
+  
 
 export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => ( <svg aria-hidden="true" fill="none" focusable="false" height={size} viewBox="0 0 24 24" width={size} {...props}> <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={strokeWidth} /> <path d="M22 22L20 20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={strokeWidth} /> </svg> );
 export default function App() {
-  const { cart, addToCart, removeFromCart, calculateTotal, clearCart } = useCart();
+  const { cart, addToCart, removeFromCart, clearCart } = useCart();
   const { products, loading, updateProductQuantity } = useProducts();
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -23,6 +27,9 @@ export default function App() {
     { id: 4, name: "เครื่องดื่ม" },
     { id: 5, name: "อื่น" },
   ];
+
+  const router = useRouter();
+
 
   const handleAddToCart = (item) => {
     if (item.quantity === 0) return;
@@ -152,15 +159,20 @@ export default function App() {
             ))}
         </div>
       </div>
+      
 
       {/* Popup แสดงรายการสินค้า */}
       {showPopup && (
         <div className="fixed bottom-5 right-5 w-11/12 sm:w-80 bg-gray-700 border rounded-lg shadow-lg p-4 z-50 max-h-96 overflow-y-auto">
           <div className="flex justify-between items-center border-b pb-2 mb-2">
             <h3 className="text-lg font-semibold text-white">🛒 Carts</h3>
-            <Button className="bg-green-500 text-white px-4 py-2 text-sm sm:text-base" onPress={() => setShowPopup(false)}>
-              Checkout
-            </Button>
+            
+              <Button className="bg-green-500 text-white px-4 py-2 text-sm sm:text-base" onPress={() => {
+                setShowPopup(false);
+                router.push("/user/carts");}}>
+                Checkout
+              </Button>
+            
           </div>
           <ul className="text-white text-sm sm:text-base">
             {cartItems.map((item) => (
