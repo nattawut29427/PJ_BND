@@ -3,7 +3,7 @@
 import React from "react";
 import Drawer from "@/app/admin/components/Drawer";
 
-function page() {
+function orderpage() {
   return (
     <>
       <div>Order</div>
@@ -14,4 +14,4 @@ function page() {
   );
 }
 
-export default page;
+export default orderpage;
