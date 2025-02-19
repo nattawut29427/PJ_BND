@@ -94,7 +94,7 @@ export default function App() {
 
       {/* Categories */}
       <div className="p-4 sm:p-6 flex flex-wrap gap-2 justify-center">
-        <Button className="bg-green-500 px-4 py-2 text-sm sm:text-base" onPress={() => setSelectedCategory(null)}>
+        <Button className="px-4 py-2 text-sm sm:text-base" color="primary" onPress={() => setSelectedCategory(null)}>
           All Product
         </Button>
         {categories.map((category) => (

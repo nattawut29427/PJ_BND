@@ -31,7 +31,7 @@ export default function App() {
 
   return (
     <>
-      <Button variant="flat" color="primary" onPress={() => setIsOpen(true)}>
+      <Button color="secondary" variant="flat" onPress={() => setIsOpen(true)}>
         Open Menu
       </Button>
       <Drawer
