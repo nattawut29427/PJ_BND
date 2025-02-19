@@ -18,6 +18,7 @@ export default function App() {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Cashier", path: "/cashier" },
+    { name: "Order", path: "/order" },
     { name: "User", path: "/admin/dashboard" },
     { name: "Product", path: "/admin/product" },
     { name: "Settings", path: "/admin/settings" },
@@ -54,7 +55,7 @@ export default function App() {
             <img
               src={session?.user?.image || "/default-profile.jpg"}
               alt="Profile"
-              className="w-20 h-20 rounded-full border"
+              className="w-16 h-16 rounded-full border"
             />
             <h2 className="text-lg font-semibold text-gray-800">
               {session?.user?.name}
