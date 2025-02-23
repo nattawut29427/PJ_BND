@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button, Image, Spinner } from "@heroui/react";
 import { useCart } from "@/app/cashier/actionCh/useCart";
-import { useProducts } from "./actionCh/useProducts";
+import { useProducts } from "@/app/cashier/actionCh/useProducts";
 import Drawer from "@/app/admin/components/Drawer";
+import { useRouter } from "next/navigation";
+import { fetchData } from "next-auth/client/_utils";
 
 export default function Page() {
   const { cart, addToCart, removeFromCart, calculateTotal, clearCart } =
@@ -17,10 +19,12 @@ export default function Page() {
   const cashInputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-
   const [paymentType, setPaymentType] = useState<"cash" | "card" | "online">(
-      "cash"
-    );
+    "cash"
+  );
+  const [status, setStatus] = useState<string>("");
+
+  const customerId = "customer-session-id";
 
   const categories = [
     { id: 1, name: "เนื้อหมู" },
@@ -30,23 +34,24 @@ export default function Page() {
     { id: 5, name: "อื่น" },
   ];
 
+  // const handleAddItem = () => {
+  //   setItems([...items, { skewerId: 1, quantity: 1 }]);
+  // };
+
+  // const handleRemoveItem = (index: number) => {
+  //   setItems(items.filter((_, i) => i !== index));
+  // };
+
+  const router = useRouter(); // ใช้งาน useRouter
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (cart.length === 0) {
-      setMessage("กรุณาเพิ่มสินค้าในตะกร้าก่อนชำระเงิน");
-      return;
-    }
 
     const totalPrice = calculateTotal();
 
     try {
-      // ส่งข้อมูลเพื่อทำรายการสินค้า 
-      const response = await fetch("/api/order", {
+      const res = await fetch("/api/order/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: cart.map((item) => ({
             skewerId: item.id,
@@ -58,19 +63,26 @@ export default function Page() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      const data = await res.json();
+
+      if (res.ok) {
+        router.push(`/order/${data.orderId}`);
+      } else {
+        setStatus(`Error: ${data.error}`);
       }
-
-      // เคลียร์ cart หลังจากการชำระเงินสำเร็จ
-      clearCart();
-
-      setCash(0);
-      setMessage("ชำระเงินสำเร็จ!");
     } catch (error) {
-      setMessage("เกิดข้อผิดพลาด: " + message);
+      console.error(error);
+      setStatus("Error processing order.");
     }
   };
+
+  useEffect(() => {
+    // คำนวณยอดรวมเมื่อ cart เปลี่ยนแปลง
+    calculateTotal();
+    
+  }, [cart]);
+
+
 
   if (loading) {
     return (
@@ -160,6 +172,7 @@ export default function Page() {
                             ) as HTMLInputElement
                           ).value
                         );
+                      
                         if (quantity > item.quantity) {
                           alert("Cannot add more than available stock.");
                           return;
@@ -217,6 +230,7 @@ export default function Page() {
                               ) as HTMLInputElement
                             ).value
                           );
+
                           if (quantityToRemove > item.quantity) {
                             alert(
                               "Cannot remove more than what is in the cart."
@@ -240,42 +254,39 @@ export default function Page() {
               Total: ${calculateTotal().toFixed(2)}
             </div>
 
-            {/* 💰 ช่องกรอกเงินสด */}
-            <div className="mt-4">
-              <p className="text-sm">Amount Paid:</p>
-              <input
-                ref={cashInputRef}
-                type="number"
-                placeholder="Enter amount..."
-                value={cash}
-                onChange={(e) => setCash(parseFloat(e.target.value))}
-                className="border p-2 rounded w-full"
-              />
-              <div className="pt-4 flex justify-center gap-2">
-                <Button
-                  onPress={() => setCash(100)}
-                  className="py-2 px-4 bg-blue-500 text-white rounded"
-                >
-                  100
-                </Button>
-                <Button
-                  onPress={() => setCash(500)}
-                  className="py-2 px-4 bg-blue-500 text-white rounded"
-                >
-                  500
-                </Button>
-                <Button
-                  onPress={() => setCash(1000)}
-                  className="py-2 px-4 bg-blue-500 text-white rounded"
-                >
-                  1000
-                </Button>
-                <Button
-                  onPress={() => setCash(calculateTotal())}
-                  className="py-2 px-4 bg-green-500 text-white rounded"
-                >
-                  Exact
-                </Button>
+            <div className="mb-4 mt-4">
+              <h2 className="text-lg font-semibold">Payment Method:</h2>
+              <div className="flex gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="cash"
+                    checked={paymentType === "cash"}
+                    onChange={() => setPaymentType("cash")}
+                  />
+                  Cash
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="card"
+                    checked={paymentType === "card"}
+                    onChange={() => setPaymentType("card")}
+                  />
+                  Card
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="online"
+                    checked={paymentType === "online"}
+                    onChange={() => setPaymentType("online")}
+                  />
+                  Online
+                </label>
               </div>
             </div>
 

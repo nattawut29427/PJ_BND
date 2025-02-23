@@ -27,15 +27,35 @@ export async function middleware(request:any) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  if (
-    pathname.startsWith('/cashier') &&
-    (!user || (user.role !== 'cashier' && user.role !== 'admin'))
-  ) {
-    console.log(user)
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-
+  if (pathname.startsWith("/order/")) {
+    if (!user) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   
+    const orderId = pathname.split("/").pop(); // ดึง orderId จาก URL
+  
+    // console.log(" Checking Order:", orderId);
+    // console.log(" User ID:", user.id);
+  
+    const orderRes = await fetch(`http://localhost:3000/api/order/${orderId}`, {
+      headers: { Authorization: `Bearer ${user.accessToken}` },
+    });
+  
+    if (!orderRes.ok) {
+      // console.log(" Order not found or unauthorized.");
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
+  
+    const order = await orderRes.json();
+  
+    // console.log("🔹 Order Customer ID:", order.customerId);
+  
+    if (String(order.customerId) !== String(user.id)) {
+      console.log(" User is not the owner of this order.");
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
+  
+    // console.log("✅ Access granted.");
+  }
   return NextResponse.next()
 }

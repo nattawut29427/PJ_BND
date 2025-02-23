@@ -23,13 +23,12 @@ export default function App() {
     { name: "Settings", path: "/admin/settings" },
   ];
 
-  // ถ้า role เป็น admin ให้แสดงทั้งหมด ถ้าไม่ใช่ให้กรอง
   const filteredMenuItems =
     session?.user?.role === "admin"
       ? menuItems
       : menuItems.filter((item) => item.name === "Settings");
 
-  // ตรวจสอบว่าอยู่ใน /admin หรือไม่
+  
   const panelTitle = pathname.startsWith("/admin") ? "Admin Panel" : "Cashier Panel";
 
   return (
@@ -51,7 +50,8 @@ export default function App() {
 
           {/* ข้อมูลผู้ใช้ */}
           <div className="flex flex-col items-center gap-2 p-4 border-b">
-            <img
+         
+           <img
               src={session?.user?.image || "/default-profile.jpg"}
               alt="Profile"
               className="w-20 h-20 rounded-full border"

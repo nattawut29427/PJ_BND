@@ -1,29 +1,84 @@
 'use client';
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation"; // ใช้ next/navigation แทน next/router
-import { useEffect, useState } from "react";
+import React, { useEffect,useState } from "react";
+import { pusherClient } from "@/lib/pusher-client";
 
-export default function BlogPage() {
-  const { data: session } = useSession();
-  const router = useRouter(); // ใช้ useRouter จาก next/navigation
-  const [loading, setLoading] = useState(true);
+interface Order {
+  id: number;
+  totalPrice: number;
+  status: string;
+}
+
+export default function CashierOrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    if (session) {
-      if (session.user.role !== "admin") {
-        router.push('/'); // Redirect ไปหน้าอื่นหากไม่ใช่ admin
-      } else {
-        setLoading(false); // หากเป็น admin ให้โหลดหน้า
-      }
-    }
-  }, [session, router]);
+    const channel = pusherClient.subscribe("orders");
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    // เมื่อมีออเดอร์ใหม่เข้ามา
+    channel.bind("new-order", (newOrder: Order) => {
+      console.log("New order received:", newOrder);
+      setOrders((prevOrders) => [...prevOrders, newOrder]);
+    });
+
+    // เมื่อสถานะออเดอร์ถูกอัปเดต
+    channel.bind("status-updated", (updatedOrder: Order) => {
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === updatedOrder.id ? updatedOrder : order
+        )
+      );
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, []);
+
+  const handleAcceptOrder = async (orderId: number) => {
+    try {
+      const res = await fetch("/api/order/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Order status updated:", data);
+      } else {
+        console.error("Error accepting order:", data.error);
+      }
+    } catch (error) {
+      console.error("Error processing accept order:", error);
+    }
+  };
 
   return (
-    <div>Welcome, Admin!</div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">รายการออเดอร์ (Cashier)</h1>
+      {orders.length === 0 ? (
+        <p>ยังไม่มีออเดอร์ใหม่</p>
+      ) : (
+        <ul>
+          {orders.map((order) => (
+            <li key={order.id} className="mb-2 border p-4 rounded">
+              <p>Order ID: {order.id}</p>
+              <p>Total Price: ${order.totalPrice}</p>
+              <p className="text-green-500">Status: {order.status}</p>
+              {order.status !== "completed" && (
+                <button
+                  onClick={() => handleAcceptOrder(order.id)}
+                  className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+                >
+                  รับออเดอร์
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

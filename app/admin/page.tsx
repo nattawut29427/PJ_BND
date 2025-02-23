@@ -163,9 +163,11 @@ export default function App() {
           </Link>
         </Button>
         <Button color="success" className="h-[125px]">
+          <Link  href="/admin/recordSale">
           <h4 className="text-white font-medium text-xl">
             จำนวนขายสินค้า<p>{stats.quanSale} รายการ</p>
           </h4>
+          </Link>
         </Button>
         <Button color="danger" className="h-[125px]">
           <Link href="/admin/product">
