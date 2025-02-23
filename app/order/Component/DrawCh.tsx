@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // ใช้เช็ค path ปัจจุบัน
 import {
   Drawer,
   DrawerContent,
@@ -13,24 +12,11 @@ import { useSession, signOut } from "next-auth/react";
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
-  const pathname = usePathname(); // ดึง path ปัจจุบัน
 
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
-    { name: "Cashier", path: "/cashier" },
-    { name: "Order", path: "/order" },
-    { name: "User", path: "/admin/dashboard" },
-    { name: "Product", path: "/admin/product" },
     { name: "Settings", path: "/admin/settings" },
   ];
-
-  const filteredMenuItems =
-    session?.user?.role === "admin"
-      ? menuItems
-      : menuItems.filter((item) => item.name === "Settings");
-
-  
-  const panelTitle = pathname.startsWith("/admin") ? "Admin Panel" : "Cashier Panel";
 
   return (
     <>
@@ -46,19 +32,18 @@ export default function App() {
       >
         <DrawerContent className="p-4 bg-gray-100 shadow-lg">
           <DrawerHeader className="text-xl font-bold text-gray-700">
-            {panelTitle}
+            Cashier Panel
           </DrawerHeader>
 
-          {/* ข้อมูลผู้ใช้ */}
+          {/* User Info */}
           <div className="flex flex-col items-center gap-2 p-4 border-b">
-         
-           <img
+            <img
               src={session?.user?.image || "/default-profile.jpg"}
               alt="Profile"
-              className="w-16 h-16 rounded-full border"
+              className="w-20 h-20 rounded-full border"
             />
             <h2 className="text-lg font-semibold text-gray-800">
-              {session?.user?.name}
+              {session?.user?.name }
             </h2>
             <p className="text-sm text-gray-500">{session?.user?.email}</p>
             <p className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
@@ -66,17 +51,19 @@ export default function App() {
             </p>
           </div>
 
-          {/* รายการเมนู */}
+          {/* Menu Items */}
           <DrawerBody className="flex flex-col gap-4 mt-4">
-            {filteredMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <Link key={item.path} href={item.path} passHref>
-                <Button className="w-full text-start border hover:bg-blue-500 hover:text-white">
+                <Button
+                  className="w-full text-start border hover:bg-blue-500 hover:text-white"
+                >
                   {item.name}
                 </Button>
               </Link>
             ))}
 
-            {/* ปุ่ม Sign Out */}
+            {/* Sign Out Button */}
             <Button
               onPress={() => signOut({ callbackUrl: "/" })}
               className="w-full bg-red-500 text-white hover:bg-red-600"

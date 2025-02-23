@@ -16,25 +16,22 @@ export default function App() {
   const pathname = usePathname(); // ดึง path ปัจจุบัน
 
   const menuItems = [
-    { name: "Dashboard", path: "/admin" },
-    { name: "Cashier", path: "/cashier" },
-    { name: "Order", path: "/order" },
-    { name: "User", path: "/admin/dashboard" },
-    { name: "Product", path: "/admin/product" },
-    { name: "Settings", path: "/admin/settings" },
+    { name: "Product", path: "/user" },
+    { name: "Settings", path: "" },
   ];
 
+  // ถ้า role เป็น admin ให้แสดงทั้งหมด ถ้าไม่ใช่ให้กรอง
   const filteredMenuItems =
     session?.user?.role === "admin"
       ? menuItems
       : menuItems.filter((item) => item.name === "Settings");
 
-  
+  // ตรวจสอบว่าอยู่ใน /admin หรือไม่
   const panelTitle = pathname.startsWith("/admin") ? "Admin Panel" : "Cashier Panel";
 
   return (
     <>
-      <Button variant="flat" color="primary" onPress={() => setIsOpen(true)}>
+      <Button color="secondary" variant="flat" onPress={() => setIsOpen(true)}>
         Open Menu
       </Button>
       <Drawer
@@ -51,11 +48,10 @@ export default function App() {
 
           {/* ข้อมูลผู้ใช้ */}
           <div className="flex flex-col items-center gap-2 p-4 border-b">
-         
-           <img
+            <img
               src={session?.user?.image || "/default-profile.jpg"}
               alt="Profile"
-              className="w-16 h-16 rounded-full border"
+              className="w-20 h-20 rounded-full border"
             />
             <h2 className="text-lg font-semibold text-gray-800">
               {session?.user?.name}

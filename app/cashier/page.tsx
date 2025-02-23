@@ -112,8 +112,8 @@ export default function Page() {
 
       <div className="p-6 min-h-screen flex flex-col md:flex-row gap-6 ">
         {/* สินค้า */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p">
+        <div className="flex">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {products
               .filter(
                 (item) =>
@@ -183,7 +183,7 @@ export default function Page() {
         </div>
 
         {/* Cart Summary ฝั่งขวา */}
-        <div className="w-full md:w-[350px] lg:w-[400px]  p-4 rounded-lg shadow-lg sticky top-6 h-fit">
+        <div className="ml-3 w-full md:w-[250px] lg:w-[300px]  rounded-lg shadow-lg sticky top-6 h-fit">
           <h1 className="text-2xl font-bold mb-4 text-center">
             🛒 Cart Summary
           </h1>
@@ -197,8 +197,8 @@ export default function Page() {
                     className="flex justify-between items-center mb-2"
                   >
                     <span>
-                      {item.name} - {item.quantity} qty - $
-                      {item.price * item.quantity}
+                      <div>{item.name} - {item.quantity} ไม้</div>
+                      <div>${item.price * item.quantity}</div>
                     </span>
                     <div className="flex items-center gap-2">
                       <input
