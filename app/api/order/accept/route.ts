@@ -1,93 +1,94 @@
-// app/api/order/accept/route.ts
 import { NextResponse } from "next/server";
 import { PrismaClient, OrderStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { pusherServer } from "@/lib/pusher";
 
 const prisma = new PrismaClient();
 
+export async function GET() {
+  try {
+    const orders = await prisma.order.findMany({
+      where: { status: { in: ["pending", "cooking", "canceled"] } },
+      include: {
+        orderItems: {
+          include: {
+            skewer: { select: { id: true, name: true } }, // ต้อง include name
+          },
+        },
+      },
+    });
+    
+    return NextResponse.json({ orders });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "ดึงข้อมูลออเดอร์ล้มเหลว" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   try {
-    // ดึงข้อมูล session สำหรับพนักงาน (cashier)
+    // ตรวจสอบการเข้าสู่ระบบ (เช่น Cashier)
     const session = await getServerSession(authOptions);
-   
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const cashierId = session.user.id;
 
-    // รับข้อมูลจาก body: orderId ที่พนักงานต้องการรับออเดอร์
-    const { orderId } = (await req.json()) as { orderId: number };
-
-    // ตรวจสอบว่า Order มีอยู่จริงหรือไม่
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const { orderId } = await req.json();
     
+    if (!orderId) {
+     
+      console.error("Missing orderId");
+   
+      return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
+    }
+    console.log("Received orderId:", orderId);
+
+    const order = await prisma.order.findUnique({
+      where: { id: Number(orderId) },
+      include: { orderItems: { include: { skewer: true } } },
+    });
+
     if (!order) {
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      return NextResponse.json({ error: "ไม่พบออเดอร์" }, { status: 404 });
     }
 
-    // ตรวจสอบและเปลี่ยนสถานะออเดอร์ตามลำดับ:
-    // ถ้า Order อยู่ในสถานะ pending ให้เปลี่ยนเป็น cooking
-    // ถ้า Order อยู่ในสถานะ cooking ให้เปลี่ยนเป็น complete
-    let newStatus: OrderStatus;
-    
-    if (order.status === OrderStatus.pending) {
-      newStatus = OrderStatus.cooking;
-      console.log(newStatus)
-    } else if (order.status === OrderStatus.cooking) {
-      newStatus = OrderStatus.completed
-    } else {
-      return NextResponse.json(
-        { error: "Order is already complete" },
-        { status: 400 }
-      );
-    }
+    // เปลี่ยนสถานะ: pending -> cooking, อื่นๆ -> completed
+    const newStatus = order.status === "pending" ? "cooking" : "completed";
 
-    // อัปเดตสถานะ Order
+    // อัปเดตสถานะออเดอร์
     const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
+      where: { id: Number(orderId) },
       data: { status: newStatus },
+      include: { orderItems: { include: { skewer: true } } },
     });
 
-    // หากมี Bill ที่เกี่ยวข้อง ให้บันทึกข้อมูล cashier ลงใน Bill และ Transaction
-    const bill = await prisma.bill.findUnique({ where: { orderId } });
-    
-    if (bill) {
-      await prisma.bill.update({
-        where: { id: bill.id },
-        data: { cashierId },
+    // เมื่อสถานะเป็น cooking ให้อัปเดต cashierId ใน Bill (และ Transaction)
+    if (newStatus === "cooking") {
+      const bill = await prisma.bill.findUnique({
+        where: { orderId: Number(orderId) },
       });
-      await prisma.transaction.updateMany({
-        where: { billId: bill.id },
-        data: { cashierId },
-      });
+
+      if (bill) {
+        await prisma.bill.update({
+          where: { id: bill.id },
+          data: { cashierId },
+        });
+      }
     }
 
-    await pusherServer.trigger(`orders`, "status-updated", updatedOrder);
+    // ส่งข้อมูล Real-time ไปยัง Pusher
+    await pusherServer.trigger("orders", "status-updated", updatedOrder);
+    await pusherServer.trigger(`order-${orderId}`, "status-updated", updatedOrder);
 
-    console.log("Pusher Triggered:", `orders-${orderId}`, newStatus);
-    
-    await pusherServer.trigger(`orders-${orderId}`, "status-updated", {
-      orderId: updatedOrder.id,
-      status: newStatus,
-    });
+    return NextResponse.json({ status: newStatus });
+  } catch (error) {
    
-    console.log("Pusher Triggered:", `orders-${orderId}`, newStatus); 
-
-    return NextResponse.json(
-      {
-        status: newStatus,
-        orderId: updatedOrder.id,
-      },
-      { status: 200 }
-    );
-  } catch (error: any) {
     console.error(error);
-   
-    return NextResponse.json(
-      { error: error.message || "Error processing order acceptance" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "อัปเดตสถานะล้มเหลว" }, { status: 500 });
   }
 }

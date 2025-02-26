@@ -48,7 +48,7 @@ export async function middleware(request:any) {
   
     const order = await orderRes.json();
   
-    // console.log("🔹 Order Customer ID:", order.customerId);
+    // console.log(" Order Customer ID:", order.customerId);
   
     if (String(order.customerId) !== String(user.id)) {
       console.log(" User is not the owner of this order.");

@@ -1,46 +1,75 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusher-client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button } from "@heroui/button";
+import {
+  faBox,
+  faTruck,
+  faCheckCircle,
+  faClock,
+  faUtensilSpoon,
+} from "@fortawesome/free-solid-svg-icons";
 
+interface OrderItems {
+  id: number;
+  quantity: number;
+  price: number;
+  skewer: {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+  };
+}
 interface Order {
   id: number;
   totalPrice: number;
   status: string;
+  orderItems: OrderItems[];
+  date: Date;
 }
+
+// interface OrderStatusProps {
+//   order: Order;
+//   onCancel: (orderId: number) => void;
+// }
 
 export default function OrderPage() {
   const params = useParams();
   const id = params.id as string;
   const [order, setOrder] = useState<Order | null>(null);
-  const [navigated, setNavigated] = useState(false); // เพิ่มสถานะเพื่อตรวจสอบว่าเปลี่ยนหน้าแล้ว
-  const router = useRouter();
-
-  const fetchOrder = async () => {
-    const res = await fetch(`/api/order/${id}`);
-    if (res.ok) {
-      const data = await res.json();
-      setOrder(data);
-    }
-  };
 
   useEffect(() => {
     if (!id) return;
 
-    // ดึงข้อมูลออเดอร์
+    const fetchOrder = async () => {
+      try {
+        const res = await fetch(`/api/order/${id}`);
+       
+        if (res.ok) {
+          const data = await res.json();
+          
+          setOrder(data);
+        }
+      } catch (error) {
+      
+        console.error("Error fetching order:", error);
+     
+      }
+    };
+
     fetchOrder();
 
-    const channel = pusherClient.subscribe(`orders-${id}`);
-    console.log("Subscribed to channel:", `orders-${id}`);
-
-    // อัปเดตข้อมูลสถานะใน realtime เมื่อมีการเปลี่ยนแปลง
-    channel.bind("status-updated", (data: { orderId: number; status: string }) => {
-      console.log("Received status update:", data);
-      if (data.orderId === Number(id)) {
-        // รีเฟรชข้อมูลออเดอร์ทุกครั้งที่สถานะเปลี่ยน
-        fetchOrder();
-      }
+    // Subscribe
+    const channel = pusherClient.subscribe(`order-${id}`);
+    
+    channel.bind("status-updated", (updatedOrder: Order) => {
+      setOrder(updatedOrder);
+      console.log(updatedOrder) // อัปเดต State ทันที
     });
 
     return () => {
@@ -49,29 +78,132 @@ export default function OrderPage() {
     };
   }, [id]);
 
-  useEffect(() => {
-   
-  }, [order,router]);
+  if (!order)
+    return <p className="text-center text-gray-500 mt-10">Loading...</p>;
 
-  if (!order) return <p>Loading...</p>;
+  return <OrderStatusComponent order={order} />;
+}
+
+const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
+  const router = useRouter();
+  const statuses = [
+    { name: "pending", icon: faClock },
+    { name: "cooking", icon: faUtensilSpoon },
+    { name: "completed", icon: faCheckCircle },
+  ];
+  const handleCancledOrder = async (orderId: number) => {
+    try {
+      const res = await fetch("/api/order/cancled", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      alert("ยกเลิกรายการเเล้วครับ");
+      router.push("/testui");
+   
+    } catch (error) {
+     
+      // console.error("เกิดข้อผิดพลาด:", error);
+      alert("พนักงานได้รับออเดอร์เเล้ว จึงไม่สามาถรยกเลิกได้");
+      window.location.reload();
+    }
+  };
+
+  const handleBackToTestUI = () => {
+    router.push("/testui");
+  };
+
+  const getStatusIndex = (status: string) =>
+    statuses.findIndex((s) => s.name === status);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Order #{order.id}</h1>
-      <p className="text-green-500">Status: {order?.status}</p>
-      <p className="text-gray-600">Total Price: ${order.totalPrice}</p>
+    <div className="w-full max-w-7xl mx-auto bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:mt-10">
+    <div className="p-6 sm:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">Order #{order.id}</h2>
+      </div>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/3">
+          <div className="relative">
+            {statuses.map((status, index) => {
+              const isCompleted = getStatusIndex(order.status) >= index;
+              const isCurrent = order.status === status.name;
 
-      {/* ถ้าสถานะเป็น completed, ให้แสดงปุ่มเพื่อไปหน้า testui */}
-       
-        <button
-          onClick={() => {
-            setNavigated(true); // ตั้งสถานะว่าได้เปลี่ยนหน้าแล้ว
-            router.push("/testui"); // เปลี่ยนหน้าไปยัง testui
-          }}
-          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
-        >
-          Go to Test UI
-        </button>
+              return (
+                <div key={status.name} className="mb-8 flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div
+                      className={`rounded-full h-12 w-12 flex items-center justify-center ${
+                        isCompleted ? "bg-green-500" : "bg-gray-200"
+                      } ${isCurrent ? "ring-4 ring-green-200" : ""}`}
+                    >
+                      <FontAwesomeIcon
+                        icon={status.icon}
+                        className={`${isCompleted ? "text-white" : "text-gray-500"}`}
+                      />
+                    </div>
+                    {index < statuses.length - 1 && (
+                      
+                      <div
+                        className={`w-0.5 h-6 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+                      >
+
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className={`${isCurrent ? "text-green-600 font-semibold" : "text-gray-600"}`}
+                  >
+                    <span className="text-lg flex">{status.name}</span>
+                    {isCurrent && <span className="text-sm">Current Status</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="w-full md:w-2/3">
+          <div className="space-y-4">
+            {order.orderItems?.length ? (
+              order.orderItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">{item.skewer.name}</p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  </div>
+                  <p className="font-bold text-green-600">${item.price.toFixed(2)}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No items in this order</p>
+            )}
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex justify-between items-center font-bold text-lg">
+              <p className="text-gray-800">Total</p>
+              <p className="text-green-600">${order.totalPrice.toFixed(2)}</p>
+            </div>
+          </div>
+          <div className="justify-end flex pt-10">
+            {order.status === "completed" ? (
+              <Button color="success" className="text-white" onPress={handleBackToTestUI}>
+                Completed
+              </Button>
+            ) : (
+              <Button color="danger" onPress={() => handleCancledOrder(order.id)}>
+                Cancel Order
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
-  );
-}
+  </div>
+);
+};

@@ -48,7 +48,7 @@ export default function App() {
       setter: (data: SaleData[]) => void
     ) => {
       try {
-        const res = await fetch(`/api/saleService?${key}=true`);
+        const res = await fetch(`/api/order?${key}=true`);
         if (!res.ok) throw new Error(`Failed to fetch ${key}`);
         setter(await res.json());
       } catch {
@@ -59,10 +59,10 @@ export default function App() {
     const fetchStats = async () => {
       try {
         const [sumRes, userRes, productRes, quanRes] = await Promise.all([
-          fetch("/api/saleService?sum=true"),
+          fetch("/api/order?sum=true"),
           fetch("/api/users?count=true"),
           fetch("/api/productService?count=true"),
-          fetch("/api/saleService?quanSale=true"),
+          fetch("/api/order?quanSale=true"),
         ]);
 
         if (![sumRes, userRes, productRes, quanRes].every((res) => res.ok))
@@ -178,9 +178,9 @@ export default function App() {
         </Button>
 
         <Button color="secondary" className="h-[125px] ">
-          <a href="/admin/sale" className="text-white font-medium text-xl">
+          <h4 className="text-white font-medium text-xl">
             ยอดขายทั้งหมด<p>{stats.totalAmount} บาท</p>
-          </a>
+          </h4>
         </Button>
       </div>
       <div className="pt-6">

@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
-      <div className="px-72 mx-auto">
+      <div>
         {children}
       </div>
     </SessionProvider>

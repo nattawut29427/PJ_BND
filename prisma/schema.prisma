@@ -120,7 +120,7 @@ model OrderItem {
 
 model Bill {
   id          Int          @id @default(autoincrement())
-  orderId     Int          @unique @default(autoincrement())
+  orderId     Int          @unique
   totalPrice  Float
   paidAt      DateTime?
   paymentType PaymentType?
