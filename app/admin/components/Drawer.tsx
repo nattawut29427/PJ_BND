@@ -18,7 +18,7 @@ export default function App() {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Cashier", path: "/cashier" },
-    { name: "Order", path: "/cashier/reqorder" },
+    { name: "Order", path: "/order" },
     { name: "User", path: "/admin/dashboard" },
     { name: "Product", path: "/admin/product" },
     { name: "RecordSale", path: "/admin/recordSale" },

@@ -117,18 +117,16 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:mt-10">
-      <div className="p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">
-            Order #{order.id}
-          </h2>
-        </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/3">
-            <div className="relative">
-              {statuses.map((status, index) => {
-                const isCompleted = getStatusIndex(order.status) >= index;
-                const isCurrent = order.status === status.name;
+    <div className="p-6 sm:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">Order #{order.id}</h2>
+      </div>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/3">
+          <div className="relative">
+            {statuses.map((status, index) => {
+              const isCompleted = getStatusIndex(order.status) >= index;
+              const isCurrent = order.status === status.name;
 
                 return (
                   <div key={status.name} className="mb-8 flex">
