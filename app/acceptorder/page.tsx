@@ -56,17 +56,17 @@ export default function CashierOrdersPage() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">รายการออเดอร์ (Cashier)</h1>
+    <div className="p-6 bg-white w-screen h-screen">
+      <h1 className="text-2xl font-bold mb-4 text-black">รายการออเดอร์ (Cashier)</h1>
       {orders.length === 0 ? (
-        <p>ยังไม่มีออเดอร์ใหม่</p>
+        <p className="text-black">ยังไม่มีออเดอร์ใหม่</p>
       ) : (
         <ul>
           {orders.map((order) => (
-            <li key={order.id} className="mb-2 border p-4 rounded">
-              <p>Order ID: {order.id}</p>
-              <p>Total Price: ${order.totalPrice}</p>
-              <p className="text-green-500">Status: {order.status}</p>
+            <li key={order.id} className="mb-2 border-3 border-zinc-300 p-4 rounded">
+              <p className="text-black">Order ID : {order.id}</p>
+              <p className="text-black">Total Price : ${order.totalPrice}</p>
+              <p className="text-green-500">Status : {order.status}</p>
               {order.status !== "completed" && (
                 <button
                   onClick={() => handleAcceptOrder(order.id)}
