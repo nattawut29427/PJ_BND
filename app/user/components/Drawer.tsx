@@ -31,7 +31,7 @@ export default function App() {
 
   return (
     <>
-      <Button color="secondary" variant="flat" onPress={() => setIsOpen(true)}>
+      <Button className="font-semibold text-white bg-red-900" color="default" variant="flat" onPress={() => setIsOpen(true)}>
         Open Menu
       </Button>
       <Drawer
@@ -82,6 +82,41 @@ export default function App() {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      {/* Responsive Styles */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .drawer-content {
+            width: 100%;
+          }
+
+          .drawer-header,
+          .drawer-body {
+            padding: 8px;
+          }
+
+          .profile-img {
+            width: 80px;
+            height: 80px;
+          }
+
+          .profile-name {
+            font-size: 1.2rem;
+          }
+
+          .profile-email {
+            font-size: 0.9rem;
+          }
+
+          .profile-role {
+            font-size: 0.8rem;
+          }
+
+          .menu-item {
+            font-size: 0.9rem;
+          }
+        }
+      `}</style>
     </>
   );
 }
