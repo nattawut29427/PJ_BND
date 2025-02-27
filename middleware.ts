@@ -12,7 +12,12 @@ export async function middleware(request: any) {
   // ถ้า user เป็น customer เข้าหน้า "/"
   if (pathname === "/" && user?.role === "customer") {
     // Redirect ไปที่ "/testui"
-    return NextResponse.redirect(new URL("/testui", request.url));
+    return NextResponse.redirect(new URL("/user", request.url));
+  }
+
+  if (pathname === "/" && !user) {
+    
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
     // ถ้า user เป็น customer เข้าหน้า "/"

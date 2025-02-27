@@ -18,17 +18,18 @@ export default function App() {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Cashier", path: "/cashier" },
-    { name: "Order", path: "/order" },
+    { name: "Order", path: "/cashier/reqorder" },
     { name: "User", path: "/admin/dashboard" },
     { name: "Product", path: "/admin/product" },
     { name: "RecordSale", path: "/admin/recordSale" },
+    { name: "My order", path: "/myorder" },
     { name: "Settings", path: "/admin/settings" },
   ];
 
   const filteredMenuItemsCh =
   session?.user?.role === "cashier"
     ? menuItems.filter((item) => item.name === "Order" || item.name === "Settings" || item.name === "Cashier")
-    : menuItems.filter((item) => item.name === "Settings");
+    : menuItems.filter((item) => item.name === "Settings" || item.name === "My order");
 
   const filteredMenuItems =
     session?.user?.role === "admin"
@@ -43,7 +44,7 @@ export default function App() {
 
   return (
     <>
-      <Button variant="flat" color="primary" onPress={() => setIsOpen(true)}>
+      <Button variant="flat" className="font-semibold text-black bg-teal-50 " onPress={() => setIsOpen(true)}>
         Open Menu
       </Button>
       <Drawer

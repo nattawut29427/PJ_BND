@@ -100,7 +100,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
       alert("ยกเลิกรายการเเล้วครับ");
-      router.push("/testui");
+      router.push("/user");
     } catch (error) {
       
       alert("พนักงานได้รับออเดอร์เเล้ว จึงไม่สามาถรยกเลิกได้");
@@ -109,7 +109,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
   };
 
   const handleBackToTestUI = () => {
-    router.push("/testui");
+    router.push("/user");
   };
 
   const getStatusIndex = (status: string) =>
