@@ -49,16 +49,14 @@ export default function OrderPage() {
     const fetchOrder = async () => {
       try {
         const res = await fetch(`/api/order/${id}`);
-       
+
         if (res.ok) {
           const data = await res.json();
-          
+
           setOrder(data);
         }
       } catch (error) {
-      
         console.error("Error fetching order:", error);
-     
       }
     };
 
@@ -66,10 +64,10 @@ export default function OrderPage() {
 
     // Subscribe
     const channel = pusherClient.subscribe(`order-${id}`);
-    
+
     channel.bind("status-updated", (updatedOrder: Order) => {
       setOrder(updatedOrder);
-      console.log(updatedOrder) // อัปเดต State ทันที
+      console.log(updatedOrder); // อัปเดต State ทันที
     });
 
     return () => {
@@ -103,10 +101,8 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
 
       alert("ยกเลิกรายการเเล้วครับ");
       router.push("/testui");
-   
     } catch (error) {
-     
-      // console.error("เกิดข้อผิดพลาด:", error);
+      
       alert("พนักงานได้รับออเดอร์เเล้ว จึงไม่สามาถรยกเลิกได้");
       window.location.reload();
     }
@@ -120,7 +116,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
     statuses.findIndex((s) => s.name === status);
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:mt-10 mt-20">
+    <div className="w-full max-w-7xl mx-auto bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:mt-10">
     <div className="p-6 sm:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h2 className="text-3xl font-bold text-gray-800">Order #{order.id}</h2>
@@ -132,78 +128,93 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
               const isCompleted = getStatusIndex(order.status) >= index;
               const isCurrent = order.status === status.name;
 
-              return (
-                <div key={status.name} className="mb-8 flex">
-                  <div className="flex flex-col items-center mr-4">
-                    <div
-                      className={`rounded-full h-12 w-12 flex items-center justify-center ${
-                        isCompleted ? "bg-green-500" : "bg-gray-200"
-                      } ${isCurrent ? "ring-4 ring-green-200" : ""}`}
-                    >
-                      <FontAwesomeIcon
-                        icon={status.icon}
-                        className={`${isCompleted ? "text-white" : "text-gray-500"}`}
-                      />
-                    </div>
-                    {index < statuses.length - 1 && (
-                      
+                return (
+                  <div key={status.name} className="mb-8 flex">
+                    <div className="flex flex-col items-center mr-4">
                       <div
-                        className={`w-0.5 h-6 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+                        className={`rounded-full h-12 w-12 flex items-center justify-center ${
+                          isCompleted ? "bg-green-500" : "bg-gray-200"
+                        } ${isCurrent ? "ring-4 ring-green-200" : ""}`}
                       >
-
+                        
+                        <FontAwesomeIcon
+                          icon={status.icon}
+                        
+                          className={`${isCompleted ? "text-white" : "text-gray-500"}`}
+                        
+                        />
                       </div>
-                    )}
+                      {index < statuses.length - 1 && (
+                        <div
+                          className={`w-0.5 h-6 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+                        > </div>
+                      )}
+                    </div>
+                    <div
+                      className={`${isCurrent ? "text-green-600 font-semibold" : "text-gray-600"}`}
+                    >
+                      <span className="text-lg flex">{status.name}</span>
+                      {isCurrent && (
+                        <span className="text-sm">Current Status</span>
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={`${isCurrent ? "text-green-600 font-semibold" : "text-gray-600"}`}
-                  >
-                    <span className="text-lg flex">{status.name}</span>
-                    {isCurrent && <span className="text-sm">Current Status</span>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="w-full md:w-2/3">
-          <div className="space-y-4">
-            {order.orderItems?.length ? (
-              order.orderItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
-                >
-                  <div>
-                    <p className="font-semibold text-gray-800">{item.skewer.name}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                  </div>
-                  <p className="font-bold text-green-600">${item.price.toFixed(2)}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No items in this order</p>
-            )}
-          </div>
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="flex justify-between items-center font-bold text-lg">
-              <p className="text-gray-800">Total</p>
-              <p className="text-green-600">${order.totalPrice.toFixed(2)}</p>
+                );
+              })}
             </div>
           </div>
-          <div className="justify-end flex pt-10">
-            {order.status === "completed" ? (
-              <Button color="success" className="text-white" onPress={handleBackToTestUI}>
-                Completed
-              </Button>
-            ) : (
-              <Button color="danger" onPress={() => handleCancledOrder(order.id)}>
-                Cancel Order
-              </Button>
-            )}
+          <div className="w-full md:w-2/3">
+            <div className="space-y-4">
+              {order.orderItems?.length ? (
+                order.orderItems.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        {item.skewer.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Quantity: {item.quantity}
+                      </p>
+                    </div>
+                    <p className="font-bold text-green-600">
+                      ${item.price.toFixed(2)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No items in this order</p>
+              )}
+            </div>
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex justify-between items-center font-bold text-lg">
+                <p className="text-gray-800">Total</p>
+                <p className="text-green-600">${order.totalPrice.toFixed(2)}</p>
+              </div>
+            </div>
+            <div className="justify-end flex pt-10">
+              {order.status === "completed" ? (
+                <Button
+                  color="success"
+                  className="text-white"
+                  onPress={handleBackToTestUI}
+                >
+                  Completed
+                </Button>
+              ) : (
+                <Button
+                  color="danger"
+                  onPress={() => handleCancledOrder(order.id)}
+                >
+                  Cancel Order
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 };

@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import { Button, Image, Spinner } from "@heroui/react";
 import { useCart } from "@/app/cashier/actionCh/useCart";
 import { useProducts } from "./actionCh/useProducts";
-import Drawer from "@/app/admin/components/Drawer";
+
 
 export default function Page() {
   const { cart, addToCart, removeFromCart, calculateTotal, clearCart } =
@@ -19,8 +19,8 @@ export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   const [paymentType, setPaymentType] = useState<"cash" | "card" | "online">(
-      "cash"
-    );
+    "cash"
+  );
 
   const categories = [
     { id: 1, name: "เนื้อหมู" },
@@ -40,7 +40,7 @@ export default function Page() {
     const totalPrice = calculateTotal();
 
     try {
-      // ส่งข้อมูลเพื่อทำรายการสินค้า 
+      // ส่งข้อมูลเพื่อทำรายการสินค้า
       const response = await fetch("/api/order", {
         method: "POST",
         headers: {
@@ -85,9 +85,6 @@ export default function Page() {
 
   return (
     <>
-      <div className="absolute top-5 left-5">
-        <Drawer />
-      </div>
       <div className="p-6 gap-4  flex">
         <Button
           className="bg-red-500"
@@ -197,7 +194,9 @@ export default function Page() {
                     className="flex justify-between items-center mb-2"
                   >
                     <span>
-                      <div>{item.name} - {item.quantity} ไม้</div>
+                      <div>
+                        {item.name} - {item.quantity} ไม้
+                      </div>
                       <div>${item.price * item.quantity}</div>
                     </span>
                     <div className="flex items-center gap-2">
@@ -217,6 +216,7 @@ export default function Page() {
                               ) as HTMLInputElement
                             ).value
                           );
+
                           if (quantityToRemove > item.quantity) {
                             alert(
                               "Cannot remove more than what is in the cart."

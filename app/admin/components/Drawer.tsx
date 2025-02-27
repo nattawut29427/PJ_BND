@@ -18,16 +18,25 @@ export default function App() {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Cashier", path: "/cashier" },
-    { name: "Order", path: "/acceptorder" },
+    { name: "Order", path: "/order" },
     { name: "User", path: "/admin/dashboard" },
     { name: "Product", path: "/admin/product" },
+    { name: "RecordSale", path: "/admin/recordSale" },
     { name: "Settings", path: "/admin/settings" },
   ];
+
+  const filteredMenuItemsCh =
+  session?.user?.role === "cashier"
+    ? menuItems.filter((item) => item.name === "Order" || item.name === "Settings" || item.name === "Cashier")
+    : menuItems.filter((item) => item.name === "Settings");
 
   const filteredMenuItems =
     session?.user?.role === "admin"
       ? menuItems
-      : menuItems.filter((item) => item.name === "Settings");
+      : filteredMenuItemsCh;
+
+  
+      
 
   
   const panelTitle = pathname.startsWith("/admin") ? "Admin Panel" : "Cashier Panel";

@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect } from "react";
 
 type Skewer = {
@@ -19,24 +20,32 @@ export const useProducts = () => {
       try {
         const response = await fetch("/api/productService");
         const data = await response.json();
+      
         setProducts(data);
+     
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+
+        return error     
+        // console.error("Failed to fetch products:", error);
+     
       } finally {
         setLoading(false);
       }
     };
 
     // ดึงจำนวนสินค้า ทั้งหมด
-    const fetchTotalProducts = async () => {
-      try {
-        const response = await fetch("/api/productService?count=true");
-        const { total } = await response.json();
-        setProducts(total);
-      } catch (error) {
-        console.error("Failed to fetch total products:", error);
-      }
-    };
+    // const fetchTotalProducts = async () => {
+    
+    //   try {
+    //     const response = await fetch("/api/productService?count=true");
+    //     const { total } = await response.json();
+    
+    //     setProducts(total);
+    //   } catch (error) {
+   
+    //     return alert(error)
+    //   }
+    // };
 
 
     fetchProducts();
