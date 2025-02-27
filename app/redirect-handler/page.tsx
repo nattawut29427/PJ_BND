@@ -21,7 +21,7 @@ export default function RedirectHandler() {
     } else if (role === "cashier") {
       router.push("/cashier");
     } else {
-      router.push("/"); // ลูกค้าธรรมดาไปหน้าแรก
+      router.push("/testui"); // ลูกค้าธรรมดาไปหน้าแรก
     }
   }, [session, status, router]);
 
