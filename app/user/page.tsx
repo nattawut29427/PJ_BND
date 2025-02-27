@@ -1,5 +1,5 @@
 "use client";
-import Drawer from "@/app/user/components/Drawer";
+import Drawer from "@/app/admin/components/Drawer";
 import {
   Navbar,
   NavbarBrand,
@@ -7,6 +7,7 @@ import {
   Input,
   Button,
   Image,
+  Spinner
 } from "@heroui/react";
 import React, { useState, useRef } from "react";
 import { useCart } from "@/app/cashier/actionCh/useCart";
@@ -119,11 +120,13 @@ export default function App() {
 
     setCartItems((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
+     
       if (existingItem) {
         return prev.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
+     
       return [
         ...prev,
         { id: item.id, name: item.name, quantity, price: item.price },
@@ -132,6 +135,19 @@ export default function App() {
 
     setShowPopup(true);
   };
+
+  if (loading) {
+    return (
+      
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2 "
+        size="lg"
+        color="danger"
+        labelColor="danger"
+       
+      />
+    );
+  }
 
   return (
     <>
@@ -148,11 +164,12 @@ export default function App() {
           className="flex items-center justify-between sm:justify-start md:justify-end "
         >
           <Input
-            className="w-full max-w-full sm:max-w-[20rem] md:max-w-[24rem] lg:max-w-[28rem] h-10 text-lg"
+            className="w-full max-w-full  sm:max-w-[20rem] md:max-w-[24rem] lg:max-w-[28rem] h-10 text-lg bg-transparent"
             placeholder="ค้นหา..."
             size="md"
             startContent={<SearchIcon size={18} />}
             type="search"
+            
             value={searchTerm} // เพิ่ม value
             onChange={(e) => setSearchTerm(e.target.value)} // เพิ่ม onChange
           />
@@ -183,7 +200,7 @@ export default function App() {
       </div>
 
       {/* Products */}
-      <div className="flex-1 px-2 sm:px-6">
+      <div className="flex-1 px-2  sm:px-6">
         <div className="grid grid-cols-2 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-5">
           {products
             .filter(
@@ -224,6 +241,7 @@ export default function App() {
                     min="1"
                     defaultValue="1"
                     className="p-2 rounded-xl w-full sm:w-14 h-10 text-center"
+
                     ref={(el) => (quantityRefs.current[item.id] = el)}
                     max={item.quantity}
                     style={{

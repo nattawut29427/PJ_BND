@@ -107,7 +107,7 @@ export default function Page() {
         ))}
       </div>
 
-      <div className="p-6 min-h-screen flex flex-col md:flex-row gap-6 ">
+      <div className="p-6 h-fit flex flex-col md:flex-row gap-6 ">
         {/* สินค้า */}
         <div className="flex">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -157,6 +157,7 @@ export default function Page() {
                             ) as HTMLInputElement
                           ).value
                         );
+                        
                         if (quantity > item.quantity) {
                           alert("Cannot add more than available stock.");
                           return;

@@ -7,8 +7,8 @@ export default function Layout({ children }: { children: ReactElement }) {
   return (
     <>
       <SessionProvider>
-        <main className="flex flex-col items-center justify-center">
-          <div className="bg-white inline-block w-screen">{children}</div>
+        <main className="flex flex-col items-center h-full  justify-center">
+          <div className="bg-white inline-block w-screen h-full">{children}</div>
         </main>
       </SessionProvider>
     </>
