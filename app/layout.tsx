@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.png",
   },
   viewport: 'width=device-width, initial-scale=1',
 };
@@ -46,7 +46,7 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
-            <main className=" flex-grow">
+            <main className="flex-grow ">
               {children}
             </main>
 
