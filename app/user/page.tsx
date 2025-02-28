@@ -1,5 +1,5 @@
 "use client";
-import Drawer from "@/app/user/components/Drawer";
+import Drawer from "@/app/admin/components/Drawer";
 import {
   Navbar,
   NavbarBrand,
