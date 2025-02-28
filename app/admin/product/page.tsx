@@ -36,6 +36,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export const columns = [
+  { name: "No", uid: "No" },
   { name: "Id", uid: "id" },
   { name: "Images", uid: "images" },
   { name: "Name", uid: "name" },
@@ -89,6 +90,7 @@ type Skewer = {
   category: string;
   quantity: GLfloat;
   price: GLfloat;
+  no: number;
 };
 
 export default function App() {
@@ -147,11 +149,18 @@ export default function App() {
     fetchProduct();
   }, []);
 
+  const itemsWithIndex = items.map((item) => {
+    const index = skewer.findIndex((s) => s.id === item.id); 
+    return { ...item, no: index + 1 }; 
+  });
+
   const renderCell = React.useCallback(
     (skewer: Skewer, columnKey: React.Key) => {
       const cellValue = skewer[columnKey as keyof Skewer];
 
       switch (columnKey) {
+        case "No":
+          return  <p>{skewer.no}</p>;
         case "id":
           return <p>{skewer.id}</p>;
         case "images":
@@ -249,7 +258,7 @@ export default function App() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={items}>
+          <TableBody items={itemsWithIndex}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
