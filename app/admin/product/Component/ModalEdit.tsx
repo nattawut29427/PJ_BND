@@ -26,7 +26,7 @@ export default function ModalBt({ id }: Props) {
   return (
     <>
       <Button 
-        className="bg-red-600" 
+        color="primary"
         onPress={handleOpen} // ไม่ต้องส่งพารามิเตอร์
       >
         Edit

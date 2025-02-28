@@ -6,6 +6,8 @@ import Selected from "@/components/Selected";
 import { UploadButton } from "@uploadthing/react";
 import {Button , Alert } from "@heroui/react";
 
+
+
 export default function UserUpload() {
   const [formData, setFormData] = useState({
     email: "",
@@ -14,10 +16,12 @@ export default function UserUpload() {
     role: "",
   });
 
+
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   // ตัวเลือก Roles
   const roles = [
@@ -26,16 +30,24 @@ export default function UserUpload() {
     { key: "customer", label: "Customer" },
   ];
 
+  const isFormValid = 
+  formData.email.trim() !== "" &&
+  formData.name.trim() !== "" &&
+  formData.password.trim() !== "" &&
+  formData.role !== "" &&
+  fileUrl  !== null;
+
+
   const handleRoleChange = (newRole: string) => {
     setRole(newRole);
     console.log(setRole);
   };
 
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   // ใช้ useEffect เก็บข้อมูลใน localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
+   
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
@@ -66,6 +78,12 @@ export default function UserUpload() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isFormValid) {
+      alert("Please fill in all required fields and upload an image.");
+     
+      return;
+    }
 
     
       const metadata = {
@@ -148,12 +166,12 @@ export default function UserUpload() {
           <UploadButton<FileRouter>
             endpoint="skewerImageUpload"
             onClientUploadComplete={handleUploadComplete}
-            // metadata={{
-            //   name: formData.name,
-            //   price: formData.price,
-            //   categoryId: formData.categoryId,
-            //   quantity: formData.quantity,
-            // }}
+            metadata={{
+              email: formData.email,
+              name: formData.name,
+              password: formData.password,
+              role: formData.role,
+            }}
           />
         </div>
         <div className="flex justify-end ">

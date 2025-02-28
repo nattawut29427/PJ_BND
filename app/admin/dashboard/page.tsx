@@ -149,7 +149,7 @@ export default function App() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users"); // Replace with your API URL
+        const response = await fetch("http://localhost:3000/api/users"); 
         const data = await response.json();
         setUsers(data);
       } catch (error) {
@@ -217,7 +217,6 @@ export default function App() {
         className="flex justify-center items-center m-auto w-1/2 h-1/2"
         size="lg"
         color="primary"
-        labelColor="primary"
       />
     );
   }
