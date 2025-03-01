@@ -141,7 +141,7 @@ export default function CashierOrdersPage() {
       ) : (
         <ul className="space-y-4">
           {orders.map((order) => (
-            <li key={order.id} className="border p-4 rounded-lg">
+            <li key={order.id} className="border border-gray-400 p-4 rounded-lg">
               <div className="flex justify-between items-start">
                 <div>
                   <p className="font-bold">ออเดอร์ #{order.id}</p>
@@ -152,7 +152,7 @@ export default function CashierOrdersPage() {
                       {order.orderItems?.map((item) => (
                         <li key={item.id}>
                           {/* ใช้ชื่อจากข้อมูลออเดอร์โดยตรง */}
-                          {item.skewer?.name || "ไม่มีชื่อสินค้า"} -{" "}
+                          {item.skewer?.name || "ไม่มีชื่อสินค้า"}{" "}
                           {item.quantity} ไม้
                         </li>
                       ))}
