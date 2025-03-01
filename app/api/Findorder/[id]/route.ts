@@ -1,28 +1,27 @@
+// app/api/Findorder/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 
-
-
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest, // ใช้ NextRequest แทน Request
+  { params }: { params: { id: string } } // รับ params โดยตรง
 ) {
   try {
-    // แปลง ID เป็นตัวเลขและตรวจสอบความถูกต้อง
-    const orderId = parseInt(params.id, 10);
-   
-    if (isNaN(orderId)) {
-      
+    // แปลง ID พร้อมตรวจสอบความถูกต้อง
+    const orderId = Number.parseInt(params.id, 10);
+    
+    if (Number.isNaN(orderId)) {
       return NextResponse.json(
-       
-        { error: "รูปแบบ ID ไม่ถูกต้อง" },
-     
+        { 
+          code: "INVALID_ID",
+          message: "รหัสใบสั่งซื้อไม่ถูกต้อง"
+        },
         { status: 400 }
       );
     }
 
-    // ค้นหาข้อมูล Order พร้อมข้อมูลที่เกี่ยวข้อง
+    // ค้นหาข้อมูลด้วย Prisma
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
@@ -33,7 +32,6 @@ export async function GET(
                 id: true,
                 name: true,
                 price: true,
-                
               }
             }
           }
@@ -41,24 +39,39 @@ export async function GET(
       }
     });
 
-    // ตรวจสอบการมีอยู่ของ Order
+    // ตรวจสอบการมีอยู่ของข้อมูล
     if (!order) {
       return NextResponse.json(
-        { error: "ไม่พบข้อมูลใบสั่งซื้อ" },
+        {
+          code: "ORDER_NOT_FOUND",
+          message: "ไม่พบข้อมูลใบสั่งซื้อ"
+        },
         { status: 404 }
       );
     }
 
-    // ส่งกลับข้อมูล Order
+    // ส่งกลับข้อมูลรูปแบบมาตรฐาน
     return NextResponse.json({
-      status: "success",
-      data: order
+      success: true,
+      data: {
+        ...order,
+        totalPrice: order.orderItems.reduce(
+          (sum, item) => sum + (item.skewer.price * item.quantity),
+          0
+        )
+      }
     });
+
   } catch (error) {
+    // จัดการ error logging
     error
-   
+
+    // ส่งกลับ error response แบบมาตรฐาน
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการประมวลผล" },
+      {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "เกิดข้อผิดพลาดในระบบ"
+      },
       { status: 500 }
     );
   }

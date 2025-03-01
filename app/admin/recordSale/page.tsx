@@ -73,7 +73,7 @@ export default function CompletedOrdersTable() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch("/api/order");
+        const response = await fetch("/api/Findorder");
       
         if (!response.ok) throw new Error("Failed to fetch orders");
        
