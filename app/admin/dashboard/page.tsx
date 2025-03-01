@@ -12,6 +12,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
+  user,
 } from "@heroui/react";
 
 import React, { useEffect, useState, SVGProps } from "react";
@@ -37,6 +38,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export const columns = [
+  { name: "No", uid: "No" },
   { name: "NAME", uid: "name" },
   { name: "ROLE", uid: "role" },
   { name: "Phone", uid: "phone" },
@@ -88,6 +90,7 @@ type User = {
   status: string;
   image: string;
   email: string;
+  no:number;
 };
 
 export default function App() {
@@ -149,7 +152,7 @@ export default function App() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users"); // Replace with your API URL
+        const response = await fetch("http://localhost:3000/api/users");
         const data = await response.json();
         setUsers(data);
       } catch (error) {
@@ -162,10 +165,19 @@ export default function App() {
     fetchUsers();
   }, []);
 
+  const itemsWithIndex = items.map((item) => {
+    const index = users.findIndex((s) => s.id === item.id);
+    return { ...item, no: index + 1 };
+  });
+
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof User];
 
     switch (columnKey) {
+      case "No":
+        return(
+          <p>{user.no}</p>
+        )
       case "name":
         return (
           <User
@@ -217,7 +229,6 @@ export default function App() {
         className="flex justify-center items-center m-auto w-1/2 h-1/2"
         size="lg"
         color="primary"
-        labelColor="primary"
       />
     );
   }
@@ -276,7 +287,7 @@ export default function App() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={items}>
+          <TableBody items={itemsWithIndex}>
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (

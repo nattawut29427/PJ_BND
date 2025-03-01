@@ -22,7 +22,7 @@ export default function ModalEdit({ email }: Props) {
   return (
     <>
       <Button 
-        className="bg-red-600" 
+        color="primary"
         onPress={onOpen}
       >
         Edit

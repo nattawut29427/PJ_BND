@@ -16,9 +16,9 @@ import {
   DropdownItem,
   Chip,
   Pagination,
+  Spinner,
 } from "@heroui/react";
 
-// Interfaces ตามโครงสร้างข้อมูล Order
 interface Skewer {
   id: string;
   name: string;
@@ -40,10 +40,12 @@ interface Order {
   customer: {
     name: string;
   };
+  no: number;
 }
 
-// กำหนดคอลัมน์ใหม่ให้ตรงกับข้อมูล Order
+
 export const columns = [
+  
   { name: "ORDER ID", uid: "id", sortable: true },
   { name: "TOTAL", uid: "total", sortable: true },
   { name: "DATE", uid: "createdAt", sortable: true },
@@ -53,7 +55,6 @@ export const columns = [
 ];
 
 
-// const INITIAL_VISIBLE_COLUMNS = ["id", "total", "createdAt", "status", "items"];
 
 export default function CompletedOrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -69,7 +70,7 @@ export default function CompletedOrdersTable() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
 
-  // ดึงข้อมูลจาก API
+ 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -77,8 +78,8 @@ export default function CompletedOrdersTable() {
         if (!response.ok) throw new Error("Failed to fetch orders");
         const data = await response.json();
         setOrders(data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch orders");
+      } catch (error) {
+        setError("Failed to fetch orders");
       } finally {
         setLoading(false);
       }
@@ -87,11 +88,17 @@ export default function CompletedOrdersTable() {
     fetchOrders();
   }, []);
 
-  // ฟังก์ชันสำหรับเรนเดอร์ข้อมูลในแต่ละเซลล์
+
+
+  
   const renderCell = (order: Order, columnKey: React.Key) => {
     const cellValue = order[columnKey as keyof Order];
 
     switch (columnKey) {
+      case "No":
+        return (
+          <p>{order.no}</p>
+        )
       case "id":
         return (
           <span className="font-medium">
@@ -127,7 +134,7 @@ export default function CompletedOrdersTable() {
           </div>
         );
 
-      case "customerName": // เพิ่ม case ใหม่
+      case "customerName":
         return order.customer.name;
 
       default:
@@ -142,7 +149,7 @@ export default function CompletedOrdersTable() {
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-  
+
     return filteredItems.slice(start, end);
   }, [page, filteredItems, rowsPerPage]);
 
@@ -163,7 +170,6 @@ export default function CompletedOrdersTable() {
     });
   }, [sortDescriptor, items]);
 
- 
   // const topContent = (
   //   <div className="flex flex-col gap-4 ">
   //     <div className="flex gap-3 items-end">
@@ -194,7 +200,15 @@ export default function CompletedOrdersTable() {
     </div>
   );
 
-  if (loading) return <div>Loading orders...</div>;
+  if (loading) {
+    return (
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2"
+        size="lg"
+        color="primary"
+      />
+    );
+  }
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -220,7 +234,7 @@ export default function CompletedOrdersTable() {
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+                <TableCell>{renderCell(item, columnKey) as string}</TableCell>
               )}
             </TableRow>
           )}
