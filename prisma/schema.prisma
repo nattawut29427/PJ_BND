@@ -21,8 +21,6 @@ model User {
   role           Role          @default(customer)
   orders         Order[]       @relation("UserOrders") // ความสัมพันธ์กับ Order
   transactions   Transaction[] @relation("UserTransactions") // ความสัมพันธ์กับ Transaction
-  customerQueues Queue[]       @relation("CustomerQueue") // ความสัมพันธ์กับ Queue (ในฐานะลูกค้า)
-  userQueues     Queue[]       @relation("UserQueue") // ความสัมพันธ์กับ Queue (ในฐานะผู้ใช้ที่เกี่ยวข้อง)
   bills          Bill[]        @relation("UserBills") // ความสัมพันธ์กับ Bill
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -81,7 +79,6 @@ model Skewer {
   category   Category    @relation(fields: [categoryId], references: [id]) // เชื่อมโยงกับ Category
   orderItems OrderItem[]
   quantity   Float
-  Sale       Sale[]
 }
 
 enum SpicyLevel {
@@ -136,29 +133,9 @@ enum PaymentType {
   online
 }
 
-model Queue {
-  id          Int         @id @default(autoincrement())
-  customerId  String
-  userId      String? // เพิ่มฟิลด์นี้เพื่อเก็บข้อมูล User ที่เกี่ยวข้อง
-  queueNumber Int         @unique
-  status      QueueStatus @default(waiting)
-  createdAt   DateTime    @default(now())
 
-  customer User  @relation("CustomerQueue", fields: [customerId], references: [id])
-  user     User? @relation("UserQueue", fields: [userId], references: [id])
-}
 
-enum status {
-  waiting
-  completed
-  canceled
-}
 
-enum QueueStatus {
-  waiting
-  completed
-  canceled
-}
 
 model Transaction {
   id          Int         @id @default(autoincrement())
@@ -179,19 +156,4 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-model Sale {
-  id          Int        @id @default(autoincrement())
-  skewerId    Int
-  quantity    Float
-  saleDate    DateTime   @default(now())
-  totalSaleId Int? // เพิ่มฟิลด์นี้เพื่อเชื่อมโยงกับ TotalSale
-  skewer      Skewer     @relation(fields: [skewerId], references: [id], onDelete: Cascade)
-  totalSale   TotalSale? @relation(fields: [totalSaleId], references: [id]) // ความสัมพันธ์กับ TotalSale
-}
 
-model TotalSale {
-  id         Int      @id @default(autoincrement())
-  totalPrice Float
-  createdAt  DateTime @default(now())
-  sales      Sale[] // ความสัมพันธ์กับ Sale หลายรายการ
-}
