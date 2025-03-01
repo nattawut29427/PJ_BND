@@ -32,7 +32,7 @@ export default function CashierOrdersPage() {
   // ดึงข้อมูลออเดอร์ครั้งแรก
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await fetch(`/api/order/accept?timestamp=${Date.now()}`);
+      const res = await fetch(`/api/Findorder/accept?timestamp=${Date.now()}`);
 
       if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
 
@@ -103,7 +103,7 @@ export default function CashierOrdersPage() {
       );
 
       // ส่ง request อัปเดต
-      const res = await fetch("/api/order/accept", {
+      const res = await fetch("/api/Findorder/accept", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId: order.id }),

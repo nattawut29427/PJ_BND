@@ -1,48 +1,64 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 
+
+
 export async function GET(
-  _request: Request,
-  context: { params: { id: string } } 
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    
-    const id = Number(context.params.id);
-
-    
-    if (isNaN(id)) {
+    // แปลง ID เป็นตัวเลขและตรวจสอบความถูกต้อง
+    const orderId = parseInt(params.id, 10);
+   
+    if (isNaN(orderId)) {
+      
       return NextResponse.json(
-        { error: "ID ใบสั่งซื้อไม่ถูกต้อง" },
+       
+        { error: "รูปแบบ ID ไม่ถูกต้อง" },
+     
         { status: 400 }
       );
     }
 
-
+    // ค้นหาข้อมูล Order พร้อมข้อมูลที่เกี่ยวข้อง
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { id: orderId },
       include: {
         orderItems: {
           include: {
-            skewer: true,
-          },
-        },
-      },
+            skewer: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                
+              }
+            }
+          }
+        }
+      }
     });
 
+    // ตรวจสอบการมีอยู่ของ Order
     if (!order) {
       return NextResponse.json(
-        { error: "ไม่พบใบสั่งซื้อ" },
+        { error: "ไม่พบข้อมูลใบสั่งซื้อ" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(order);
+    // ส่งกลับข้อมูล Order
+    return NextResponse.json({
+      status: "success",
+      data: order
+    });
   } catch (error) {
-  
-    
+    error
+   
     return NextResponse.json(
-      { error: error },
+      { error: "เกิดข้อผิดพลาดในการประมวลผล" },
       { status: 500 }
     );
   }
