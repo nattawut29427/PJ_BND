@@ -38,7 +38,7 @@ interface Order {
 }
 
 
-export const columns = [
+const columns = [
   
   { name: "ORDER ID", uid: "id", sortable: true },
   { name: "TOTAL", uid: "total", sortable: true },
