@@ -130,18 +130,18 @@ export default function App() {
     showAlert("success", "User deleted successfully!");
   };
 
-  const [page, setPage] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const rowsPerPage = 6;
 
   const pages = Math.ceil(users.length / rowsPerPage);
 
   const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
+    const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
    
     return filteredUsers.slice(start, end);
  
-  }, [page, filteredUsers]);
+  }, [currentPage, filteredUsers]);
 
   function formatPhoneNumber(phone: string) {
     if (phone) {
@@ -314,9 +314,9 @@ export default function App() {
             showControls
             showShadow
             color="primary"
-            page={page}
+            page={currentPage}
             total={pages}
-            onChange={(page) => setPage(page)}
+            onChange={(page) => setCurrentPage(page)}
           />
         </div>
       </div>
