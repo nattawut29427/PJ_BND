@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { Input, Button, Alert } from "@heroui/react";
 
 import Selected from "@/components/Selected";
@@ -66,7 +65,8 @@ export default function UpdateProduct({ id }: Props) {
   }, []);
 
   useEffect(() => {
-    const { id: _, ...rest } = formData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: id, ...rest } = formData;
     
     localStorage.setItem("formData", JSON.stringify(rest));
  
