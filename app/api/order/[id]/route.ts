@@ -1,39 +1,30 @@
-// app/api/order/route.ts
-
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-// import { pusherServer } from "@/lib/pusher";
 
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: { params: { id: string } } // รับ params โดยตรง
 ) {
   try {
-    // แปลง ID เป็นตัวเลข
-    const id = Number(params.id);
-    
-    // ตรวจสอบว่า ID เป็นตัวเลขที่ถูกต้อง
-    if (isNaN(id)) {
+    const id = Number(params.id); // แปลงเป็น number
+
+    if (isNaN(id)) { // ตรวจสอบว่าเป็นตัวเลข
       return NextResponse.json(
         { error: "Invalid order ID" },
         { status: 400 }
       );
     }
 
-    // ค้นหา Order พร้อมข้อมูลที่เกี่ยวข้อง
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
         orderItems: {
           include: {
-            skewer: true,
-          },
-        },
-      },
+            skewer: true
+          }
+        }
+      }
     });
 
     if (!order) {
@@ -45,8 +36,8 @@ export async function GET(
 
     return NextResponse.json(order);
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error fetching order:", error);
+    
+    return error
     
     return NextResponse.json(
       { error: "Internal Server Error" },
