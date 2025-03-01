@@ -7,18 +7,16 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // แปลง ID ให้เป็นตัวเลข
     const orderId = Number(params.id);
-  
+   
     if (Number.isNaN(orderId)) {
-      
+     
       return NextResponse.json(
         { error: "Invalid order ID" },
         { status: 400 }
       );
     }
 
-    // ค้นหา Order ในฐานข้อมูล
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
@@ -30,7 +28,6 @@ export async function GET(
       },
     });
 
-    // ถ้าไม่พบ Order
     if (!order) {
       return NextResponse.json(
         { error: "Order not found" },
@@ -41,7 +38,8 @@ export async function GET(
     return NextResponse.json(order, { status: 200 });
 
   } catch (error) {
-    return error
+    error
+
    
     return NextResponse.json(
       { error: "Internal Server Error" },
