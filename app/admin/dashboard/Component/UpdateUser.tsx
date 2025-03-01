@@ -124,11 +124,11 @@ export default function UpdateUser({ email }: Props) {
     <div className="flex flex-col gap-4">
       {alertStatus && (
         <Alert
-          className="mb-4"
-          description={alertMessage}
-          title={alertStatus === "success" ? "Success" : "Error"}
-          color={alertStatus}
-          onClose={() => setAlertStatus(null)}
+        className="mb-4"
+        color={alertStatus === "success" ? "success" : "danger"}
+        description={alertMessage}
+        title={alertStatus === "success" ? "Success" : "Error"}
+        onClose={() => setAlertStatus(null)}
         />
       )}
 
@@ -180,8 +180,8 @@ export default function UpdateUser({ email }: Props) {
         <div className="flex justify-end mt-6">
           <Button 
           className="w-full md:w-auto"
-          type="submit" 
           color="primary" 
+          type="submit" 
           >
             Save Changes
           </Button>

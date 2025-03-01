@@ -236,8 +236,8 @@ export default function App() {
     return (
       <Spinner
         className="flex justify-center items-center m-auto w-1/2 h-1/2"
-        size="lg"
         color="primary"
+        size="lg"
       />
     );
   }
@@ -248,9 +248,9 @@ export default function App() {
         {alertStatus && (
           <Alert
           className="fixed bottom-4 left-4 z-50"
+          color={alertStatus === "success" ? "success" : "danger"}
           description={alertMessage}
           title={alertStatus === "success" ? "Success" : "Error"}
-          color={alertStatus}
           onClose={() => setAlertStatus(null)}
           />
         )}
