@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Input } from "@heroui/react";
-import Selected from "@/components/Selected";
+import { Input, Button } from "@heroui/react";
 import { UploadButton } from "@uploadthing/react";
-import {Button , Alert } from "@heroui/react";
 
-
+import Selected from "@/components/Selected";
 
 export default function UserUpload() {
   const [formData, setFormData] = useState({
@@ -16,14 +14,8 @@ export default function UserUpload() {
     role: "",
   });
 
-
-  const [quantity, setQuantity] = useState("");
-  const [price, setPrice] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
-  // ตัวเลือก Roles
   const roles = [
     { key: "admin", label: "Admin" },
     { key: "cashier", label: "Cashier" },
@@ -31,23 +23,15 @@ export default function UserUpload() {
   ];
 
   const isFormValid = 
-  formData.email.trim() !== "" &&
-  formData.name.trim() !== "" &&
-  formData.password.trim() !== "" &&
-  formData.role !== "" &&
-  fileUrl  !== null;
+    formData.email.trim() !== "" &&
+    formData.name.trim() !== "" &&
+    formData.password.trim() !== "" &&
+    formData.role !== "" &&
+    fileUrl !== null;
 
-
-  const handleRoleChange = (newRole: string) => {
-    setRole(newRole);
-    console.log(setRole);
-  };
-
-
-  // ใช้ useEffect เก็บข้อมูลใน localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
-   
+  
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
@@ -63,11 +47,11 @@ export default function UserUpload() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+   
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUploadComplete = (res: any) => {
-    console.log("Upload complete response:", res);
     if (res[0]?.url) {
       setFileUrl(res[0]?.url);
       alert("Upload complete! Please submit the form to save data.");
@@ -81,37 +65,34 @@ export default function UserUpload() {
 
     if (!isFormValid) {
       alert("Please fill in all required fields and upload an image.");
-     
       return;
     }
 
-    
-      const metadata = {
-        email: formData.email,
-        name: formData.name,
-        password: formData.password,
-        role: formData.role,
-        fileUrl,
-      };
+    const metadata = {
+      email: formData.email,
+      name: formData.name,
+      password: formData.password,
+      role: formData.role,
+      fileUrl,
+    };
 
-      try {
-        const response = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(metadata),
-        });
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(metadata),
+      });
 
-        if (response.ok) {
-          alert("Data saved successfully");
-        } else {
-          alert("Failed to save data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Error saving data");
+      if (response.ok) {
+        alert("Data saved successfully");
+      } else {
+        alert("Failed to save data");
       }
+    } catch (error) {
+      alert("Error saving data");
+    }
   };
 
   return (
@@ -121,22 +102,22 @@ export default function UserUpload() {
           <Input
             label="Email"
             labelPlacement="outside"
+            name="email"
             placeholder="you@examle.com"
-            value={formData.email}
-            onChange={handleChange}
             size="lg"
             type="email"
-            name="email"
+            value={formData.email}
+            onChange={handleChange}
           />
           <Input
             label="Name"
             labelPlacement="outside"
+            name="name"
             placeholder="Input your name..."
-            value={formData.name}
-            onChange={handleChange}
             size="lg"
             type="text"
-            name="name"
+            value={formData.name}
+            onChange={handleChange}
           />
         </div>
 
@@ -144,39 +125,42 @@ export default function UserUpload() {
           <Input
             label="Password"
             labelPlacement="outside"
+            name="password"
             placeholder="Input your password...."
-            value={formData.password}
-            onChange={handleChange}
             size="lg"
             type="password"
-            name="password"
+            value={formData.password}
+            onChange={handleChange}
           />
           <Selected
             label="Role"
-            placeholder="Selected Role"
             options={roles}
+            placeholder="Selected Role"
             value={formData.role}
-            onChange={(newRole) =>
-              setFormData({ ...formData, role: newRole })
-            }
+            onChange={(newRole) => setFormData({ ...formData, role: newRole })}
           />
         </div>
-          <p className="pt-5">Upload image</p>
-        <div className="flex justify-start pt-3 ">
-          <UploadButton<FileRouter>
-            endpoint="skewerImageUpload"
-            onClientUploadComplete={handleUploadComplete}
-            metadata={{
-              email: formData.email,
-              name: formData.name,
-              password: formData.password,
-              role: formData.role,
-            }}
-          />
+        
+        <div className="pt-5">
+          <p>Upload image</p>
+          <div className="flex justify-start pt-3">
+            <UploadButton<FileRouter>
+              endpoint="skewerImageUpload"
+              metadata={{
+                email: formData.email,
+                name: formData.name,
+                password: formData.password,
+                role: formData.role,
+              }}
+              onClientUploadComplete={handleUploadComplete}
+            />
+          </div>
         </div>
-        <div className="flex justify-end ">
 
-        <Button type="submit" color="primary">Save</Button>
+        <div className="flex justify-end">
+          <Button color="primary" type="submit">
+            Save
+          </Button>
         </div>
       </form>
     </div>

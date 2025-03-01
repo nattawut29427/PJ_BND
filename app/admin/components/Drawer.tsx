@@ -51,17 +51,17 @@ export default function App() {
     <>
       <Button
         className="font-semibold text-black bg-teal-50"
-        variant="flat"
         onPress={() => setIsOpen(true)}
+        variant="flat"
       >
         Open Menu
       </Button>
       <Drawer
         backdrop="blur"
         isOpen={isOpen}
+        onOpenChange={setIsOpen}
         placement="left"
         size="xs"
-        onOpenChange={setIsOpen}
       >
         <DrawerContent className="p-4 bg-gray-100 shadow-lg h-screen">
           <DrawerHeader className="text-xl font-bold text-gray-700">

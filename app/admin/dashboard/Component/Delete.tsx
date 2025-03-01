@@ -1,12 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, useDraggable, Input } from "@heroui/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  useDraggable,
+  Input,
+} from "@heroui/react";
 
 interface DeleteUserModalProps {
-    email: string;
-    onUserDeleted?: () => void;
-  }
+  email: string;
+  onUserDeleted?: () => void;
+}
+
 export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const targetRef = React.useRef(null);
@@ -16,13 +27,14 @@ export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModa
   const [confirmText, setConfirmText] = useState("");
 
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // ป้องกันหน้ารีโหลด
+    event.preventDefault(); // Prevent page reload
     setLoading(true);
     setError(null);
 
     if (confirmText !== email) {
       setError("Email does not match. Please type correctly.");
       setLoading(false);
+     
       return;
     }
 
@@ -35,10 +47,13 @@ export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModa
         throw new Error("Failed to delete user");
       }
 
-      onUserDeleted?.(); // Notify parent component that user was deleted
-      onOpenChange(false); // ปิด Modal
+      onUserDeleted?.(); 
+      onOpenChange(); 
     } catch (err) {
       setError("Error deleting user. Please try again.");
+     
+      return (err); 
+    
     } finally {
       setLoading(false);
     }
@@ -50,7 +65,7 @@ export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModa
         Delete
       </Button>
 
-      <Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} >
         <ModalContent>
           <form onSubmit={handleDelete}>
             <ModalHeader {...moveProps} className="flex flex-col gap-1">
@@ -73,13 +88,13 @@ export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModa
             <ModalFooter>
               <Button
                 color="danger"
-                variant="light"
-                onPress={() => onOpenChange(false)}
                 isDisabled={loading}
+                variant="light"
+                onPress={() => onOpenChange()}
               >
                 Cancel
               </Button>
-              <Button color="primary" type="submit" isLoading={loading}>
+              <Button color="primary" isLoading={loading} type="submit">
                 Confirm
               </Button>
             </ModalFooter>
