@@ -3,36 +3,33 @@ import {
     ModalContent,
     ModalHeader,
     ModalBody,
-    ModalFooter,
     Button,
     useDisclosure,
   } from "@heroui/react";
 
   import FormUser from "@/app/admin/dashboard/Component/FormUesr";
   
-  export default function modalUs() {
+  export default function ModalUs() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
   
     return (
       <>
         <Button className="bg-blue-600" onPress={onOpen}>Add</Button>
         <Modal
+          backdrop="blur"
           isDismissable={false}
           isKeyboardDismissDisabled={true}
           isOpen={isOpen}
-          onOpenChange={onOpenChange}
           size="5xl"
-          backdrop="blur"
-        >
+          onOpenChange={onOpenChange}
+          >
           <ModalContent className="">
-            {(onClose) => (
+            {(_onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">Add User</ModalHeader>
                 <ModalBody>
                   <FormUser/>
                 </ModalBody>
-                <ModalFooter>
-                </ModalFooter>
               </>
             )}
           </ModalContent>

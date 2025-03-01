@@ -65,6 +65,7 @@ export default function UserUpload() {
 
     if (!isFormValid) {
       alert("Please fill in all required fields and upload an image.");
+     
       return;
     }
 
@@ -91,7 +92,8 @@ export default function UserUpload() {
         alert("Failed to save data");
       }
     } catch (error) {
-      alert("Error saving data");
+      
+      return (alert("Error saving data"), error)
     }
   };
 

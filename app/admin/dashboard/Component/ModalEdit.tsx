@@ -1,42 +1,39 @@
 // ในไฟล์ ModalEdit.tsx
 "use client";
 
+type Props = {
+  email: string;
+};
+
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   useDisclosure,
 } from "@heroui/react";
-import UpdateUser from "./UpdateUser";
 
-type Props = {
-  email: string; // รับค่า email เป็น string
-};
+import UpdateUser from "./UpdateUser";
 
 export default function ModalEdit({ email }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <>
-      <Button 
-        color="primary"
-        onPress={onOpen}
-      >
+      <Button color="primary" onPress={onOpen}>
         Edit
       </Button>
-      
+
       <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        size="5xl"
         backdrop="blur"
         isDismissable={false}
+        isOpen={isOpen}
+        size="5xl"
+        onOpenChange={onOpenChange}
       >
         <ModalContent>
-          {(onClose) => (
+          {(_onClose) => (
             <>
               <ModalHeader>Update User</ModalHeader>
               <ModalBody>
