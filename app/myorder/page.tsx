@@ -47,12 +47,12 @@ export default function OrdersPage() {
         {orders.map((order) => (
           <li
             key={order.id}
-            className="border rounded-lg p-4 my-2 shadow-sm hover:shadow-md transition-shadow"
+            className="border rounded-lg p-4 my-2 shadow-sm hover:shadow-md transition-shadow border-gray-500"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start ">
               <div>
                 <p className="font-semibold text-lg">Order #{order.id}</p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-500 text-sm">
                   Date: {new Date(order.orderDate).toLocaleString()}
                 </p>
               </div>
@@ -78,7 +78,7 @@ export default function OrdersPage() {
               ))}
               <div className="flex justify-between text-lg pt-4">
                 <p>Total Price</p>
-                <p>{order.totalPrice} $</p>
+                <p>{order.totalPrice} บาท</p>
               </div>
             </ul>
           </li>

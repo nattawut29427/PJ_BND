@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
-      <div>
+      <div className="text-black w-full">
         {children}
       </div>
     </SessionProvider>
