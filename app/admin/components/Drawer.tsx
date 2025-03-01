@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // ใช้เช็ค path ปัจจุบัน
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   Drawer,
   DrawerContent,
@@ -13,11 +14,12 @@ import { useSession, signOut } from "next-auth/react";
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
-  const pathname = usePathname(); // ดึง path ปัจจุบัน
+  const pathname = usePathname();
 
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Cashier", path: "/cashier" },
+    { name: "User Cashier", path: "/user" },
     { name: "Order", path: "/cashier/reqorder" },
     { name: "User", path: "/admin/dashboard" },
     { name: "Product", path: "/admin/product" },
@@ -48,30 +50,31 @@ export default function App() {
   return (
     <>
       <Button
-        variant="flat"
-        className="font-semibold text-black bg-teal-50 "
+        className="font-semibold text-black bg-teal-50"
         onPress={() => setIsOpen(true)}
+        variant="flat"
       >
         Open Menu
       </Button>
       <Drawer
+        backdrop="blur"
         isOpen={isOpen}
+        onOpenChange={setIsOpen}
         placement="left"
         size="xs"
-        backdrop="blur"
-        onOpenChange={setIsOpen}
       >
         <DrawerContent className="p-4 bg-gray-100 shadow-lg h-screen">
           <DrawerHeader className="text-xl font-bold text-gray-700">
             {panelTitle}
           </DrawerHeader>
 
-          {/* ข้อมูลผู้ใช้ */}
           <div className="flex flex-col items-center gap-2 p-4 border-b">
-            <img
-              src={session?.user?.image || "/default-profile.jpg"}
+            <Image
               alt="Profile"
               className="w-16 h-16 rounded-full border"
+              height={64}
+              src={session?.user?.image || "/default-profile.jpg"}
+              width={64}
             />
             <h2 className="text-lg font-semibold text-gray-800">
               {session?.user?.name}
@@ -82,10 +85,9 @@ export default function App() {
             </p>
           </div>
 
-          {/* รายการเมนู */}
           <DrawerBody className="flex flex-col gap-4 mt-4 overflow-y-auto">
             {filteredMenuItems.map((item) => (
-              <Link key={item.path} href={item.path} passHref>
+              <Link key={item.path} passHref href={item.path}>
                 <Button className="w-full text-start border hover:bg-blue-500 hover:text-white">
                   {item.name}
                 </Button>
@@ -94,8 +96,8 @@ export default function App() {
           </DrawerBody>
           <div className="sticky bottom-0 bg-gray-100 pt-4 flex justify-center mr-5">
             <Button
-              onPress={() => signOut({ callbackUrl: "/" })}
               className="w-3/4 bg-red-500 text-white hover:bg-red-600"
+              onPress={() => signOut({ callbackUrl: "/" })}
             >
               Sign Out
             </Button>
