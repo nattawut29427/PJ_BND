@@ -1,6 +1,6 @@
 // app/api/order/route.ts
 
-// import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 // import { getServerSession } from "next-auth";
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -8,35 +8,50 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: Request, context: { params: { id: string } }) {
-  // ต้อง await params ก่อนใช้งาน
-  const { id } = await context.params;
-
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    // ดึงข้อมูลของ Order พร้อมข้อมูลที่เชื่อมโยงกัน
+    // แปลง ID เป็นตัวเลข
+    const id = Number(params.id);
+    
+    // ตรวจสอบว่า ID เป็นตัวเลขที่ถูกต้อง
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: "Invalid order ID" },
+        { status: 400 }
+      );
+    }
+
+    // ค้นหา Order พร้อมข้อมูลที่เกี่ยวข้อง
     const order = await prisma.order.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         orderItems: {
           include: {
-            skewer: true 
-          }
-        }
-      }
+            skewer: true,
+          },
+        },
+      },
     });
 
     if (!order) {
-      return new Response("Order not found", { status: 404 });
+      return NextResponse.json(
+        { error: "Order not found" },
+        { status: 404 }
+      );
     }
 
-    return new Response(JSON.stringify(order), {
-      status: 200,
-    });
+    return NextResponse.json(order);
   } catch (error) {
-   
-    return error
- 
-    return new Response("Internal Server Error", { status: 500 });
+    // eslint-disable-next-line no-console
+    console.error("Error fetching order:", error);
+    
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
