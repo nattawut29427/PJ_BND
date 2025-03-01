@@ -2,7 +2,7 @@
 
 import type { Selection } from "@heroui/react";
 
-import React, { useEffect, useState, SVGProps } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -48,9 +48,9 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   vacation: "warning",
 };
 
-export type IconSvgProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
+// export type IconSvgProps = SVGProps<SVGSVGElement> & {
+//   size?: number;
+// };
 
 
 // export const EyeIcon = (props: IconSvgProps) => (
