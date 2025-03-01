@@ -1,22 +1,15 @@
 "use client";
 
 import type { Selection } from "@heroui/react";
-import ModalUS from "@/app/admin/dashboard/Component/ModalUS";
-import Find from "@/components/Find";
-import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit";
-import Delete from "@/app/admin/dashboard/Component/Delete";
 
+import React, { useEffect, useState, SVGProps } from "react";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
   Button,
-  user,
 } from "@heroui/react";
-
-import React, { useEffect, useState, SVGProps } from "react";
-
 import {
   Table,
   TableHeader,
@@ -26,12 +19,20 @@ import {
   TableCell,
   User,
   Chip,
-  Tooltip,
   ChipProps,
   Pagination,
   Spinner,
   Alert,
 } from "@heroui/react";
+
+
+import ModalUS from "@/app/admin/dashboard/Component/ModalUS";
+import Find from "@/components/Find";
+import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit";
+import Delete from "@/app/admin/dashboard/Component/Delete";
+
+
+
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -137,7 +138,9 @@ export default function App() {
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
+   
     return filteredUsers.slice(start, end);
+ 
   }, [page, filteredUsers]);
 
   function formatPhoneNumber(phone: string) {
@@ -154,9 +157,13 @@ export default function App() {
       try {
         const response = await fetch("http://localhost:3000/api/users");
         const data = await response.json();
+   
         setUsers(data);
+    
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+     
+        return (error)
+     
       } finally {
         setLoading(false);
       }
@@ -167,7 +174,9 @@ export default function App() {
 
   const itemsWithIndex = items.map((item) => {
     const index = users.findIndex((s) => s.id === item.id);
+ 
     return { ...item, no: index + 1 };
+ 
   });
 
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
@@ -238,18 +247,18 @@ export default function App() {
       <div className="flex-row">
         {alertStatus && (
           <Alert
-            color={alertStatus}
-            title={alertStatus === "success" ? "Success" : "Error"}
-            description={alertMessage}
-            className="fixed bottom-4 left-4 z-50"
-            onClose={() => setAlertStatus(null)}
+          className="fixed bottom-4 left-4 z-50"
+          description={alertMessage}
+          title={alertStatus === "success" ? "Success" : "Error"}
+          color={alertStatus}
+          onClose={() => setAlertStatus(null)}
           />
         )}
         <div className="flex justify-end pb-5 gap-5">
           <Find
+            className="border rounded px-2 py-1"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
-            className="border rounded px-2 py-1"
           />
           <Dropdown className="">
             <DropdownTrigger>

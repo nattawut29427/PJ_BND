@@ -27,8 +27,8 @@ export default function UpdateUser({ email }: Props) {
     role: "",
     image: "",
   });
-
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [fileUrl, _setFileUrl] = useState<string | null>(null);
   const [alertStatus, setAlertStatus] = useState<"success" | "error" | null>(null);
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -64,8 +64,8 @@ export default function UpdateUser({ email }: Props) {
   }, [email]);
 
   useEffect(() => {
-    
-    const { email, ...rest } = formData;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { email:  _email, ...rest } = formData;
     
     localStorage.setItem("formData", JSON.stringify(rest));
   
@@ -109,8 +109,14 @@ export default function UpdateUser({ email }: Props) {
         setAlertMessage(`Failed to save data: ${result.error || "Unknown error"}`);
       }
     } catch (error) {
-      setAlertStatus("error");
-      setAlertMessage("Error saving data");
+      return(
+        (
+          setAlertStatus("error"),
+          setAlertMessage("Error saving data")
+        ),
+        error
+      )
+        
     }
   };
 

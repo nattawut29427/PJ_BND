@@ -1,8 +1,10 @@
 "use client";
 
-import { ReactElement } from "react";
-import Drawer from "@/app/admin/components/Drawer";
 import { SessionProvider } from "next-auth/react";
+import { ReactElement } from "react";
+
+import Drawer from "@/app/admin/components/Drawer";
+
 
 export default function Layout({ children }: { children: ReactElement }) {
   return (
