@@ -32,7 +32,7 @@ import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit";
 import Delete from "@/app/admin/dashboard/Component/Delete";
 
 
-export const columns = [
+const columns = [
   { name: "No", uid: "No" },
   { name: "NAME", uid: "name" },
   { name: "ROLE", uid: "role" },
