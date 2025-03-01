@@ -20,6 +20,10 @@ export async function middleware(request: any) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
+  if (pathname === "/cashier" && user?.role === "customer") {
+    return NextResponse.redirect(new URL("/user", request.url));
+  }
+
     // ถ้า user เป็น customer เข้าหน้า "/"
   if (pathname === "/" && user?.role === "cashier") {
       // Redirect ไปที่ "/testui"
