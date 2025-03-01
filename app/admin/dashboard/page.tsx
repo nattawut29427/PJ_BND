@@ -48,6 +48,16 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   vacation: "warning",
 };
 
+type User = {
+  id: number;
+  name: string;
+  role: string;
+  phone: string;
+  status: string;
+  image: string;
+  email: string;
+  no:number;
+};
 // export type IconSvgProps = SVGProps<SVGSVGElement> & {
 //   size?: number;
 // };
@@ -83,16 +93,6 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 
 
 
-type User = {
-  id: number;
-  name: string;
-  role: string;
-  phone: string;
-  status: string;
-  image: string;
-  email: string;
-  no:number;
-};
 
 export default function App() {
   const [alertStatus, setAlertStatus] = useState<"success" | "error" | null>(
