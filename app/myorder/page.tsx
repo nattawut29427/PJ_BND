@@ -52,7 +52,7 @@ export default function OrdersPage() {
             <div className="flex justify-between items-start ">
               <div>
                 <p className="font-semibold text-lg">Order #{order.id}</p>
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-600 text-sm">
                   Date: {new Date(order.orderDate).toLocaleString()}
                 </p>
               </div>
@@ -68,12 +68,12 @@ export default function OrdersPage() {
               {order.orderItems.map((item) => (
                 <li
                   key={item.id}
-                  className="text-white text-base flex justify-between items-center py-1"
+                  className="text-black text-base flex justify-between items-center py-1"
                 >
                   <span>
-                    {item.skewer?.name || "Unknown Item"} ({item.quantity} pcs)
+                    {item.skewer?.name || "Unknown Item"} ({item.quantity} ไม้)
                   </span>
-                  <span className="font-medium">{item.price} $</span>
+                  <span className="font-medium">{item.price} บาท</span>
                 </li>
               ))}
               <div className="flex justify-between text-lg pt-4">

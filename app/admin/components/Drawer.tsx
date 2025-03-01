@@ -92,10 +92,10 @@ export default function App() {
               </Link>
             ))}
           </DrawerBody>
-          <div className="sticky bottom-0 bg-gray-100 pt-4">
+          <div className="sticky bottom-0 bg-gray-100 pt-4 flex justify-center mr-5">
             <Button
               onPress={() => signOut({ callbackUrl: "/" })}
-              className="w-full  bg-red-500 text-white hover:bg-red-600"
+              className="w-3/4 bg-red-500 text-white hover:bg-red-600"
             >
               Sign Out
             </Button>
