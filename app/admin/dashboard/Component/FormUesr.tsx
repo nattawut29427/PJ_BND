@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button } from "@heroui/react";
 import { UploadButton } from "@uploadthing/react";
+import type { FileRouter } from "@/app/api/uploadthing/route";
 
 import Selected from "@/components/Selected";
+
+type FileRouter = any;
 
 export default function UserUpload() {
   const [formData, setFormData] = useState({
@@ -15,6 +18,7 @@ export default function UserUpload() {
   });
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+
 
   const roles = [
     { key: "admin", label: "Admin" },
@@ -146,7 +150,7 @@ export default function UserUpload() {
         <div className="pt-5">
           <p>Upload image</p>
           <div className="flex justify-start pt-3">
-            <UploadButton<FileRouter>
+          <UploadButton<FileRouter>
               endpoint="skewerImageUpload"
               metadata={{
                 email: formData.email,

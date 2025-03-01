@@ -3,16 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function GET(
-  request: NextRequest, 
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const orderId = Number(params.id);
+    // รอให้ Promise resolve แล้ว destructuring
+    const { id } = await context.params;
+    const orderId = Number(id);
    
-    if (Number.isNaN(orderId)) {
-     
+    if (isNaN(orderId)) {
+      
       return NextResponse.json(
-        { error: "Invalid order ID" },
+        { error: "Invalid Order ID" },
         { status: 400 }
       );
     }
@@ -22,7 +24,13 @@ export async function GET(
       include: {
         orderItems: {
           include: {
-            skewer: true, 
+            skewer: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+              },
+            },
           },
         },
       },
@@ -30,16 +38,15 @@ export async function GET(
 
     if (!order) {
       return NextResponse.json(
-        { error: "Order not found" },
+        { error: "Order Not Found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(order, { status: 200 });
-
   } catch (error) {
+   
     error
-
    
     return NextResponse.json(
       { error: "Internal Server Error" },

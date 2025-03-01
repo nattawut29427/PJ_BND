@@ -25,8 +25,11 @@ export default function DeleteProductModal({
   onProductDeleted,
 }: DeleteProductModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const targetRef = React.useRef(null);
-  const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+  const targetRef = React.useRef<HTMLElement>(null);
+  const { moveProps } = useDraggable({
+    targetRef: targetRef as React.RefObject<HTMLElement>,
+    isDisabled: !isOpen,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
@@ -35,25 +38,25 @@ export default function DeleteProductModal({
     event.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       const response = await fetch(`/api/productService?id=${productId}`, {
         method: "DELETE",
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete product");
       }
-  
+
       onProductDeleted?.();
       onOpenChange();
     } catch (error) {
-      return (alert("Error deleting product. Please try again."), error) ;
+      return alert("Error deleting product. Please try again."), error;
     } finally {
       setLoading(false);
     }
   };
- 
+
   return (
     <>
       <Button color="danger" onPress={onOpen}>
@@ -68,7 +71,8 @@ export default function DeleteProductModal({
             </ModalHeader>
             <ModalBody>
               <p>
-                Are you sure you want to delete product <strong>{productName}</strong>?
+                Are you sure you want to delete product{" "}
+                <strong>{productName}</strong>?
               </p>
               <p className="text-sm text-gray-500">
                 Type <strong>{productName}</strong> to confirm.
@@ -89,11 +93,7 @@ export default function DeleteProductModal({
               >
                 Cancel
               </Button>
-              <Button 
-              color="primary" 
-              isLoading={loading}
-              type="submit" 
-              >
+              <Button color="primary" isLoading={loading} type="submit">
                 Confirm
               </Button>
             </ModalFooter>

@@ -17,33 +17,34 @@ import { useCart } from "@/app/cashier/actionCh/useCart";
 import { useProducts } from "@/app/cashier/actionCh/useProducts";
 
 
-export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
-  <svg
-    aria-hidden="true"
-    fill="none"
-    focusable="false"
-    height={size}
-    viewBox="0 0 24 24"
-    width={size}
-    {...props}
-  >
-    {" "}
-    <path
-      d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={strokeWidth}
-    />{" "}
-    <path
-      d="M22 22L20 20"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={strokeWidth}
-    />{" "}
-  </svg>
-);
+// export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
+//   <svg
+//     aria-hidden="true"
+//     fill="none"
+//     focusable="false"
+//     height={size}
+//     viewBox="0 0 24 24"
+//     width={size}
+//     {...props}
+//   >
+//     {" "}
+//     <path
+//       d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+//       stroke="currentColor"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//       strokeWidth={strokeWidth}
+//     />{" "}
+//     <path
+//       d="M22 22L20 20"
+//       stroke="currentColor"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//       strokeWidth={strokeWidth}
+//     />{" "}
+//   </svg>
+// );
+
 export default function App() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { cart, addToCart, removeFromCart, calculateTotal, clearCart } =
@@ -87,7 +88,7 @@ export default function App() {
     const totalPrice = calculateTotal();
 
     try {
-      const res = await fetch("/api/Findorder/", {
+      const res = await fetch("/api/findorder/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -175,7 +176,7 @@ export default function App() {
             className="w-full max-w-full  sm:max-w-[20rem] md:max-w-[24rem] lg:max-w-[28rem] h-10 text-lg bg-transparent"
             placeholder="ค้นหา..."
             size="md"
-            startContent={<SearchIcon size={18} />}
+            // startContent={size={18} />}
             type="search"
             value={searchTerm} // เพิ่ม value
             onChange={(e) => setSearchTerm(e.target.value)} // เพิ่ม onChange

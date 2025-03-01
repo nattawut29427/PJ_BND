@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const uploadThing = createUploadthing();
 
-export const fileRouter = {
+export const FileRouter = {
   skewerImageUpload: uploadThing({
     image: { maxFileSize: "4MB", maxFileCount: 1 }, 
   })
@@ -19,4 +19,4 @@ export const fileRouter = {
     }),
 } satisfies FileRouter;
 
-export type FileRouter = typeof fileRouter;
+export type FileRouter = typeof FileRouter;

@@ -20,8 +20,11 @@ interface DeleteUserModalProps {
 
 export default function DeleteUserModal({ email, onUserDeleted }: DeleteUserModalProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const targetRef = React.useRef(null);
-  const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+  const targetRef = React.useRef<HTMLElement>(null);
+  const { moveProps } = useDraggable({ 
+    targetRef: targetRef as React.RefObject<HTMLElement>, 
+    isDisabled: !isOpen 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");

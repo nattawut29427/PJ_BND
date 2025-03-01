@@ -35,20 +35,17 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
    
     if (!session) {
-   
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const cashierId = session.user.id;
 
     const { orderId } = await req.json();
-    
+
     if (!orderId) {
-     
-   
       return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
     }
-    // eslint-disable-next-line no-console
-    console.log("Received orderId:", orderId);
+    
+    // console.log("Received orderId:", orderId);
 
     const order = await prisma.order.findUnique({
       where: { id: Number(orderId) },
@@ -62,7 +59,6 @@ export async function POST(req: Request) {
     // เปลี่ยนสถานะ: pending -> cooking, อื่นๆ -> completed
     const newStatus = order.status === "pending" ? "cooking" : "completed";
 
-    // อัปเดตสถานะออเดอร์
     const updatedOrder = await prisma.order.update({
       where: { id: Number(orderId) },
       data: { status: newStatus },
@@ -89,10 +85,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ status: newStatus });
   } catch (error) {
-   
-  
-    return(error)
-   
+    error
+    
     return NextResponse.json({ error: "อัปเดตสถานะล้มเหลว" }, { status: 500 });
   }
 }

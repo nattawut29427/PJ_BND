@@ -10,8 +10,4 @@ const nextConfig = {
       },
     };
 
-    module.exports = {
-      experimental: {
-        appDir: true,  
-      },
-    };
+module.exports = nextConfig;

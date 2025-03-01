@@ -23,7 +23,11 @@ export async function POST(req: Request) {
 
     return new Response("Data saved successfully", { status: 200 });
   } catch (error) {
-    return error;
+    
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -171,7 +175,8 @@ export async function PATCH(req: Request) {
   } catch (error) {
     // Log ข้อผิดพลาด
     if (error instanceof Error) {
-      return error;
+      // eslint-disable-next-line no-console
+      console.error(error);
     } else {
       // ส่งกลับข้อความ error ที่ชัดเจน
       return NextResponse.json(
