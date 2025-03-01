@@ -32,12 +32,6 @@ import ModalEdit from "@/app/admin/dashboard/Component/ModalEdit";
 import Delete from "@/app/admin/dashboard/Component/Delete";
 
 
-
-
-export type IconSvgProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
 export const columns = [
   { name: "No", uid: "No" },
   { name: "NAME", uid: "name" },
@@ -46,6 +40,12 @@ export const columns = [
   { name: "ACTIONS", uid: "actions" },
   { name: "DELETE", uid: "delete" },
 ];
+
+
+export type IconSvgProps = SVGProps<SVGSVGElement> & {
+  size?: number;
+};
+
 
 export const EyeIcon = (props: IconSvgProps) => (
   <svg
