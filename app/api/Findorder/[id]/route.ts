@@ -1,77 +1,50 @@
-// app/api/Findorder/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 
 export async function GET(
-  _request: NextRequest, // ใช้ NextRequest แทน Request
-  { params }: { params: { id: string } } // รับ params โดยตรง
+  request: NextRequest, 
+  { params }: { params: { id: string } }
 ) {
   try {
-    // แปลง ID พร้อมตรวจสอบความถูกต้อง
-    const orderId = Number.parseInt(params.id, 10);
-    
+    // แปลง ID ให้เป็นตัวเลข
+    const orderId = Number(params.id);
+  
     if (Number.isNaN(orderId)) {
+      
       return NextResponse.json(
-        { 
-          code: "INVALID_ID",
-          message: "รหัสใบสั่งซื้อไม่ถูกต้อง"
-        },
+        { error: "Invalid order ID" },
         { status: 400 }
       );
     }
 
-    // ค้นหาข้อมูลด้วย Prisma
+    // ค้นหา Order ในฐานข้อมูล
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
         orderItems: {
           include: {
-            skewer: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-              }
-            }
-          }
-        }
-      }
+            skewer: true, 
+          },
+        },
+      },
     });
 
-    // ตรวจสอบการมีอยู่ของข้อมูล
+    // ถ้าไม่พบ Order
     if (!order) {
       return NextResponse.json(
-        {
-          code: "ORDER_NOT_FOUND",
-          message: "ไม่พบข้อมูลใบสั่งซื้อ"
-        },
+        { error: "Order not found" },
         { status: 404 }
       );
     }
 
-    // ส่งกลับข้อมูลรูปแบบมาตรฐาน
-    return NextResponse.json({
-      success: true,
-      data: {
-        ...order,
-        totalPrice: order.orderItems.reduce(
-          (sum, item) => sum + (item.skewer.price * item.quantity),
-          0
-        )
-      }
-    });
+    return NextResponse.json(order, { status: 200 });
 
   } catch (error) {
-    // จัดการ error logging
-    error
-
-    // ส่งกลับ error response แบบมาตรฐาน
+    return error
+   
     return NextResponse.json(
-      {
-        code: "INTERNAL_SERVER_ERROR",
-        message: "เกิดข้อผิดพลาดในระบบ"
-      },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
