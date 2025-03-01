@@ -17,8 +17,10 @@ export async function POST(request:any) {
         image: fileUrl,
       },
     })
+  
     return Response.json({ message: 'User created', user })
+  
   } catch (error) {
-    return Response.json({ error: 'User could not be created' })
+    return Response.json({ error: error })
   }
 }

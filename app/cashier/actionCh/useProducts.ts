@@ -6,7 +6,7 @@ type Skewer = {
   name: string;
   status: string;
   images: string;
-  category: string;
+  category: number;
   quantity: number;
   price: number;
 };

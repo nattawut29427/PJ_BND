@@ -1,9 +1,10 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prisma";
-import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+import prisma from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
 
-      async authorize(credentials , request) {
+      async authorize(credentials ) {
         if (!credentials || !credentials.email || !credentials.password) {
           throw new Error("Email and password are required");
         }
@@ -55,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role; // เพิ่ม role
       }
+    
       return token;
     },
     session: async ({ session, token }) => {
@@ -62,10 +64,12 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string; // เพิ่ม role เข้าไปใน session
       }
+  
       return session;
     },
   },
 };
 
 const handler = NextAuth(authOptions);
+
 export { handler as GET, handler as POST };

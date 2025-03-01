@@ -46,9 +46,9 @@ export default function DeleteProductModal({
       }
   
       onProductDeleted?.();
-      onOpenChange(false);
-    } catch (err) {
-      setError("Error deleting product. Please try again.");
+      onOpenChange();
+    } catch (error) {
+      return (alert("Error deleting product. Please try again."), error) ;
     } finally {
       setLoading(false);
     }
@@ -83,13 +83,17 @@ export default function DeleteProductModal({
             <ModalFooter>
               <Button
                 color="danger"
-                variant="light"
-                onPress={() => onOpenChange(false)}
                 isDisabled={loading}
+                variant="light"
+                onPress={() => onOpenChange()}
               >
                 Cancel
               </Button>
-              <Button color="primary" type="submit" isLoading={loading}>
+              <Button 
+              color="primary" 
+              isLoading={loading}
+              type="submit" 
+              >
                 Confirm
               </Button>
             </ModalFooter>

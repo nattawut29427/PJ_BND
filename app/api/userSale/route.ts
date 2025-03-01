@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ปรับ path ให้ถูกต้องตามโปรเจคของคุณ
 
 const prisma = new PrismaClient();
@@ -54,6 +55,7 @@ export async function POST(req: Request) {
         }
 
         const price = skewer.price * item.quantity;
+        
         totalPrice += price;
 
         // สร้าง OrderItem
@@ -110,7 +112,8 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error(error);
+   
+
     return NextResponse.json(
       { error: error.message || "Error processing order" },
       { status: 500 }

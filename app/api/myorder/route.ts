@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma"; 
 
@@ -29,6 +30,7 @@ export async function GET(req: Request) {
   
       return NextResponse.json(orders);
     } catch (error) {
-      return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+     
+      return NextResponse.json({ error: error }, { status: 500 });
     }
   }

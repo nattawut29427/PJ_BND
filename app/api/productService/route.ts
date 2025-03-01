@@ -1,13 +1,7 @@
-
-import { PrismaClient } from '@prisma/client';
-
-import { ourFileRouter } from "@/app/api/uploadthing/core"
-
-import { NextResponse } from 'next/server';
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
-
-
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +23,7 @@ export async function POST(req: Request) {
 
     return new Response("Data saved successfully", { status: 200 });
   } catch (error) {
-    return new Response("Failed to save data", { status: 500 });
+    return error;
   }
 }
 
@@ -55,9 +49,8 @@ export async function GET(req: Request) {
     }
 
     if (count) {
-      
       const totalSkewers = await prisma.skewer.count();
-     
+
       return NextResponse.json({ total: totalSkewers });
     }
 
@@ -66,18 +59,10 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(skewers);
-  
   } catch (error) {
-    
-    console.error("Error fetching skewer data:", error);
-   
-    return NextResponse.json(
-      { error: "Unable to fetch skewer data" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
-
 
 export async function DELETE(req: Request) {
   try {
@@ -85,7 +70,10 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Product ID is required" },
+        { status: 400 }
+      );
     }
 
     // ลบข้อมูลในตาราง Sale ที่เชื่อมโยงกับ Skewer นี้
@@ -98,14 +86,14 @@ export async function DELETE(req: Request) {
       where: { id: parseInt(id) },
     });
 
-    return NextResponse.json({ message: "Product and related sales deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Product and related sales deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error during deletion:", error);
-    return NextResponse.json({ error: "Unable to delete product" }, { status: 500 });
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
-
-
 
 export async function PATCH(req: Request) {
   try {
@@ -146,21 +134,16 @@ export async function PATCH(req: Request) {
     });
 
     if (!skewer) {
-      return NextResponse.json(
-        { error: "Skewer not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Skewer not found" }, { status: 404 });
     }
 
     // คำนวณจำนวนใหม่ (หากมี quantityChange)
     let newQuantity = skewer.quantity;
-   
+
     if (typeof quantityChange === "number") {
-    
       newQuantity = skewer.quantity + quantityChange;
-     
+
       if (newQuantity < 0) {
-      
         return NextResponse.json(
           { error: "Insufficient quantity" },
           { status: 400 }
@@ -174,7 +157,8 @@ export async function PATCH(req: Request) {
       data: {
         name: name !== undefined ? name : skewer.name, // อัปเดตชื่อ (หากส่งมา)
         price: price !== undefined ? parseFloat(price) : skewer.price, // แปลง price เป็น float
-        categoryId: categoryId !== undefined ?  parseInt(categoryId) : skewer.categoryId, // อัปเดตหมวดหมู่ (หากส่งมา)
+        categoryId:
+          categoryId !== undefined ? parseInt(categoryId) : skewer.categoryId, // อัปเดตหมวดหมู่ (หากส่งมา)
         quantity: newQuantity, // อัปเดตจำนวน (หากส่ง quantityChange)
       },
     });
@@ -187,19 +171,17 @@ export async function PATCH(req: Request) {
   } catch (error) {
     // Log ข้อผิดพลาด
     if (error instanceof Error) {
-      console.error("Error updating product:", error.message);
+      return error;
     } else {
-      console.error("An unknown error occurred:", error);
+      // ส่งกลับข้อความ error ที่ชัดเจน
+      return NextResponse.json(
+        {
+          error:
+            "Unable to update product: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
     }
-
-    // ส่งกลับข้อความ error ที่ชัดเจน
-    return NextResponse.json(
-      {
-        error:
-          "Unable to update product: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      },
-      { status: 500 }
-    );
   }
 }

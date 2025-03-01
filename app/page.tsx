@@ -1,5 +1,7 @@
 "use client"
 
+
+import { Button } from "@heroui/react";
 import { Link } from "@heroui/link";
 import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
@@ -9,7 +11,6 @@ import {  signOut } from "next-auth/react";
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
-import { Button } from "@heroui/react";
 
 export default function Home() {
   return (
@@ -56,8 +57,8 @@ export default function Home() {
         </Snippet>
       </div>
         <Button
-              onPress={() => signOut({ callbackUrl: "/" })}
               className="w-fit bg-red-500 text-white hover:bg-red-600"
+              onPress={() => signOut({ callbackUrl: "/" })}
             >
               Sign Out
         </Button>

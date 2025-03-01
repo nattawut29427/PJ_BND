@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
 import { PrismaClient, OrderStatus } from "@prisma/client";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { pusherServer } from "@/lib/pusher";
 
@@ -47,6 +48,7 @@ export async function GET(request: Request) {
             acc[date] = 0;
           }
           acc[date] += totalPrice;
+         
           return acc;
         },
         {}
@@ -165,7 +167,7 @@ export async function GET(request: Request) {
     // ส่งข้อมูลกลับ
     return NextResponse.json(completedOrders, { status: 200 });
   } catch (error: any) {
-    console.error("Error fetching completed orders:", error);
+  
 
     return NextResponse.json(
       { error: error.message || "Failed to fetch completed orders" },
@@ -212,6 +214,7 @@ export async function POST(req: Request) {
         }
 
         const price = skewer.price * item.quantity;
+        
         totalPrice += price;
 
         // สร้าง OrderItem
@@ -299,7 +302,6 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Order creation error:", error);
 
     return NextResponse.json(
       { error: error.message || "Failed to create order" },

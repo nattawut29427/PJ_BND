@@ -1,10 +1,12 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import { Input } from "@heroui/react";
-import Selected from "@/components/Selected";
 import { UploadButton } from "@uploadthing/react";
-import {Button , Alert } from "@heroui/react";
+import {Button ,  } from "@heroui/react";
+
+import Selected from "@/components/Selected";
 
 export default function SkewerUpload() {
   const [formData, setFormData] = useState({
@@ -14,9 +16,13 @@ export default function SkewerUpload() {
     quantity: "",
   });
 
-  const [quantity, setQuantity] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [quantity, setQuantity] = useState(""); 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [price, setPrice] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [name, setName] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [role, setRole] = useState("");
 
   // ตัวเลือก Roles
@@ -28,16 +34,19 @@ export default function SkewerUpload() {
     { key: "5", label: "อื่นๆ" }
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRoleChange = (newRole: string) => {
     setRole(newRole);
-    console.log(setRole);
+    
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   // ใช้ useEffect เก็บข้อมูลใน localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
+   
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
@@ -53,11 +62,12 @@ export default function SkewerUpload() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+   
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUploadComplete = (res: any) => {
-    console.log("Upload complete response:", res);
+    
     if (res[0]?.url) {
       setFileUrl(res[0]?.url);
       alert("Upload complete! Please submit the form to save data.");
@@ -93,7 +103,7 @@ export default function SkewerUpload() {
           alert("Failed to save data");
         }
       } catch (error) {
-        console.error("Error:", error);
+        return(error)
         alert("Error saving data");
       }
   };
@@ -105,22 +115,22 @@ export default function SkewerUpload() {
           <Input
             label="Name"
             labelPlacement="outside"
+            name="name"
             placeholder="Name product..."
-            value={formData.name}
-            onChange={handleChange}
             size="lg"
             type="text"
-            name="name"
+            value={formData.name}
+            onChange={handleChange}
           />
           <Input
             label="Price"
             labelPlacement="outside"
+            name="price"
             placeholder="Input Price..."
-            value={formData.price}
-            onChange={handleChange}
             size="lg"
             type="float"
-            name="price"
+            value={formData.price}
+            onChange={handleChange}
           />
         </div>
 
@@ -128,17 +138,17 @@ export default function SkewerUpload() {
           <Input
             label="Quantity"
             labelPlacement="outside"
+            name="quantity"
             placeholder="Input your Quantity...."
-            value={formData.quantity}
-            onChange={handleChange}
             size="lg"
             type="number"
-            name="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
           />
           <Selected
             label="ประเภท"
-            placeholder="เลือกประเภท"
             options={roles}
+            placeholder="เลือกประเภท"
             value={formData.categoryId}
             onChange={(newCategoryId) =>
               setFormData({ ...formData, categoryId: newCategoryId })
@@ -149,18 +159,22 @@ export default function SkewerUpload() {
         <div className="flex justify-start pt-3 ">
           <UploadButton<FileRouter>
             endpoint="skewerImageUpload"
-            onClientUploadComplete={handleUploadComplete}
             metadata={{
               name: formData.name,
               price: formData.price,
               categoryId: formData.categoryId,
               quantity: formData.quantity,
             }}
+            onClientUploadComplete={handleUploadComplete}
           />
         </div>
         <div className="flex justify-end ">
 
-        <Button type="submit" color="primary">Save</Button>
+        <Button 
+         color="primary"
+        type="submit"
+        >Save
+        </Button>
         </div>
       </form>
     </div>

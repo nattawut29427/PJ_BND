@@ -1,7 +1,9 @@
 // app/api/order/accept/route.ts
+
 import { NextResponse } from "next/server";
-import { PrismaClient, OrderStatus } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { PrismaClient, OrderStatus } from "@prisma/client";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { pusherServer } from "@/lib/pusher";
 
@@ -46,7 +48,7 @@ export async function POST(req: Request) {
 
     if (order.status === OrderStatus.pending) {
       newStatus = OrderStatus.canceled;
-      console.log("New status:", newStatus);
+      
 
    
     } else {
@@ -79,13 +81,13 @@ export async function POST(req: Request) {
     // Trigger event แจ้งอัปเดตสถานะผ่าน Pusher
     await pusherServer.trigger(`orders`, "status-updated", updatedOrder);
 
-    console.log("Pusher Triggered:", `orders-${orderId}`, newStatus);
+    
 
     await pusherServer.trigger(`orders-${orderId}`, "status-updated", {
       orderId: updatedOrder.id,
       status: newStatus,
     });
-    console.log("Pusher Triggered:", `orders-${orderId}`, newStatus);
+    
 
     // หากสถานะเป็น canceled ให้ทำการลบข้อมูลที่เกี่ยวข้องตามลำดับ
     if (newStatus === OrderStatus.canceled) {
@@ -110,13 +112,11 @@ export async function POST(req: Request) {
 
           // 4. ลบ Order
           await prisma.order.delete({ where: { id: orderId } });
-          console.log(
-            `Order ${orderId} and related data deleted after cancellation`
-          );
+         
 
           await pusherServer.trigger("orders", "order-deleted", { orderId });
         } catch (deleteError) {
-          console.error("Error deleting order and related data:", deleteError);
+          return deleteError
         }
       });
     }
@@ -129,7 +129,6 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error(error);
 
     return NextResponse.json(
       { error: error.message || "Error processing order cancellation" },

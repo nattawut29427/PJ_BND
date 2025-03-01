@@ -1,9 +1,10 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+
 import logo from "@/public/logo.png";
 
 const SignIn = () => {
@@ -13,6 +14,11 @@ const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
+
+  if (session) {
+    // eslint-disable-next-line no-console
+    console.log("User is signed in:", session.user);
+  }
 
   // เมื่อ session มีการเปลี่ยนแปลง (หลังจาก login สำเร็จ) ให้ redirect ตาม role
   const handleSubmit = useCallback(
@@ -42,7 +48,7 @@ const SignIn = () => {
     setLoading(true);
     setError(null);
 
-    const result = signIn("google", { callbackUrl: "/redirect-handler" });
+    const result = await signIn("google", { callbackUrl: "/redirect-handler" });
 
     setLoading(false);
 
@@ -56,11 +62,11 @@ const SignIn = () => {
     <>
       <div className="flex flex-wrap min-h-screen w-full content-center justify-center bg-red-950 py-10">
         <div className="flex shadow-md">
-        <div className="flex flex-wrap content-center justify-center rounded-l-md w-96 h-[32rem] bg-white">
+          <div className="flex flex-wrap content-center justify-center rounded-l-md w-96 h-[32rem] bg-white">
             <Image
-              src={logo} // Use the imported logo variable
               alt="Logo"
               className="w-fit h-fit object-cover rounded-r-md"
+              src={logo} // Use the imported logo variable
             />
           </div>
           <div className="flex flex-wrap content-center justify-center rounded-r-md bg-white w-96 h-[32rem]">
@@ -73,33 +79,33 @@ const SignIn = () => {
                 <p className="text-red-500 text-center mb-4">{error}</p>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <div>
                   <input
+                    required
+                    className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
+                    placeholder="Email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="Email"
-                    className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
                   />
                 </div>
 
                 <div>
                   <input
+                    required
+                    className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
+                    placeholder="Password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="Password"
-                    className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
                   />
                 </div>
 
                 <button
-                  type="submit"
-                  disabled={loading}
                   className="w-full p-2 bg-red-500 text-white text-lg font-semibold rounded-md"
+                  disabled={loading}
+                  type="submit"
                 >
                   {loading ? "Signing In..." : "Sign In"}
                 </button>
@@ -111,17 +117,17 @@ const SignIn = () => {
 
               <div className="mt-2 text-center border rounded-md border-gray-400">
                 <button
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
                   className="w-full p-2 bg-white text-gray-700 font-semibold rounded-md text-lg "
+                  disabled={loading}
+                  onClick={handleGoogleSignIn}
                 >
-                  <i className="fa-brands fa-google mr-3"></i>
+                  <i className="fa-brands fa-google mr-3"> </i>
+                 
                   {loading ? "Google..." : "Google"}
                 </button>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </>

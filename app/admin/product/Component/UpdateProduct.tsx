@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Input } from "@heroui/react";
-import Selected from "@/components/Selected";
-import { UploadButton } from "@uploadthing/react";
-import { Button, Alert } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
+import { Input, Button, Alert } from "@heroui/react";
+
+import Selected from "@/components/Selected";
 
 type Skewer = {
   id: number;
@@ -16,24 +15,21 @@ type Skewer = {
 };
 
 type Props = {
-  id: number; // รับค่า ID เป็น number
+  id: number;
 };
 
 export default function UpdateProduct({ id }: Props) {
   const [formData, setFormData] = useState<Skewer>({
-    id: "",
+    id: 0,
     name: "",
-    price: "",
+    price: 0,
     categoryId: "",
-    quantity: "",
+    quantity: 0,
   });
 
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [alertStatus, setAlertStatus] = useState<"success" | "error" | null>(null);
   const [alertMessage, setAlertMessage] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // ตัวเลือก Roles
   const roles = [
     { key: "1", label: "เนื้อหมู" },
     { key: "2", label: "เนื้อวัว" },
@@ -42,83 +38,47 @@ export default function UpdateProduct({ id }: Props) {
     { key: "5", label: "อื่นๆ" }
   ];
 
-  // ดึงข้อมูลและคำนวณ ID ถัดไป
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`/api/productService?id=${id}`);
         const data: Skewer = await response.json();
+       
         setFormData(data);
+      
       } catch (error) {
-        console.error("Failed to fetch product:", error);
+        return error
       }
     };
 
     if (id) fetchData();
   }, [id]);
 
-  // ตั้งค่า ID เมื่อได้รับจากภายนอก (เช่น router query)
   useEffect(() => {
-    // ตัวอย่าง: รับ ID จาก URL เช่น /edit/7
-    const params = new URLSearchParams(window.location.search);
-    const idFromUrl = params.get("id");
-    if (idFromUrl) setSelectedId(idFromUrl);
+    const savedData = localStorage.getItem("formData");
+    
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+    
+      setFormData({ ...parsedData, id: 0 });
+  
+    }
   }, []);
+
+  useEffect(() => {
+    const { id: _, ...rest } = formData;
+    
+    localStorage.setItem("formData", JSON.stringify(rest));
+ 
+  }, [formData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+   
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // เก็บข้อมูลใน localStorage (ยกเว้น ID)
-  useEffect(() => {
-    const savedData = localStorage.getItem("formData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setFormData({ ...parsedData, id: "" }); // ล้าง ID ที่เก็บไว้
-    }
-  }, []);
-
-  useEffect(() => {
-    const { id, ...rest } = formData;
-    localStorage.setItem("formData", JSON.stringify(rest));
-  }, [formData]);
-
-
-
-  // useEffect(() => {
-  //   const fetchSkewers = async () => {
-  //     try {
-  //       const response = await fetch("/api/productService");
-  //       const data: Skewer[] = await response.json(); // แก้ไขบรรทัดนี้
-        
-  //       // คำนวณ ID ถัดไป
-  //       const ids = data.map((item) => item.id);
-  //       const maxId = Math.max(...ids, 0);
-  //       const nextId = (maxId).toString();
-        
-  //       setSkewer(data);
-  //       setFormData(prev => ({ ...prev, id: nextId }));
-  //     } catch (error) {
-  //       console.error("Failed to fetch skewers:", error);
-  //     }
-  //   };
   
-  //   fetchSkewers();
-  // }, []);
-
-  const handleUploadComplete = (res: any) => {
-    console.log("Upload complete response:", res);
-    if (res[0]?.url) {
-      setFileUrl(res[0]?.url);
-      setAlertStatus("success");
-      setAlertMessage("Upload complete! Please submit the form to save data.");
-    } else {
-      setAlertStatus("error");
-      setAlertMessage("Upload failed, please try again.");
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,10 +87,9 @@ export default function UpdateProduct({ id }: Props) {
     const metadata = {
       id: formData.id,
       name: formData.name || undefined,
-      price: formData.price ? parseFloat(formData.price) : undefined,
+      price: formData.price ? parseFloat(formData.price.toString()) : undefined,
       categoryId: formData.categoryId || undefined,
-      quantityChange: parseInt(formData.quantity, 10),
-      fileUrl: fileUrl || null,
+      quantityChange: parseInt(formData.quantity.toString(), 10),
     };
 
     try {
@@ -147,66 +106,64 @@ export default function UpdateProduct({ id }: Props) {
       if (response.ok) {
         setAlertStatus("success");
         setAlertMessage("Data saved successfully");
-        // รีเฟรชหน้าหลังจาก 2 วินาที
         setTimeout(() => window.location.reload(), 2000);
       } else {
         setAlertStatus("error");
         setAlertMessage(`Failed to save data: ${result.error || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Error:", error);
-      setAlertStatus("error");
-      setAlertMessage("Error saving data");
+      return (( setAlertStatus("error"),
+      setAlertMessage("Error saving data")),error)
+     
     }
   };
 
   return (
     <div className="flex flex-col gap-4">
-
-      {/* Alert สำหรับแสดงสถานะ */}
       {alertStatus && (
         <Alert
-          color={alertStatus}
-          title={alertStatus === "success" ? "Success" : "Error"}
-          description={alertMessage}
           className="mb-4"
+          color={alertStatus === "success" ? "success" : "danger"}
+          description={alertMessage}
+          title={alertStatus === "success" ? "Success" : "Error"}
           onClose={() => setAlertStatus(null)}
         />
       )}
+
       <form onSubmit={handleSubmit}>
         <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
           <Input
+            isRequired
             label="ID"
             labelPlacement="outside"
+            name="id"
             placeholder="Name product..."
-            value={formData.id}
-            onChange={handleChange}
             size="lg"
             type="number"
-            name="id"
-            isRequired
+            value={formData.id.toString()}
+            onChange={handleChange}
           />
+
           <Input
             label="Name"
             labelPlacement="outside"
+            name="name"
             placeholder="Name product..."
-            value={formData.name}
-            onChange={handleChange}
             size="lg"
             type="text"
-            name="name"
-            
+            value={formData.name}
+            onChange={handleChange}
           />
+
           <Input
             label="Price"
             labelPlacement="outside"
+            name="price"
             placeholder="Input Price..."
-            value={formData.price}
-            onChange={handleChange}
             size="lg"
             type="number"
-            name="price"
-           
+            value={formData.price.toString()}
+            onChange={handleChange}
           />
         </div>
 
@@ -214,47 +171,31 @@ export default function UpdateProduct({ id }: Props) {
           <Input
             label="Quantity"
             labelPlacement="outside"
+            name="quantity"
             placeholder="Input your Quantity...."
-            value={formData.quantity}
-            onChange={handleChange}
             size="lg"
             type="number"
-            name="quantity"
-            
+            value={formData.quantity.toString()}
+            onChange={handleChange}
           />
+
           <Selected
             label="ประเภท"
-            placeholder="เลือกประเภท"
             options={roles}
+            placeholder="เลือกประเภท"
             value={formData.categoryId}
             onChange={(newCategoryId) =>
               setFormData({ ...formData, categoryId: newCategoryId })
             }
-            
           />
         </div>
 
-        <div className="upload-section">
-          {/* <p className="pt-5">Upload image</p> */}
-          {/* <div className="flex justify-start pt-3">
-            <UploadButton
-              endpoint="skewerImageUpload"
-              onClientUploadComplete={handleUploadComplete}
-              appearance={{
-                button: "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed",
-              }}
-              metadata={{
-                name: formData.name,
-                price: formData.price,
-                categoryId: formData.categoryId,
-                quantity: formData.quantity,
-              }}
-            />
-          </div> */}
-        </div>
-
         <div className="flex justify-end mt-6">
-          <Button type="submit" color="primary" className="w-full md:w-auto">
+          <Button
+            className="w-full md:w-auto"
+            color="primary"
+            type="submit"
+          >
             Save Changes
           </Button>
         </div>

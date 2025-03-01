@@ -12,6 +12,7 @@ export async function GET(req: Request) {
 
     if (count) {
       const totalUsers = await prisma.user.count();
+    
       return NextResponse.json({ total: totalUsers });
     }
 
@@ -33,7 +34,9 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(users);
-  } catch (error) {}
+  } catch (error) {
+    return error
+  }
 }
 
 export async function PATCH(req: Request) {
@@ -93,8 +96,10 @@ export async function PATCH(req: Request) {
   } catch (error) {
     // Log ข้อผิดพลาด
     if (error instanceof Error) {
+      // eslint-disable-next-line no-console
       console.error("Error updating user:", error.message);
     } else {
+      // eslint-disable-next-line no-console
       console.error("An unknown error occurred:", error);
     }
 
@@ -134,9 +139,9 @@ export async function DELETE(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(error); // แสดงข้อความผิดพลาดในกรณีที่เกิดข้อผิดพลาด
+   
     return NextResponse.json(
-      { error: "Unable to delete user" },
+      { error: error },
       { status: 500 }
     );
   }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { Input } from "@heroui/react";
@@ -38,10 +38,11 @@ export const SearchIcon = (props: any) => {
     </svg>
   );
 };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Find: React.FC<FindProps> = ({ value, onChange, className }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchQuery, setSearchQuery] = useState(""); // เก็บค่าการค้นหา
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -74,13 +75,14 @@ const Find: React.FC<FindProps> = ({ value, onChange, className }) => {
         label=""
         placeholder="Search by name..."
         radius="lg"
-        value={value} // ใส่ค่าของ searchQuery
-        onChange={onChange} // เมื่อมีการพิมพ์
         startContent={
           <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
         }
+        value={value} // ใส่ค่าของ searchQuery
+        onChange={onChange} // เมื่อมีการพิมพ์
       />
     </div>
   );
-}
+};
+
 export default Find;

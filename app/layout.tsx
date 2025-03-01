@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@heroui/link";
 import clsx from "clsx";
 
 import { Providers } from "./providers";

@@ -1,5 +1,4 @@
 "use client";
-import Drawer from "@/app/admin/components/Drawer";
 
 import {
   Navbar,
@@ -8,13 +7,14 @@ import {
   Input,
   Button,
   Image,
-  Spinner
+  Spinner,
 } from "@heroui/react";
-
+import { useRouter } from "next/navigation";
 import React, { useState, useRef } from "react";
+
+import Drawer from "@/app/admin/components/Drawer";
 import { useCart } from "@/app/cashier/actionCh/useCart";
 import { useProducts } from "@/app/cashier/actionCh/useProducts";
-import { useRouter } from "next/navigation";
 
 
 export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
@@ -45,27 +45,32 @@ export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
   </svg>
 );
 export default function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { cart, addToCart, removeFromCart, calculateTotal, clearCart } =
     useCart();
   const { products, loading, updateProductQuantity, revertProductQuantity } =
     useProducts();
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const quantityRefs = useRef<{ [key: number]: HTMLInputElement | any }>({});
+  const quantityRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cash, setCash] = useState<number>(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [message, setMessage] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const cashInputRef = useRef<HTMLInputElement | null>(null);
   const [paymentType, setPaymentType] = useState<"cash" | "card" | "online">(
     "cash"
   );
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState<string>("");
 
-  const customerId = "customer-session-id";
+  // const customerId = "customer-session-id";
 
   const categories = [
     { id: 1, name: "เนื้อหมู" },
@@ -104,17 +109,19 @@ export default function App() {
         setStatus(`Error: ${data.error}`);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       setStatus("Error processing order.");
     }
   };
 
-  const handleAddToCart = (item) => {
+  const handleAddToCart = (item : any) => {
     if (item.quantity === 0) return;
     const quantity = parseInt(quantityRefs.current[item.id]?.value || "1", 10);
 
     if (quantity > item.quantity) {
       alert("ไม่สามารถเพิ่มเกินจำนวนสต็อกได้");
+    
       return;
     }
 
@@ -123,13 +130,13 @@ export default function App() {
 
     setCartItems((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
-     
+
       if (existingItem) {
         return prev.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-     
+
       return [
         ...prev,
         { id: item.id, name: item.name, quantity, price: item.price },
@@ -141,13 +148,11 @@ export default function App() {
 
   if (loading) {
     return (
-      
       <Spinner
         className="flex justify-center items-center m-auto w-1/2 h-1/2 "
-        size="lg"
         color="danger"
         labelColor="danger"
-       
+        size="lg"
       />
     );
   }
@@ -172,7 +177,6 @@ export default function App() {
             size="md"
             startContent={<SearchIcon size={18} />}
             type="search"
-            
             value={searchTerm} // เพิ่ม value
             onChange={(e) => setSearchTerm(e.target.value)} // เพิ่ม onChange
           />
@@ -190,12 +194,12 @@ export default function App() {
         {categories.map((category) => (
           <Button
             key={category.id}
-            onPress={() => setSelectedCategory(category.id)}
             className={`px-4 py-2 text-sm sm:text-base ${
               selectedCategory === category.id
-                ? "bg-orange-600 text-white"
-                : "bg-zinc-800 text-white"
+              ? "bg-orange-600 text-white"
+              : "bg-zinc-800 text-white"
             }`}
+            onPress={() => setSelectedCategory(category.id)}
           >
             {category.name}
           </Button>
@@ -209,7 +213,7 @@ export default function App() {
             .filter(
               (item) =>
                 selectedCategory === null ||
-                item.categoryId === selectedCategory
+                item.category === selectedCategory
             )
             .filter(
               (item) =>
@@ -222,10 +226,10 @@ export default function App() {
               >
                 <Image
                   alt={item.name}
+                  className="rounded-lg object-cover mb-3 mx-auto w-full sm:w-40 sm:h-40"
+                  height={120}
                   src={item.images}
                   width={120}
-                  height={120}
-                  className="rounded-lg object-cover mb-3 mx-auto w-full sm:w-40 sm:h-40"
                 />
                 <h2 className="text-base sm:text-lg font-medium text-black">
                   {item.name}
@@ -240,28 +244,29 @@ export default function App() {
                 </div>
                 <div className="flex flex-col justify-center sm:flex-row items-center gap-2 mt-4 w-full">
                   <input
-                    type="number"
-                    min="1"
-                    defaultValue="1"
+                    ref={(el) => {
+                      quantityRefs.current[item.id] = el;
+                    }}
                     className="p-2 rounded-xl w-full sm:w-14 h-10 text-center"
-
-                    ref={(el) => (quantityRefs.current[item.id] = el)}
+                    defaultValue="1"
                     max={item.quantity}
+                    min="1"
                     style={{
                       backgroundColor: "white",
                       border: "2px solid gray",
                       color: "black",
                     }}
+                    type="number"
                   />
 
                   <Button
-                    onPress={() => handleAddToCart(item)}
                     className={`w-full sm:w-auto px-4 py-2 text-sm sm:text-base ${
                       item.quantity === 0
-                        ? "bg-gray-400"
-                        : "bg-gradient-to-tr from-pink-500 to-yellow-500"
+                      ? "bg-gray-400"
+                      : "bg-gradient-to-tr from-pink-500 to-yellow-500"
                     }`}
                     disabled={item.quantity === 0}
+                    onPress={() => handleAddToCart(item)}
                   >
                     Add
                   </Button>
@@ -273,7 +278,7 @@ export default function App() {
             .filter(
               (item) =>
                 selectedCategory === null ||
-                item.categoryId === selectedCategory
+                item.category === selectedCategory
             )
             .filter((item) =>
               item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -312,18 +317,19 @@ export default function App() {
                         </span>
                         <div className="flex items-center gap-2">
                           <input
-                            type="number"
-                            min="1"
-                            defaultValue="1"
                             className="p-2 rounded-xl w-full sm:w-14 h-10 text-center"
+                            defaultValue="1"
                             id={`remove-quantity-${item.id}`}
+                            min="1"
                             style={{
                               backgroundColor: "white",
                               border: "2px solid gray",
                               color: "black",
                             }}
+                            type="number"
                           />
                           <Button
+                            className="bg-red-500 text-white shadow-lg py-1 px-3 rounded-xl"
                             onPress={() => {
                               const quantityToRemove = parseInt(
                                 (
@@ -337,12 +343,13 @@ export default function App() {
                                 alert(
                                   "Cannot remove more than what is in the cart."
                                 );
+                                
                                 return;
+                             
                               }
                               removeFromCart(item.id, quantityToRemove);
                               revertProductQuantity(item.id, quantityToRemove);
                             }}
-                            className="bg-red-500 text-white shadow-lg py-1 px-3 rounded-xl"
                           >
                             Remove
                           </Button>
@@ -360,33 +367,33 @@ export default function App() {
                 <div className="grid grid-cols-3 gap-x-1 mt-2 font-medium">
                   <label>
                     <input
-                      type="radio"
-                      name="paymentType"
-                      value="cash"
-                      className="mr-1"
                       checked={paymentType === "cash"}
+                      className="mr-1"
+                      name="paymentType"
+                      type="radio"
+                      value="cash"
                       onChange={() => setPaymentType("cash")}
                     />
                     Cash
                   </label>
                   <label>
                     <input
-                      type="radio"
-                      name="paymentType"
-                      value="card"
-                      className="mr-1"
                       checked={paymentType === "card"}
+                      className="mr-1"
+                      name="paymentType"
+                      type="radio"
+                      value="card"
                       onChange={() => setPaymentType("card")}
                     />
                     Card
                   </label>
                   <label>
                     <input
-                      type="radio"
-                      name="paymentType"
-                      value="online"
-                      className="mr-1"
                       checked={paymentType === "online"}
+                      className="mr-1"
+                      name="paymentType"
+                      type="radio"
+                      value="online"
                       onChange={() => setPaymentType("online")}
                     />
                     Online
@@ -406,8 +413,8 @@ export default function App() {
 
             <Button
               className="w-full mt-2 h-14 text-xl text-white"
-              type="submit"
               color="success"
+              type="submit"
             >
               Pay
             </Button>

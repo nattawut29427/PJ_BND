@@ -44,6 +44,7 @@ export async function GET(request: Request) {
             acc[date] = 0;
           }
           acc[date] += totalPrice;
+        
           return acc;
         },
         {}
@@ -140,10 +141,9 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ message: "Please specify query parameters." });
   } catch (error) {
-    console.error("Error fetching daily sale data:", error);
-
+    
     return NextResponse.json(
-      { error: "Unable to fetch daily sale data" },
+      { error: error },
 
       { status: 500 }
     );
@@ -207,10 +207,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(createdSales, { status: 201 });
   } catch (error) {
-    console.error("Error:", error);
-
+  
     return NextResponse.json(
-      { error: "Failed to process sale" },
+      { error: error },
 
       { status: 500 }
     );

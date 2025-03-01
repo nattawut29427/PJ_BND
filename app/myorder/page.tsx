@@ -33,6 +33,7 @@ export default function OrdersPage() {
 
         setOrders(data);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error fetching orders:", error);
       }
     };
@@ -57,8 +58,8 @@ export default function OrdersPage() {
                 </p>
               </div>
               <Link
-                href={`/order/${order.id}`}
                 className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                href={`/order/${order.id}`}
               >
                 ดูรายละเอียด
               </Link>

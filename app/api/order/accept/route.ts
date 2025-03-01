@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient, OrderStatus } from "@prisma/client";
+import { PrismaClient,  } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -23,7 +23,7 @@ export async function GET() {
     return NextResponse.json({ orders });
   } catch (error) {
     return NextResponse.json(
-      { error: "ดึงข้อมูลออเดอร์ล้มเหลว" },
+      { error: error },
       { status: 500 }
     );
   }
@@ -33,7 +33,9 @@ export async function POST(req: Request) {
   try {
     // ตรวจสอบการเข้าสู่ระบบ (เช่น Cashier)
     const session = await getServerSession(authOptions);
+   
     if (!session) {
+   
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const cashierId = session.user.id;
@@ -42,10 +44,10 @@ export async function POST(req: Request) {
     
     if (!orderId) {
      
-      console.error("Missing orderId");
    
       return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
     }
+    // eslint-disable-next-line no-console
     console.log("Received orderId:", orderId);
 
     const order = await prisma.order.findUnique({
@@ -88,7 +90,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: newStatus });
   } catch (error) {
    
-    console.error(error);
+  
+    return(error)
+   
     return NextResponse.json({ error: "อัปเดตสถานะล้มเหลว" }, { status: 500 });
   }
 }

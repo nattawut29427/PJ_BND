@@ -1,9 +1,10 @@
 // app/api/order/route.ts
-import { NextResponse } from "next/server";
-import { PrismaClient, OrderStatus } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { pusherServer } from "@/lib/pusher";
+
+// import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// import { pusherServer } from "@/lib/pusher";
 
 const prisma = new PrismaClient();
 
@@ -32,7 +33,9 @@ export async function GET(req: Request, context: { params: { id: string } }) {
       status: 200,
     });
   } catch (error) {
-    console.error("Error fetching order:", error);
+   
+    return error
+ 
     return new Response("Internal Server Error", { status: 500 });
   }
 }

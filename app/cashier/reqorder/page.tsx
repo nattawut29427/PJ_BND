@@ -1,7 +1,9 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
-import { pusherClient } from "@/lib/pusher-client";
+
 import { Spinner } from "@heroui/react";
+import { useEffect, useState, useCallback } from "react";
+
+import { pusherClient } from "@/lib/pusher-client";
 
 interface Order {
   id: number;
@@ -31,14 +33,18 @@ export default function CashierOrdersPage() {
   const fetchOrders = useCallback(async () => {
     try {
       const res = await fetch(`/api/order/accept?timestamp=${Date.now()}`);
+
       if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
 
       const data = await res.json();
+
       setOrders(data.orders.filter((o: Order) => o.status !== "completed"));
+
       setError("");
     } catch (error) {
       setError("ไม่สามารถดึงข้อมูลออเดอร์ได้");
-      console.error("Fetch error:", error);
+
+      return error;
     } finally {
       setLoading(false);
     }
@@ -52,7 +58,7 @@ export default function CashierOrdersPage() {
     const channel = pusherClient.subscribe("orders");
 
     channel.bind("new-order", (newOrder: Order) => {
-      setOrders(prev => [...prev, newOrder]);
+      setOrders((prev) => [...prev, newOrder]);
     });
 
     // // จัดการออเดอร์ใหม่
@@ -105,6 +111,7 @@ export default function CashierOrdersPage() {
 
       if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("อัปเดตสถานะล้มเหลว:", error);
       alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
       // Rollback หากเกิดข้อผิดพลาด
@@ -124,7 +131,7 @@ export default function CashierOrdersPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Spinner size="lg" color="primary" />
+        <Spinner color="primary" size="lg" />
       </div>
     );
   }
@@ -141,7 +148,10 @@ export default function CashierOrdersPage() {
       ) : (
         <ul className="space-y-4">
           {orders.map((order) => (
-            <li key={order.id} className="border border-gray-400 p-4 rounded-lg">
+            <li
+              key={order.id}
+              className="border border-gray-400 p-4 rounded-lg"
+            >
               <div className="flex justify-between items-start">
                 <div>
                   <p className="font-bold">ออเดอร์ #{order.id}</p>
@@ -171,16 +181,16 @@ export default function CashierOrdersPage() {
                   </span>
                   {order.status !== "canceled" && (
                     <button
-                      onClick={() => handleAcceptOrder(order)}
                       className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => handleAcceptOrder(order)}
                     >
                       {order.status === "pending" ? "เริ่มทำ" : "เสร็จสิ้น"}
                     </button>
                   )}
                   {order.status === "canceled" && (
                     <button
-                      onClick={() => handleDeleteOrder(order.id)}
                       className="px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700"
+                      onClick={() => handleDeleteOrder(order.id)}
                     >
                       ลบ
                     </button>

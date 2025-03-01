@@ -8,12 +8,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Chip,
   Pagination,
   Spinner,
@@ -59,15 +53,20 @@ export const columns = [
 export default function CompletedOrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
 
   // State สำหรับการจัดการตาราง
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filterValue, setFilterValue] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "createdAt",
     direction: "ascending",
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [rowsPerPage, setRowsPerPage] = useState(5);
+ 
   const [page, setPage] = useState(1);
 
  
@@ -75,11 +74,15 @@ export default function CompletedOrdersTable() {
     const fetchOrders = async () => {
       try {
         const response = await fetch("/api/order");
+      
         if (!response.ok) throw new Error("Failed to fetch orders");
+       
         const data = await response.json();
+       
         setOrders(data);
+      
       } catch (error) {
-        setError("Failed to fetch orders");
+        return error
       } finally {
         setLoading(false);
       }
@@ -166,7 +169,10 @@ export default function CompletedOrdersTable() {
 
       // เรียงลำดับสำหรับตัวเลข
       const cmp = Number(first) < Number(second) ? -1 : 1;
+    
       return sortDescriptor.direction === "ascending" ? cmp : -cmp;
+   
+
     });
   }, [sortDescriptor, items]);
 
@@ -204,8 +210,8 @@ export default function CompletedOrdersTable() {
     return (
       <Spinner
         className="flex justify-center items-center m-auto w-1/2 h-1/2"
-        size="lg"
         color="primary"
+        size="lg"
       />
     );
   }

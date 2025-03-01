@@ -1,10 +1,6 @@
 "use client";
 
 import type { Selection } from "@heroui/react";
-import ModalPD from "@/app/admin/product/Component/ModalPD";
-import Find from "@/components/Find";
-import ModalEdit from "@/app/admin/product/Component/ModalEdit";
-import Deleat from "@/app/admin/product/Component/Deleat";
 
 import {
   Dropdown,
@@ -13,8 +9,6 @@ import {
   DropdownItem,
   Button,
 } from "@heroui/react";
-
-import React, { useEffect, useState, SVGProps } from "react";
 import {
   Table,
   TableHeader,
@@ -22,14 +16,18 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  User,
-  Chip,
-  Tooltip,
   ChipProps,
   Pagination,
   Spinner,
   Image,
 } from "@heroui/react";
+import React, { useEffect, useState, SVGProps } from "react";
+
+import ModalPD from "@/app/admin/product/Component/ModalPD";
+import Find from "@/components/Find";
+import ModalEdit from "@/app/admin/product/Component/ModalEdit";
+import Deleat from "@/app/admin/product/Component/Deleat";
+
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -74,8 +72,7 @@ export const EyeIcon = (props: IconSvgProps) => (
   </svg>
 );
 
-// Other icons here...
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const statusColorMap: Record<string, ChipProps["color"]> = {
   active: "success",
   paused: "danger",
@@ -119,6 +116,7 @@ export default function App() {
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
+    
     return filteredUsers.slice(start, end);
   }, [page, filteredUsers]);
 
@@ -138,9 +136,11 @@ export default function App() {
           "http://localhost:3000/api/productService"
         ); // Replace with your API URL
         const data = await response.json();
+        
         setSkewer(data);
+      
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        return error
       } finally {
         setLoading(false);
       }
@@ -151,6 +151,7 @@ export default function App() {
 
   const itemsWithIndex = items.map((item) => {
     const index = skewer.findIndex((s) => s.id === item.id); 
+ 
     return { ...item, no: index + 1 }; 
   });
 
@@ -166,10 +167,10 @@ export default function App() {
         case "images":
           return (
             <Image
-              src={skewer.images}
-              width={300}
-              height={300}
-              className="object-cover"
+            className="object-cover"
+            height={300}
+            src={skewer.images}
+            width={300}
             />
           );
         case "name":
@@ -206,9 +207,9 @@ export default function App() {
     return (
       <Spinner
         className="flex justify-center items-center m-auto w-1/2 h-1/2"
-        size="lg"
         color="primary"
         labelColor="primary"
+        size="lg"
       />
     );
   }
@@ -218,9 +219,9 @@ export default function App() {
       <div className="flex-row">
         <div className="flex justify-end pb-5 gap-5">
           <Find
+            className="border rounded px-2 py-1"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} // อัปเดตคำค้นหา
-            className="border rounded px-2 py-1"
           />
           <Dropdown className="">
             <DropdownTrigger>

@@ -11,6 +11,7 @@ export default function RedirectHandler() {
     if (status === "loading") return; // รอให้ session โหลดเสร็จก่อน
     if (!session) {
       router.push("/signin"); // ถ้าไม่มี session ให้กลับไปหน้า Sign In
+     
       return;
     }
 

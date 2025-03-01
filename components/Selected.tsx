@@ -22,15 +22,15 @@ export default function App({
         className="flex pt-6"
         label={label}
         placeholder={placeholder}
+        radius="lg"
         selectedKeys={[value]}
+        size="sm"
         variant="bordered"
+        
         onSelectionChange={(selected) =>
           onChange(Array.from(selected)[0]?.toString() || "")
         } // อัปเดต key
-  
-        size="sm"
-        radius="lg"
-      >
+        >
         {options.map((option) => (
           <SelectItem key={option.key}>{option.label}</SelectItem>
         ))}

@@ -8,21 +8,21 @@ import {
     useDisclosure,
   } from "@heroui/react";
 
-  import FromUser from "./FromUser";
+  import FromUser from "@/app/admin/dashboard/Component/FormUesr";
   
-  export default function modalbt() {
+  export default function MoDalbt() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
   
     return (
       <>
         <Button className="bg-blue-600" onPress={onOpen}>Add</Button>
         <Modal
+          backdrop="blur"
           isDismissable={false}
           isKeyboardDismissDisabled={true}
           isOpen={isOpen}
-          onOpenChange={onOpenChange}
           size="5xl"
-          backdrop="blur"
+          onOpenChange={onOpenChange}
         >
           <ModalContent className="">
             {(onClose) => (

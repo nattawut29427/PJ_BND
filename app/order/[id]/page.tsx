@@ -2,18 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { redirect, useParams } from "next/navigation";
-import { pusherClient } from "@/lib/pusher-client";
+import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@heroui/button";
 import {
-  faBox,
-  faTruck,
   faCheckCircle,
   faClock,
   faUtensilSpoon,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { pusherClient } from "@/lib/pusher-client";
 interface OrderItems {
   id: number;
   quantity: number;
@@ -56,6 +54,7 @@ export default function OrderPage() {
           setOrder(data);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error fetching order:", error);
       }
     };
@@ -67,6 +66,7 @@ export default function OrderPage() {
 
     channel.bind("status-updated", (updatedOrder: Order) => {
       setOrder(updatedOrder);
+      // eslint-disable-next-line no-console
       console.log(updatedOrder); // อัปเดต State ทันที
     });
 
@@ -102,7 +102,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
       alert("ยกเลิกรายการเเล้วครับ");
       router.push("/user");
     } catch (error) {
-      
+      error;
       alert("พนักงานได้รับออเดอร์เเล้ว จึงไม่สามาถรยกเลิกได้");
       window.location.reload();
     }
@@ -117,16 +117,18 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto h-full  bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:h-auto sm:mt-10">
-    <div className="p-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">Order #{order.id}</h2>
-      </div>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/3">
-          <div className="relative">
-            {statuses.map((status, index) => {
-              const isCompleted = getStatusIndex(order.status) >= index;
-              const isCurrent = order.status === status.name;
+      <div className="p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">
+            Order #{order.id}
+          </h2>
+        </div>
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-full md:w-1/3">
+            <div className="relative">
+              {statuses.map((status, index) => {
+                const isCompleted = getStatusIndex(order.status) >= index;
+                const isCurrent = order.status === status.name;
 
                 return (
                   <div key={status.name} className="mb-8 flex">
@@ -136,18 +138,17 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
                           isCompleted ? "bg-green-500" : "bg-gray-200"
                         } ${isCurrent ? "ring-4 ring-green-200" : ""}`}
                       >
-                        
                         <FontAwesomeIcon
-                          icon={status.icon}
-                        
                           className={`${isCompleted ? "text-white" : "text-gray-500"}`}
-                        
+                          icon={status.icon}
                         />
                       </div>
                       {index < statuses.length - 1 && (
                         <div
                           className={`w-0.5 h-6 ${isCompleted ? "bg-green-500" : "bg-gray-200"}`}
-                        > </div>
+                        >
+                          {" "}
+                        </div>
                       )}
                     </div>
                     <div
@@ -197,8 +198,8 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
             <div className="justify-end flex pt-10">
               {order.status === "completed" ? (
                 <Button
-                  color="success"
                   className="text-white"
+                  color="success"
                   onPress={handleBackToTestUI}
                 >
                   Completed

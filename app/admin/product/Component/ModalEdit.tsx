@@ -1,13 +1,16 @@
+"use client"
+
+
+import { useState } from "react";
 import {
-  Modal,
+Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   useDisclosure,
 } from "@heroui/react";
-import { useState } from "react";
+
 import UpdateProduct from "@/app/admin/product/Component/UpdateProduct";
 
 type Props = {
@@ -33,15 +36,15 @@ export default function ModalBt({ id }: Props) {
       </Button>
       
       <Modal
+        backdrop="blur"
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        onOpenChange={onOpenChange}
         size="5xl"
-        backdrop="blur"
+        onOpenChange={onOpenChange}
       >
         <ModalContent>
-          {(onClose) => (
+          {(_onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Update Product
@@ -51,7 +54,6 @@ export default function ModalBt({ id }: Props) {
                   <UpdateProduct id={selectedId} />
                 )}
               </ModalBody>
-              <ModalFooter></ModalFooter>
             </>
           )}
         </ModalContent>

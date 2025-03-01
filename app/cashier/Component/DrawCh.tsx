@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Drawer,
   DrawerContent,
@@ -20,14 +21,17 @@ export default function App() {
 
   return (
     <>
-      <Button variant="flat" color="primary" onPress={() => setIsOpen(true)}>
+      <Button 
+      color="primary" 
+      variant="flat" 
+      onPress={() => setIsOpen(true)}>
         Open Menu
       </Button>
       <Drawer
+        backdrop="blur"
         isOpen={isOpen}
         placement="left"
         size="xs"
-        backdrop="blur"
         onOpenChange={setIsOpen}
       >
         <DrawerContent className="p-4 bg-gray-100 shadow-lg">
@@ -37,10 +41,13 @@ export default function App() {
 
           {/* User Info */}
           <div className="flex flex-col items-center gap-2 p-4 border-b">
-            <img
-              src={session?.user?.image || "/default-profile.jpg"}
-              alt="Profile"
-              className="w-20 h-20 rounded-full border"
+            <Image
+             
+             alt="Profile"
+             className="w-20 h-20 rounded-full border"
+             src={session?.user?.image || "/default-profile.jpg"}
+             
+           
             />
             <h2 className="text-lg font-semibold text-gray-800">
               {session?.user?.name }
@@ -54,7 +61,11 @@ export default function App() {
           {/* Menu Items */}
           <DrawerBody className="flex flex-col gap-4 mt-4">
             {menuItems.map((item) => (
-              <Link key={item.path} href={item.path} passHref>
+              <Link 
+              key={item.path} 
+              passHref
+              href={item.path} 
+              >
                 <Button
                   className="w-full text-start border hover:bg-blue-500 hover:text-white"
                 >
@@ -65,8 +76,8 @@ export default function App() {
 
             {/* Sign Out Button */}
             <Button
-              onPress={() => signOut({ callbackUrl: "/" })}
               className="w-full bg-red-500 text-white hover:bg-red-600"
+              onPress={() => signOut({ callbackUrl: "/" })}
             >
               Sign Out
             </Button>
