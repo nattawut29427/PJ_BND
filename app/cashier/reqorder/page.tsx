@@ -135,9 +135,9 @@ export default function CashierOrdersPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">รายการออเดอร์</h1>
+      <h1 className="text-2xl font-bold mb-4 ml-40">รายการออเดอร์</h1>
       {orders.length === 0 ? (
-        <p>ยังไม่มีออเดอร์ใหม่</p>
+        <p className="mt-10 ml-40">ยังไม่มีออเดอร์ใหม่</p>
       ) : (
         <ul className="space-y-4">
           {orders.map((order) => (

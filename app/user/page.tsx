@@ -1,5 +1,6 @@
 "use client";
 import Drawer from "@/app/admin/components/Drawer";
+
 import {
   Navbar,
   NavbarBrand,
@@ -9,10 +10,12 @@ import {
   Image,
   Spinner
 } from "@heroui/react";
+
 import React, { useState, useRef } from "react";
 import { useCart } from "@/app/cashier/actionCh/useCart";
 import { useProducts } from "@/app/cashier/actionCh/useProducts";
 import { useRouter } from "next/navigation";
+
 
 export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
   <svg
@@ -52,7 +55,7 @@ export default function App() {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const quantityRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+  const quantityRefs = useRef<{ [key: number]: HTMLInputElement | any }>({});
   const [cash, setCash] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const cashInputRef = useRef<HTMLInputElement | null>(null);
