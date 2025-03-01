@@ -4,43 +4,45 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } } // รับ params โดยตรง
+  context: { params: { id: string } } 
 ) {
   try {
-    const id = Number(params.id); // แปลงเป็น number
+    
+    const id = Number(context.params.id);
 
-    if (isNaN(id)) { // ตรวจสอบว่าเป็นตัวเลข
+    
+    if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Invalid order ID" },
+        { error: "ID ใบสั่งซื้อไม่ถูกต้อง" },
         { status: 400 }
       );
     }
+
 
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
         orderItems: {
           include: {
-            skewer: true
-          }
-        }
-      }
+            skewer: true,
+          },
+        },
+      },
     });
 
     if (!order) {
       return NextResponse.json(
-        { error: "Order not found" },
+        { error: "ไม่พบใบสั่งซื้อ" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(order);
   } catch (error) {
-    
-    return error
+  
     
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: error },
       { status: 500 }
     );
   }
