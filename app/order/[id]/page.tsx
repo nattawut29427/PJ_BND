@@ -116,7 +116,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
     statuses.findIndex((s) => s.name === status);
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:mt-10">
+    <div className="w-full max-w-7xl mx-auto h-full  bg-white shadow-lg rounded-b-2xl overflow-hidden mt-0 sm:h-auto sm:mt-10">
     <div className="p-6 sm:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h2 className="text-3xl font-bold text-gray-800">Order #{order.id}</h2>
