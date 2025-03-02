@@ -61,7 +61,7 @@ export async function middleware(request: any) {
 
     const orderId = pathname.split("/").pop(); // ดึง orderId จาก URL
 
-    const orderRes = await fetch(`/api/order/${orderId}`, {
+    const orderRes = await fetch(`${process.env.NEXTAUTH_URL}/api/order/${orderId}`, {
       headers: { Authorization: `Bearer ${user.accessToken}` },
     });
 
