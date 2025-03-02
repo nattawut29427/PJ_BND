@@ -31,11 +31,8 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      
-       // eslint-disable-next-line no-console
-      console.log('Upload complete for userId:', metadata.userId);
-      
-       // eslint-disable-next-line no-console
+      console.log("Upload complete for userId:", metadata.userId);
+
       console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback

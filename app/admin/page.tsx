@@ -48,7 +48,7 @@ export default function App() {
       setter: (data: SaleData[]) => void
     ) => {
       try {
-        const res = await fetch(`/api/order?${key}=true`);
+        const res = await fetch(`/api/findorder?${key}=true`);
         
         if (!res.ok) throw new Error(`Failed to fetch ${key}`);
         setter(await res.json());
@@ -60,10 +60,10 @@ export default function App() {
     const fetchStats = async () => {
       try {
         const [sumRes, userRes, productRes, quanRes] = await Promise.all([
-          fetch("/api/order?sum=true"),
+          fetch("/api/findorder?sum=true"),
           fetch("/api/users?count=true"),
           fetch("/api/productService?count=true"),
-          fetch("/api/order?quanSale=true"),
+          fetch("/api/findorder?quanSale=true"),
         ]);
 
         if (![sumRes, userRes, productRes, quanRes].every((res) => res.ok))

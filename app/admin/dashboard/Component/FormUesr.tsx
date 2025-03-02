@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button } from "@heroui/react";
 import { UploadButton } from "@uploadthing/react";
-import type { FileRouter } from "@/app/api/uploadthing/route";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 import Selected from "@/components/Selected";
-
-type FileRouter = any;
 
 export default function UserUpload() {
   const [formData, setFormData] = useState({
@@ -17,8 +15,9 @@ export default function UserUpload() {
     role: "",
   });
 
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  
 
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const roles = [
     { key: "admin", label: "Admin" },
@@ -26,7 +25,7 @@ export default function UserUpload() {
     { key: "customer", label: "Customer" },
   ];
 
-  const isFormValid = 
+  const isFormValid =
     formData.email.trim() !== "" &&
     formData.name.trim() !== "" &&
     formData.password.trim() !== "" &&
@@ -35,7 +34,7 @@ export default function UserUpload() {
 
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
-  
+
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
@@ -51,7 +50,7 @@ export default function UserUpload() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-   
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -69,7 +68,7 @@ export default function UserUpload() {
 
     if (!isFormValid) {
       alert("Please fill in all required fields and upload an image.");
-     
+
       return;
     }
 
@@ -96,8 +95,7 @@ export default function UserUpload() {
         alert("Failed to save data");
       }
     } catch (error) {
-      
-      return (alert("Error saving data"), error)
+      return alert("Error saving data"), error;
     }
   };
 
@@ -146,19 +144,13 @@ export default function UserUpload() {
             onChange={(newRole) => setFormData({ ...formData, role: newRole })}
           />
         </div>
-        
+
         <div className="pt-5">
           <p>Upload image</p>
           <div className="flex justify-start pt-3">
-          <UploadButton<FileRouter>
-              endpoint="skewerImageUpload"
-              metadata={{
-                email: formData.email,
-                name: formData.name,
-                password: formData.password,
-                role: formData.role,
-              }}
+          <UploadButton<OurFileRouter, "imageUploader">
               onClientUploadComplete={handleUploadComplete}
+              endpoint="imageUploader"
             />
           </div>
         </div>

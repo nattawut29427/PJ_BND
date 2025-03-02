@@ -81,9 +81,9 @@ export async function DELETE(req: Request) {
     }
 
     // ลบข้อมูลในตาราง Sale ที่เชื่อมโยงกับ Skewer นี้
-    await prisma.sale.deleteMany({
-      where: { skewerId: parseInt(id) },
-    });
+    // await prisma.sale.deleteMany({
+    //   where: { skewerId: parseInt(id) },
+    // });
 
     // ลบข้อมูลในตาราง Skewer
     await prisma.skewer.delete({

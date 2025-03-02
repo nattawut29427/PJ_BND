@@ -1,11 +1,10 @@
 "use client";
 
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@heroui/react";
 import { UploadButton } from "@uploadthing/react";
-import {Button ,  } from "@heroui/react";
-
+import { Button } from "@heroui/react";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import Selected from "@/components/Selected";
 
 export default function SkewerUpload() {
@@ -17,7 +16,7 @@ export default function SkewerUpload() {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [quantity, setQuantity] = useState(""); 
+  const [quantity, setQuantity] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [price, setPrice] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -31,13 +30,12 @@ export default function SkewerUpload() {
     { key: "2", label: "เนื้อวัว" },
     { key: "3", label: "ผัก" },
     { key: "4", label: "เครื่องดื่ม" },
-    { key: "5", label: "อื่นๆ" }
+    { key: "5", label: "อื่นๆ" },
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRoleChange = (newRole: string) => {
     setRole(newRole);
-    
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,7 +44,7 @@ export default function SkewerUpload() {
   // ใช้ useEffect เก็บข้อมูลใน localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
-   
+
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
@@ -62,12 +60,11 @@ export default function SkewerUpload() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-   
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUploadComplete = (res: any) => {
-    
     if (res[0]?.url) {
       setFileUrl(res[0]?.url);
       alert("Upload complete! Please submit the form to save data.");
@@ -79,33 +76,32 @@ export default function SkewerUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
-      const metadata = {
-        name: formData.name,
-        price: formData.price,
-        categoryId: formData.categoryId,
-        quantity: formData.quantity,
-        fileUrl,
-      };
+    const metadata = {
+      name: formData.name,
+      price: formData.price,
+      categoryId: formData.categoryId,
+      quantity: formData.quantity,
+      fileUrl,
+    };
 
-      try {
-        const response = await fetch("/api/productService", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(metadata),
-        });
+    try {
+      const response = await fetch("/api/productService", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(metadata),
+      });
 
-        if (response.ok) {
-          alert("Data saved successfully");
-        } else {
-          alert("Failed to save data");
-        }
-      } catch (error) {
-        return(error)
-        alert("Error saving data");
+      if (response.ok) {
+        alert("Data saved successfully");
+      } else {
+        alert("Failed to save data");
       }
+    } catch (error) {
+      return error;
+      alert("Error saving data");
+    }
   };
 
   return (
@@ -155,26 +151,17 @@ export default function SkewerUpload() {
             }
           />
         </div>
-          <p className="pt-5">Upload image</p>
+        <p className="pt-5">Upload image</p>
         <div className="flex justify-start pt-3 ">
-          <UploadButton<FileRouter>
-            endpoint="skewerImageUpload"
-            metadata={{
-              name: formData.name,
-              price: formData.price,
-              categoryId: formData.categoryId,
-              quantity: formData.quantity,
-            }}
+          <UploadButton<OurFileRouter, "imageUploader">
             onClientUploadComplete={handleUploadComplete}
+            endpoint="imageUploader"
           />
         </div>
         <div className="flex justify-end ">
-
-        <Button 
-         color="primary"
-        type="submit"
-        >Save
-        </Button>
+          <Button color="primary" type="submit">
+            Save
+          </Button>
         </div>
       </form>
     </div>
