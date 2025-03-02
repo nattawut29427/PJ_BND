@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "@heroui/button";
+import { Button} from "@heroui/button";
+import { Spinner } from "@heroui/react";
 import {
   faCheckCircle,
   faClock,
@@ -77,7 +78,14 @@ export default function OrderPage() {
   }, [id]);
 
   if (!order)
-    return <p className="text-center text-gray-500 mt-10">Loading...</p>;
+    return (
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2"
+        color="primary"
+        labelColor="primary"
+        size="lg"
+      />
+    );
 
   return <OrderStatusComponent order={order} />;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Link from "next/link";
+
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -10,11 +10,13 @@ import {
   Button,
 } from "@heroui/react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
 
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
@@ -85,13 +87,18 @@ export default function App() {
             </p>
           </div>
 
-          <DrawerBody className="flex flex-col gap-4 mt-4 overflow-y-auto">
+          <DrawerBody className="flex flex-col  gap-4 mt-4 overflow-y-auto">
             {filteredMenuItems.map((item) => (
-              <Link key={item.path} passHref href={item.path}>
-                <Button className="w-full text-start border hover:bg-blue-500 hover:text-white">
-                  {item.name}
-                </Button>
-              </Link>
+              <Button
+                key={item.path}
+                className="w-full text-start border hover:bg-blue-500 hover:text-white"
+                onPress={() => {
+                  router.push(item.path); 
+                  setIsOpen(false); 
+                }}
+              >
+                {item.name}
+              </Button>
             ))}
           </DrawerBody>
           <div className="sticky bottom-0 bg-gray-100 pt-4 flex justify-center mr-5">

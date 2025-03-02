@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Spinner } from "@heroui/react";
 import Link from "next/link";
 
 // กำหนด interface สำหรับโครงสร้างข้อมูล
@@ -24,6 +25,7 @@ interface Order {
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -32,6 +34,7 @@ export default function OrdersPage() {
         const data: Order[] = await response.json();
 
         setOrders(data);
+        setLoading(false)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error fetching orders:", error);
@@ -40,6 +43,17 @@ export default function OrdersPage() {
 
     fetchOrders();
   }, []);
+
+  if (loading) {
+    return (
+      <Spinner
+        className="flex justify-center items-center m-auto w-1/2 h-1/2"
+        color="primary"
+        labelColor="primary"
+        size="lg"
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
