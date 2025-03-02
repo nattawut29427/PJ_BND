@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+
+
 
 export async function GET(
-  _request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
-    // รอให้ Promise resolve แล้ว destructuring
-    const { id } = await context.params;
-    const orderId = Number(id);
+    const session = await getServerSession(authOptions);
    
+    if (!session?.user) {
+   
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // const userId = session.user.id;
+    const orderId = Number(params.id);
+
     if (isNaN(orderId)) {
-      
       return NextResponse.json(
         { error: "Invalid Order ID" },
         { status: 400 }
@@ -45,11 +54,9 @@ export async function GET(
 
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
-   
-    error
-   
+
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: error },
       { status: 500 }
     );
   }
