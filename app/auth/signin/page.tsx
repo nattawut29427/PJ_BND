@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+
 import logo from "@/public/logo.png";
 
 const SignIn = () => {
@@ -12,6 +13,8 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: session } = useSession();
 
   const handleSubmit = useCallback(
@@ -55,10 +58,10 @@ const SignIn = () => {
       <div className="flex flex-col sm:flex-row shadow-md max-w-md sm:max-w-3xl w-full mx-4">
         <div className="flex flex-wrap content-center justify-center rounded-tl-md rounded-tr-md sm:rounded-tr-none sm:rounded-bl-md w-full sm:w-1/2 h-64 sm:h-[32rem] bg-white">
           <Image
-            src={logo}
             alt="Logo"
-            className="w-fit h-fit object-contain"
+            className="w-60 h-60 object-contain sm:w-fit sm:h-fit"
             priority={true}
+            src={logo}
           />
         </div>
         <div className="flex flex-wrap content-center justify-center rounded-br-md rounded-bl-md sm:rounded-bl-none sm:rounded-tr-md bg-white w-full sm:w-1/2 h-auto sm:h-[32rem]">
@@ -71,33 +74,36 @@ const SignIn = () => {
               <p className="text-red-500 text-center mb-4">{error}</p>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form 
+            className="space-y-5"
+            onSubmit={handleSubmit} 
+            >
               <div>
                 <input
+                  required
+                  className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
+                  placeholder="Email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="Email"
-                  className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
-                />
+                  />
               </div>
 
               <div>
                 <input
+                  required
+                  className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
+                  placeholder="Password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Password"
-                  className="w-full p-2 border rounded-md text-lg font-medium bg-white text-gray-600"
                 />
               </div>
 
               <button
-                type="submit"
-                disabled={loading}
                 className="w-full p-2 bg-red-500 text-white text-lg font-semibold rounded-md"
+                disabled={loading}
+                type="submit"
               >
                 {loading ? "Signing In..." : "Sign In"}
               </button>
@@ -109,11 +115,11 @@ const SignIn = () => {
 
             <div className="mt-2 text-center border rounded-md border-gray-400">
               <button
-                onClick={handleGoogleSignIn}
-                disabled={loading}
                 className="w-full p-2 bg-white text-gray-700 font-semibold rounded-md text-lg "
+                disabled={loading}
+                onClick={handleGoogleSignIn}
               >
-                <i className="fa-brands fa-google mr-3"></i>
+                <i className="fa-brands fa-google mr-3"> </i>
                 {loading ? "Google..." : "Google"}
               </button>
             </div>
