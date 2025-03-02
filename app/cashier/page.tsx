@@ -46,7 +46,7 @@ export default function Page() {
 
     try {
       // ส่งข้อมูลเพื่อทำรายการสินค้า
-      const response = await fetch("/api/findorder", {
+      const response = await fetch("/api/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

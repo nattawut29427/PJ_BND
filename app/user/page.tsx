@@ -88,7 +88,7 @@ export default function App() {
     const totalPrice = calculateTotal();
 
     try {
-      const res = await fetch("/api/findorder/", {
+      const res = await fetch("/api/order/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

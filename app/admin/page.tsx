@@ -48,7 +48,7 @@ export default function App() {
       setter: (data: SaleData[]) => void
     ) => {
       try {
-        const res = await fetch(`/api/findorder?${key}=true`);
+        const res = await fetch(`/api/order?${key}=true`);
         
         if (!res.ok) throw new Error(`Failed to fetch ${key}`);
         setter(await res.json());

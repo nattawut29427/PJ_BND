@@ -46,7 +46,7 @@ export default function OrderPage() {
 
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`/api/findorder/${id}`);
+        const res = await fetch(`/api/order/${id}`);
 
         if (res.ok) {
           const data = await res.json();
@@ -91,7 +91,7 @@ const OrderStatusComponent: React.FC<{ order: Order }> = ({ order }) => {
   ];
   const handleCancledOrder = async (orderId: number) => {
     try {
-      const res = await fetch("/api/findorder/cancled", {
+      const res = await fetch("/api/order/cancled", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId }),

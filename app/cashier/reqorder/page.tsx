@@ -103,7 +103,7 @@ export default function CashierOrdersPage() {
       );
 
       // ส่ง request อัปเดต
-      const res = await fetch("/api/findorder/accept", {
+      const res = await fetch("/api/order/accept", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId: order.id }),
