@@ -60,10 +60,10 @@ export default function App() {
     const fetchStats = async () => {
       try {
         const [sumRes, userRes, productRes, quanRes] = await Promise.all([
-          fetch("/api/findorder?sum=true"),
+          fetch("/api/order?sum=true"),
           fetch("/api/users?count=true"),
           fetch("/api/productService?count=true"),
-          fetch("/api/findorder?quanSale=true"),
+          fetch("/api/order?quanSale=true"),
         ]);
 
         if (![sumRes, userRes, productRes, quanRes].every((res) => res.ok))
