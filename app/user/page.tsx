@@ -16,7 +16,6 @@ import Drawer from "@/app/admin/components/Drawer";
 import { useCart } from "@/app/cashier/actionCh/useCart";
 import { useProducts } from "@/app/cashier/actionCh/useProducts";
 
-
 // export const SearchIcon = ({ size = 24, strokeWidth = 1.5, ...props }) => (
 //   <svg
 //     aria-hidden="true"
@@ -68,7 +67,7 @@ export default function App() {
   const [paymentType, setPaymentType] = useState<"cash" | "card" | "online">(
     "cash"
   );
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [status, setStatus] = useState<string>("");
 
   // const customerId = "customer-session-id";
@@ -116,13 +115,13 @@ export default function App() {
     }
   };
 
-  const handleAddToCart = (item : any) => {
+  const handleAddToCart = (item: any) => {
     if (item.quantity === 0) return;
     const quantity = parseInt(quantityRefs.current[item.id]?.value || "1", 10);
 
     if (quantity > item.quantity) {
       alert("ไม่สามารถเพิ่มเกินจำนวนสต็อกได้");
-    
+
       return;
     }
 
@@ -197,8 +196,8 @@ export default function App() {
             key={category.id}
             className={`px-4 py-2 text-sm sm:text-base ${
               selectedCategory === category.id
-              ? "bg-orange-600 text-white"
-              : "bg-zinc-800 text-white"
+                ? "bg-orange-600 text-white"
+                : "bg-zinc-800 text-white"
             }`}
             onPress={() => setSelectedCategory(category.id)}
           >
@@ -214,7 +213,7 @@ export default function App() {
             .filter(
               (item) =>
                 selectedCategory === null ||
-                item.category === selectedCategory
+                item.categoryId === selectedCategory
             )
             .filter(
               (item) =>
@@ -263,8 +262,8 @@ export default function App() {
                   <Button
                     className={`w-full sm:w-auto px-4 py-2 text-sm sm:text-base ${
                       item.quantity === 0
-                      ? "bg-gray-400"
-                      : "bg-gradient-to-tr from-pink-500 to-yellow-500"
+                        ? "bg-gray-400"
+                        : "bg-gradient-to-tr from-pink-500 to-yellow-500"
                     }`}
                     disabled={item.quantity === 0}
                     onPress={() => handleAddToCart(item)}
@@ -278,8 +277,7 @@ export default function App() {
           {products
             .filter(
               (item) =>
-                selectedCategory === null ||
-                item.category === selectedCategory
+                selectedCategory === null || item.categoryId === selectedCategory
             )
             .filter((item) =>
               item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -344,9 +342,8 @@ export default function App() {
                                 alert(
                                   "Cannot remove more than what is in the cart."
                                 );
-                                
+
                                 return;
-                             
                               }
                               removeFromCart(item.id, quantityToRemove);
                               revertProductQuantity(item.id, quantityToRemove);

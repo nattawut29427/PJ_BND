@@ -124,7 +124,7 @@ export default function Page() {
                 .filter(
                   (item) =>
                     selectedCategory === null ||
-                    item.category === selectedCategory
+                    item.categoryId === selectedCategory
                 )
                 .map((item, index) => (
                   <div
