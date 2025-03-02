@@ -32,7 +32,7 @@ export default function CashierOrdersPage() {
   // ดึงข้อมูลออเดอร์ครั้งแรก
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await fetch(`/api/findorder/accept?timestamp=${Date.now()}`);
+      const res = await fetch(`/api/order/accept?timestamp=${Date.now()}`);
 
       if (!res.ok) throw new Error(`HTTP error! ${res.status}`);
 

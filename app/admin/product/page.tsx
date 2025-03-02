@@ -131,7 +131,7 @@ export default function App() {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/productService"
+          "/api/productService"
         ); // Replace with your API URL
         const data = await response.json();
         
