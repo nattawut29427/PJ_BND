@@ -86,7 +86,7 @@ export default function OrdersPage() {
                   className="text-black text-base flex justify-between items-center py-1"
                 >
                   <span>
-                    {item.skewer?.name || "Unknown Item"} ({item.quantity} ไม้)
+                    {item.skewer?.name || "Unknown Item"} ({item.quantity} รายการ)
                   </span>
                   <span className="font-medium">{item.price} บาท</span>
                 </li>
