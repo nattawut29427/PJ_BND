@@ -211,7 +211,7 @@ export default function Page() {
                     >
                       <span>
                         <div className="ml-3">
-                          {item.name} {item.quantity} ไม้
+                          {item.name} {item.quantity} 
                         </div>
                         <div className="ml-3">
                           {item.price * item.quantity} บาท
