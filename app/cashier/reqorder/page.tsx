@@ -163,7 +163,7 @@ export default function CashierOrdersPage() {
                         <li key={item.id}>
                           {/* ใช้ชื่อจากข้อมูลออเดอร์โดยตรง */}
                           {item.skewer?.name || "ไม่มีชื่อสินค้า"}{" "}
-                          {item.quantity} ไม้
+                          {item.quantity} รายการ
                         </li>
                       ))}
                     </ul>
