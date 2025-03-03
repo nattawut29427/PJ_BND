@@ -357,7 +357,7 @@ export default function App() {
               </ul>
             </div>
             <div className="text-lg font-bold mt-4 text-center text-gray-800">
-              Total: ${calculateTotal().toFixed(2)}
+              Total: {calculateTotal().toFixed(2)} บาท
             </div>
             <div className="mt-4 text-center text-gray-800">
               <div className="mb-4 mt-4">
