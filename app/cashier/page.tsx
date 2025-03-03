@@ -248,7 +248,7 @@ export default function Page() {
                               return;
                             }
                             addToCart(item.id, item.name, item.price, quantity);
-                            updateProductQuantity(item.id, quantity);
+                            revertProductQuantity(item.id, quantity);
                           }}
                         >
                           Remove
