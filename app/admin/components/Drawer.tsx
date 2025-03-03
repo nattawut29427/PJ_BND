@@ -65,7 +65,7 @@ export default function App() {
         size="xs"
         onOpenChange={setIsOpen}
       >
-        <DrawerContent className="p-4 bg-gray-100 shadow-lg h-screen">
+        <DrawerContent className="p-4 bg-gray-100 shadow-lg ">
           <DrawerHeader className="text-xl font-bold text-gray-700">
             {panelTitle}
           </DrawerHeader>
