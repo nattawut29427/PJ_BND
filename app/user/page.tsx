@@ -311,7 +311,7 @@ export default function App() {
                         className="flex justify-between items-center mb-2 text-gray-800"
                       >
                         <span>
-                          {item.name} {item.quantity} ไม้ <br />
+                          {item.name} {item.quantity}  <br />
                           {item.price * item.quantity} บาท
                         </span>
                         <div className="flex items-center gap-2">
