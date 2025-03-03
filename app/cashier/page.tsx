@@ -260,7 +260,7 @@ export default function Page() {
               </div>
 
               <div className="text-lg font-bold mt-4 text-center">
-                Total: ${calculateTotal().toFixed(2)}
+                Total: {calculateTotal().toFixed(2)} บาท
               </div>
 
               {/* 💰 ช่องกรอกเงินสด */}
@@ -313,7 +313,7 @@ export default function Page() {
               {cash >= calculateTotal() && (
                 <div className="mt-8 text-center">
                   <p className="text-lg font-semibold">
-                    Change: ${cash - calculateTotal()}
+                    Change: {cash - calculateTotal()} บาท
                   </p>
                 </div>
               )}
